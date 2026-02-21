@@ -4,8 +4,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { useAuthStore } from "@/stores/auth.store";
 
 const MainLayout = () => {
-    const { session } = useAuthStore();
-    const isAdmin = session?.user.role_title === 'Administrator';
+  const { session } = useAuthStore();
+  const isAdmin = session?.user.role_title === "Administrator";
 
   return (
     <div className="dark flex min-h-screen flex-col font-sans text-foreground bg-background">
@@ -13,27 +13,28 @@ const MainLayout = () => {
         <div className="container flex h-14 items-center justify-between px-4">
           <div className="flex items-center gap-6">
             <Link to="/" className="flex items-center space-x-2">
-                <span className="text-xl font-bold tracking-tighter text-primary">
+              <span className="text-xl font-bold tracking-tighter text-primary">
                 L.A. NOIRE
-                </span>
+              </span>
             </Link>
             {isAdmin && (
-                <nav className="flex items-center gap-4 text-sm lg:gap-6">
-                    <Link
-                        to="/roles"
-                        className="transition-colors hover:text-foreground/80 text-foreground/60 font-mono"
-                    >
-                        Role Management
-                    </Link>
-                </nav>
+              <nav className="flex items-center gap-4 text-sm lg:gap-6">
+                <Link
+                  to="/roles"
+                  className="transition-colors hover:text-foreground/80 text-foreground/60 font-mono"
+                >
+                  Role Management
+                </Link>
+              </nav>
             )}
           </div>
           <div className="flex items-center gap-2">
-             {session && (
-                 <div className="text-xs font-mono text-muted-foreground hidden md:block">
-                     Logged in as: <span className="text-primary">{session.user.username}</span>
-                 </div>
-             )}
+            {session && (
+              <div className="text-xs font-mono text-muted-foreground hidden md:block">
+                Logged in as:{" "}
+                <span className="text-primary">{session.user.username}</span>
+              </div>
+            )}
           </div>
         </div>
       </header>
