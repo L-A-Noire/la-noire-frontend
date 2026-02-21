@@ -1,13 +1,13 @@
 export interface Role {
-    id: number;
-    title: string;
-    user_count: number;
+  id: number;
+  title: string;
+  user_count: number;
 }
 
 export interface CreateRolePayload {
-    title: string;
+  title: string;
 }
 
 export interface UpdateRolePayload {
-    title?: string;
+  title?: string;
 }

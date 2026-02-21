@@ -29,10 +29,12 @@ export default function HomePage() {
           CASE FILE: DASHBOARD
         </h1>
         <p className="text-muted-foreground font-mono text-sm">
-          {session ? `OFFICER ON DUTY: ${`${session.user.last_name}`.toUpperCase()}` : "UNAUTHORIZED ACCESS"}
+          {session
+            ? `OFFICER ON DUTY: ${`${session.user.last_name}`.toUpperCase()}`
+            : "UNAUTHORIZED ACCESS"}
         </p>
       </div>
-      
+
       {session ? (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
@@ -41,12 +43,17 @@ export default function HomePage() {
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
                     <CardTitle className="text-2xl font-mono text-primary flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-primary animate-pulse"/>
+                      <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
                       DETECTIVE PROFILE
                     </CardTitle>
-                    <CardDescription>Authorized personnel access only. Clearance verified.</CardDescription>
+                    <CardDescription>
+                      Authorized personnel access only. Clearance verified.
+                    </CardDescription>
                   </div>
-                  <Badge variant="outline" className="text-primary border-primary font-mono px-3 py-1">
+                  <Badge
+                    variant="outline"
+                    className="text-primary border-primary font-mono px-3 py-1"
+                  >
                     STATUS: ACTIVE
                   </Badge>
                 </div>
@@ -78,10 +85,13 @@ export default function HomePage() {
                         Rank Designation
                       </span>
                       <div className="flex items-center justify-between">
-                         <span className="font-mono text-lg font-semibold text-primary tracking-tight">
+                        <span className="font-mono text-lg font-semibold text-primary tracking-tight">
                           {session.user.role_title}
                         </span>
-                        <Badge variant="secondary" className="font-mono text-xs">
+                        <Badge
+                          variant="secondary"
+                          className="font-mono text-xs"
+                        >
                           Lvl {session.user.role}
                         </Badge>
                       </div>
@@ -89,7 +99,7 @@ export default function HomePage() {
                   </div>
 
                   <div className="space-y-6">
-                     <div className="flex flex-col space-y-1.5 p-3 rounded-lg bg-muted/30 border border-border/50">
+                    <div className="flex flex-col space-y-1.5 p-3 rounded-lg bg-muted/30 border border-border/50">
                       <span className="text-[10px] uppercase text-muted-foreground tracking-wider font-bold">
                         System Username
                       </span>
@@ -129,36 +139,37 @@ export default function HomePage() {
               </CardFooter>
             </Card>
           </div>
-          
+
           <div className="lg:col-span-1 min-h-full">
             <WantedSuspects />
           </div>
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center min-h-[50vh]">
-            <Card className="w-full max-w-sm text-center border-destructive/50 shadow-2xl shadow-destructive/10">
+          <Card className="w-full max-w-sm text-center border-destructive/50 shadow-2xl shadow-destructive/10">
             <CardHeader>
-                <CardTitle className="text-destructive flex items-center justify-center gap-2">
-                    RESTRICTED ACCESS
-                </CardTitle>
-                <CardDescription>
-                Identity verification required.
-                </CardDescription>
+              <CardTitle className="text-destructive flex items-center justify-center gap-2">
+                RESTRICTED ACCESS
+              </CardTitle>
+              <CardDescription>Identity verification required.</CardDescription>
             </CardHeader>
             <CardContent>
-                <p className="text-sm text-muted-foreground font-mono">
-                You are currently operating in an unauthorized capacity. Access to case files is denied.
-                </p>
+              <p className="text-sm text-muted-foreground font-mono">
+                You are currently operating in an unauthorized capacity. Access
+                to case files is denied.
+              </p>
             </CardContent>
             <CardFooter className="flex justify-center">
-                <Button onClick={() => navigate("/login")} className="w-full font-mono uppercase">
+              <Button
+                onClick={() => navigate("/login")}
+                className="w-full font-mono uppercase"
+              >
                 Access Login Terminal
-                </Button>
+              </Button>
             </CardFooter>
-            </Card>
+          </Card>
         </div>
       )}
     </div>
   );
-};
-
+}
