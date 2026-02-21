@@ -4,7 +4,7 @@ import type {
   User,
   LoginPayload,
   RegisterPayload,
-} from "@/types/auth";
+} from "@/types/auth.type";
 
 export const login = async (credentials: LoginPayload) => {
   const { data } = await http.post<SessionData>("/auth/login/", credentials);

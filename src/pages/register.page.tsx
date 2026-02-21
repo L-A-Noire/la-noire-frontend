@@ -2,11 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useAuthStore } from "../stores/auth-store";
+import { useAuthStore } from "../stores/auth.store";
 import { register as registerApi } from "../api/auth";
 import { toast } from "react-toastify";
-import { RegisterSchema } from "@/schemas/auth";
-import type { RegisterPayload } from "@/types/auth";
+import { RegisterSchema } from "@/schemas/auth.schema";
+import type { RegisterPayload } from "@/types/auth.type";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,7 +18,7 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 
-const Register = () => {
+export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const setSession = useAuthStore((state) => state.setSession);
   const navigate = useNavigate();
@@ -116,4 +116,3 @@ const Register = () => {
   );
 };
 
-export default Register;

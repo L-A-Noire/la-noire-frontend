@@ -2,11 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useAuthStore } from "../stores/auth-store";
+import { useAuthStore } from "../stores/auth.store";
 import { login } from "../api/auth";
 import { toast } from "react-toastify";
-import { LoginSchema } from "@/schemas/auth";
-import type { LoginPayload } from "@/types/auth";
+import { LoginSchema } from "@/schemas/auth.schema";
+import type { LoginPayload } from "@/types/auth.type";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,7 +18,7 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 
-const Login = () => {
+export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const setSession = useAuthStore((state) => state.setSession);
   const navigate = useNavigate();
@@ -97,4 +97,3 @@ const Login = () => {
   );
 };
 
-export default Login;

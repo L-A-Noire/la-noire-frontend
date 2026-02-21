@@ -4,7 +4,7 @@ import {
   SessionDataSchema,
   LoginSchema,
   RegisterSchema,
-} from "@/schemas/auth";
+} from "@/schemas/auth.schema";
 
 export type User = z.infer<typeof UserSchema>;
 export type SessionData = z.infer<typeof SessionDataSchema>;
