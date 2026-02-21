@@ -52,7 +52,7 @@ const Login = () => {
   };
 
   return (
-    <div className="flex justify-center items-center py-10">
+    <div className="flex justify-center items-center">
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle>Login</CardTitle>
@@ -78,7 +78,7 @@ const Login = () => {
               )}
             </div>
           </CardContent>
-          <CardFooter className="flex-col gap-2">
+          <CardFooter className="flex-col gap-2 mt-4">
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Logging in..." : "Login"}
             </Button>

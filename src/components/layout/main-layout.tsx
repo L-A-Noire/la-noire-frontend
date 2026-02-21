@@ -14,7 +14,7 @@ const MainLayout = () => {
           </Link>
         </div>
       </header>
-      <main className="flex-1 container mx-auto p-4 md:p-8">
+      <main className="flex-1 container m-auto p-4 md:p-8">
         <Outlet />
       </main>
       <ToastContainer
