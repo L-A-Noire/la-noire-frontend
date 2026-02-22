@@ -244,7 +244,10 @@ export const CaseEvidencePage = () => {
           <h1 className="text-3xl font-bold tracking-tight">Case Evidence</h1>
           <p className="text-sm text-muted-foreground">Case #{caseId}</p>
         </div>
-        <Button onClick={() => navigate("/evidence/record")} className="gap-2">
+        <Button
+          onClick={() => navigate(`/cases/${caseId}/evidence/record`)}
+          className="gap-2"
+        >
           <HugeiconsIcon icon={Add01Icon} className="h-4 w-4" />
           Record New Evidence
         </Button>
@@ -442,7 +445,7 @@ export const CaseEvidencePage = () => {
             </p>
             {allEvidence.length === 0 && (
               <Button
-                onClick={() => navigate("/evidence/record")}
+                onClick={() => navigate(`/cases/${caseId}/evidence/record`)}
                 className="gap-2"
               >
                 <HugeiconsIcon icon={Add01Icon} className="h-4 w-4" />

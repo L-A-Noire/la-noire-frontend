@@ -14,6 +14,7 @@ import { FileComplaintPage } from "@/pages/complaints/file-complaint.page";
 import { ComplaintDetailPage } from "@/pages/complaints/complaint-detail.page";
 import { CrimeScenesListPage } from "@/pages/crime-scenes/crime-scenes-list.page";
 import { ReportCrimeScenePage } from "@/pages/crime-scenes/report-crime-scene.page";
+import { CrimeSceneDetailPage } from "@/pages/crime-scenes/crime-scene-detail.page";
 import { CaseEvidencePage } from "@/pages/evidence/case-evidence.page";
 import RecordEvidencePage from "@/pages/evidence/record-evidence.page";
 import { EvidenceDetailPage } from "@/pages/evidence/evidence-detail.page";
@@ -47,6 +48,7 @@ export function App() {
 
           <Route path="crime-scenes" element={<CrimeScenesListPage />} />
           <Route path="crime-scenes/new" element={<ReportCrimeScenePage />} />
+          <Route path="crime-scenes/:id" element={<CrimeSceneDetailPage />} />
 
           {/* Protected Routes for Administrators */}
           <Route element={<RoleGuard allowedRoles={["Administrator"]} />}>
