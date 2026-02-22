@@ -8,6 +8,11 @@ import { RolesListPage, RoleFormPage } from "@/pages/roles.page";
 import { CasesListPage } from "@/pages/cases/cases-list.page";
 import { CaseCreatePage } from "@/pages/cases/create-case.page";
 import { CaseTimelinePage } from "@/pages/cases/case-timeline.page";
+import { ComplaintsListPage } from "@/pages/complaints/complaints-list.page";
+import { FileComplaintPage } from "@/pages/complaints/file-complaint.page";
+import { ComplaintDetailPage } from "@/pages/complaints/complaint-detail.page";
+import { CrimeScenesListPage } from "@/pages/crime-scenes/crime-scenes-list.page";
+import { ReportCrimeScenePage } from "@/pages/crime-scenes/report-crime-scene.page";
 
 export function App() {
   return (
@@ -21,6 +26,13 @@ export function App() {
           <Route path="cases" element={<CasesListPage />} />
           <Route path="cases/new" element={<CaseCreatePage />} />
           <Route path="cases/:id/timeline" element={<CaseTimelinePage />} />
+
+          <Route path="complaints" element={<ComplaintsListPage />} />
+          <Route path="complaints/new" element={<FileComplaintPage />} />
+          <Route path="complaints/:id" element={<ComplaintDetailPage />} />
+
+          <Route path="crime-scenes" element={<CrimeScenesListPage />} />
+          <Route path="crime-scenes/new" element={<ReportCrimeScenePage />} />
 
           {/* Protected Routes for Administrators */}
           <Route element={<RoleGuard allowedRoles={["Administrator"]} />}>

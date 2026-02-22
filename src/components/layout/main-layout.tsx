@@ -22,14 +22,26 @@ const MainLayout = () => {
                 to="/cases"
                 className="transition-colors hover:text-foreground/80 text-foreground/60 font-mono"
               >
-                Crime Cases
+                Cases
+              </Link>
+              <Link
+                to="/complaints"
+                className="transition-colors hover:text-foreground/80 text-foreground/60 font-mono"
+              >
+                Complaints
+              </Link>
+              <Link
+                to="/crime-scenes"
+                className="transition-colors hover:text-foreground/80 text-foreground/60 font-mono"
+              >
+                Scenes
               </Link>
               {isAdmin && (
                 <Link
                   to="/roles"
                   className="transition-colors hover:text-foreground/80 text-foreground/60 font-mono"
                 >
-                  Role Management
+                  Roles
                 </Link>
               )}
             </nav>
