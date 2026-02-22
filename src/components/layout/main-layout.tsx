@@ -17,16 +17,22 @@ const MainLayout = () => {
                 L.A. NOIRE
               </span>
             </Link>
-            {isAdmin && (
-              <nav className="flex items-center gap-4 text-sm lg:gap-6">
+            <nav className="flex items-center gap-4 text-sm lg:gap-6">
+              <Link
+                to="/cases"
+                className="transition-colors hover:text-foreground/80 text-foreground/60 font-mono"
+              >
+                Crime Cases
+              </Link>
+              {isAdmin && (
                 <Link
                   to="/roles"
                   className="transition-colors hover:text-foreground/80 text-foreground/60 font-mono"
                 >
                   Role Management
                 </Link>
-              </nav>
-            )}
+              )}
+            </nav>
           </div>
           <div className="flex items-center gap-2">
             {session && (
