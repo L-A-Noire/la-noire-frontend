@@ -15,7 +15,7 @@ import { ComplaintDetailPage } from "@/pages/complaints/complaint-detail.page";
 import { CrimeScenesListPage } from "@/pages/crime-scenes/crime-scenes-list.page";
 import { ReportCrimeScenePage } from "@/pages/crime-scenes/report-crime-scene.page";
 import { CaseEvidencePage } from "@/pages/evidence/case-evidence.page";
-import { RecordEvidencePage } from "@/pages/evidence/record-evidence.page";
+import RecordEvidencePage from "@/pages/evidence/record-evidence.page";
 import { EvidenceDetailPage } from "@/pages/evidence/evidence-detail.page";
 
 export function App() {
@@ -37,7 +37,7 @@ export function App() {
             element={<RecordEvidencePage />}
           />
           <Route
-            path="cases/:caseId/evidence/:evidenceId"
+            path="cases/:caseId/evidence/:evidenceType/:evidenceId"
             element={<EvidenceDetailPage />}
           />
 

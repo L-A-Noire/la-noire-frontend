@@ -1,5 +1,4 @@
 import { Badge } from "@/components/ui/badge";
-import type { EvidenceType } from "@/types/evidence.type";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   User02Icon,
@@ -8,6 +7,14 @@ import {
   UserIcon,
   Package01Icon,
 } from "@hugeicons/core-free-icons";
+
+// Define evidence types locally since we removed the global type
+type EvidenceType =
+  | "witness_testimony"
+  | "forensic"
+  | "vehicle"
+  | "identification"
+  | "other";
 
 interface EvidenceBadgeProps {
   type: EvidenceType;

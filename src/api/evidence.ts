@@ -1,109 +1,53 @@
 import http from "@/lib/http";
 import type {
-  EvidenceDetail,
-  CreateEvidenceRequest,
-  EvidenceListResponse,
-  EvidenceSummary,
-  ForensicEvidence,
+  Testimony,
+  TestimonyDetail,
+  CreateTestimonyRequest,
+  BiologicalEvidence,
+  BiologicalEvidenceDetail,
+  CreateBiologicalEvidenceRequest,
+  VehicleEvidence,
+  VehicleEvidenceDetail,
+  CreateVehicleEvidenceRequest,
+  IdentificationEvidence,
+  IdentificationEvidenceDetail,
+  CreateIdentificationEvidenceRequest,
+  OtherEvidence,
+  OtherEvidenceDetail,
+  CreateOtherEvidenceRequest,
+  Image,
+  Attachment,
 } from "@/types/evidence.type";
 
-// Get all evidence for a case
-export const getEvidenceByCase = async (
-  caseId: number,
-): Promise<EvidenceDetail[]> => {
-  const response = await http.get<EvidenceDetail[]>(
-    `/crime/cases/${caseId}/evidence/`,
-  );
-  return response.data;
-};
+// ==================== Images ====================
+export const uploadImage = async (file: File): Promise<Image> => {
+  const formData = new FormData();
+  formData.append("image", file);
 
-// Get all evidence with pagination and filters
-export const getEvidence = async (params?: {
-  case_id?: number;
-  evidence_type?: string;
-  limit?: number;
-  offset?: number;
-}): Promise<EvidenceListResponse> => {
-  const response = await http.get<EvidenceListResponse>("/crime/evidence/", {
-    params,
+  const response = await http.post<Image>("/witness/images/", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
   });
   return response.data;
 };
 
-// Get single evidence detail
-export const getEvidenceById = async (id: number): Promise<EvidenceDetail> => {
-  const response = await http.get<EvidenceDetail>(`/crime/evidence/${id}/`);
+export const getImage = async (id: number): Promise<Image> => {
+  const response = await http.get<Image>(`/witness/images/${id}/`);
   return response.data;
 };
 
-// Create new evidence
-export const createEvidence = async (
-  data: CreateEvidenceRequest,
-): Promise<EvidenceDetail> => {
+export const deleteImage = async (id: number): Promise<void> => {
+  await http.delete(`/witness/images/${id}/`);
+};
+
+// ==================== Attachments ====================
+export const uploadAttachment = async (file: File): Promise<Attachment> => {
   const formData = new FormData();
+  formData.append("file", file);
 
-  // Add basic fields
-  formData.append("case", data.case.toString());
-  formData.append("title", data.title);
-  formData.append("description", data.description);
-  formData.append("evidence_type", data.evidence_type);
-  formData.append("recorded_at", data.recorded_at);
-
-  // Type-specific fields
-  switch (data.evidence_type) {
-    case "witness_testimony":
-      if (data.witness_name) formData.append("witness_name", data.witness_name);
-      if (data.witness_contact)
-        formData.append("witness_contact", data.witness_contact);
-      if (data.statement) formData.append("statement", data.statement);
-      break;
-
-    case "forensic":
-      if (data.forensic_type)
-        formData.append("forensic_type", data.forensic_type);
-      if (data.collection_location)
-        formData.append("collection_location", data.collection_location);
-      if (data.test_status) formData.append("test_status", data.test_status);
-      break;
-
-    case "vehicle":
-      if (data.vehicle_model)
-        formData.append("vehicle_model", data.vehicle_model);
-      if (data.vehicle_color)
-        formData.append("vehicle_color", data.vehicle_color);
-      if (data.plate_number) formData.append("plate_number", data.plate_number);
-      if (data.serial_number)
-        formData.append("serial_number", data.serial_number);
-      if (data.info_type) formData.append("info_type", data.info_type);
-      break;
-
-    case "identification":
-      if (data.discovered_person_name)
-        formData.append("discovered_person_name", data.discovered_person_name);
-      if (data.person_details) {
-        formData.append("person_details", JSON.stringify(data.person_details));
-      }
-      break;
-
-    case "other":
-      if (data.custom_properties) {
-        formData.append(
-          "custom_properties",
-          JSON.stringify(data.custom_properties),
-        );
-      }
-      break;
-  }
-
-  // Add media files if provided
-  if (data.media_files && data.media_files.length > 0) {
-    data.media_files.forEach((file) => {
-      formData.append(`media_files`, file);
-    });
-  }
-
-  const response = await http.post<EvidenceDetail>(
-    "/crime/evidence/",
+  const response = await http.post<Attachment>(
+    "/witness/attachments/",
     formData,
     {
       headers: {
@@ -114,54 +58,218 @@ export const createEvidence = async (
   return response.data;
 };
 
-// Update evidence
-export const updateEvidence = async (
+export const getAttachment = async (id: number): Promise<Attachment> => {
+  const response = await http.get<Attachment>(`/witness/attachments/${id}/`);
+  return response.data;
+};
+
+export const deleteAttachment = async (id: number): Promise<void> => {
+  await http.delete(`/witness/attachments/${id}/`);
+};
+
+// ==================== Testimonies ====================
+export const getTestimonies = async (): Promise<Testimony[]> => {
+  const response = await http.get<Testimony[]>("/witness/testimonies/");
+  return response.data;
+};
+
+export const getTestimony = async (id: number): Promise<TestimonyDetail> => {
+  const response = await http.get<TestimonyDetail>(
+    `/witness/testimonies/${id}/`,
+  );
+  return response.data;
+};
+
+export const createTestimony = async (
+  data: CreateTestimonyRequest,
+): Promise<Testimony> => {
+  const response = await http.post<Testimony>("/witness/testimonies/", data);
+  return response.data;
+};
+
+export const updateTestimony = async (
   id: number,
-  data: Partial<CreateEvidenceRequest>,
-): Promise<EvidenceDetail> => {
-  const response = await http.patch<EvidenceDetail>(
-    `/crime/evidence/${id}/`,
+  data: Partial<CreateTestimonyRequest>,
+): Promise<Testimony> => {
+  const response = await http.patch<Testimony>(
+    `/witness/testimonies/${id}/`,
     data,
   );
   return response.data;
 };
 
-// Delete evidence
-export const deleteEvidence = async (id: number): Promise<void> => {
-  await http.delete(`/crime/evidence/${id}/`);
+export const deleteTestimony = async (id: number): Promise<void> => {
+  await http.delete(`/witness/testimonies/${id}/`);
 };
 
-// Update forensic test results
-export const updateForensicTestResults = async (
-  evidenceId: number,
-  data: {
-    test_status: "pending" | "in_progress" | "completed" | "error";
-    test_result?: string;
-  },
-): Promise<ForensicEvidence> => {
-  const response = await http.patch<ForensicEvidence>(
-    `/crime/evidence/${evidenceId}/update-forensic-result/`,
+// ==================== Biological Evidence ====================
+export const getBiologicalEvidences = async (): Promise<
+  BiologicalEvidence[]
+> => {
+  const response = await http.get<BiologicalEvidence[]>(
+    "/witness/biological-evidence/",
+  );
+  return response.data;
+};
+
+export const getBiologicalEvidence = async (
+  id: number,
+): Promise<BiologicalEvidenceDetail> => {
+  const response = await http.get<BiologicalEvidenceDetail>(
+    `/witness/biological-evidence/${id}/`,
+  );
+  return response.data;
+};
+
+export const createBiologicalEvidence = async (
+  data: CreateBiologicalEvidenceRequest,
+): Promise<BiologicalEvidence> => {
+  const response = await http.post<BiologicalEvidence>(
+    "/witness/biological-evidence/",
     data,
   );
   return response.data;
 };
 
-// Get evidence summary for case
-export const getEvidenceSummary = async (
-  caseId: number,
-): Promise<EvidenceSummary> => {
-  const response = await http.get<EvidenceSummary>(
-    `/crime/cases/${caseId}/evidence-summary/`,
+export const updateBiologicalEvidence = async (
+  id: number,
+  data: Partial<CreateBiologicalEvidenceRequest>,
+): Promise<BiologicalEvidence> => {
+  const response = await http.patch<BiologicalEvidence>(
+    `/witness/biological-evidence/${id}/`,
+    data,
   );
   return response.data;
 };
 
-// Search evidence
-export const searchEvidence = async (
-  query: string,
-): Promise<EvidenceDetail[]> => {
-  const response = await http.get<EvidenceDetail[]>("/crime/evidence/search/", {
-    params: { q: query },
-  });
+export const deleteBiologicalEvidence = async (id: number): Promise<void> => {
+  await http.delete(`/witness/biological-evidence/${id}/`);
+};
+
+// ==================== Vehicle Evidence ====================
+export const getVehicleEvidences = async (): Promise<VehicleEvidence[]> => {
+  const response = await http.get<VehicleEvidence[]>(
+    "/witness/vehicle-evidence/",
+  );
   return response.data;
+};
+
+export const getVehicleEvidence = async (
+  id: number,
+): Promise<VehicleEvidenceDetail> => {
+  const response = await http.get<VehicleEvidenceDetail>(
+    `/witness/vehicle-evidence/${id}/`,
+  );
+  return response.data;
+};
+
+export const createVehicleEvidence = async (
+  data: CreateVehicleEvidenceRequest,
+): Promise<VehicleEvidence> => {
+  const response = await http.post<VehicleEvidence>(
+    "/witness/vehicle-evidence/",
+    data,
+  );
+  return response.data;
+};
+
+export const updateVehicleEvidence = async (
+  id: number,
+  data: Partial<CreateVehicleEvidenceRequest>,
+): Promise<VehicleEvidence> => {
+  const response = await http.patch<VehicleEvidence>(
+    `/witness/vehicle-evidence/${id}/`,
+    data,
+  );
+  return response.data;
+};
+
+export const deleteVehicleEvidence = async (id: number): Promise<void> => {
+  await http.delete(`/witness/vehicle-evidence/${id}/`);
+};
+
+// ==================== Identification Evidence ====================
+export const getIdentificationEvidences = async (): Promise<
+  IdentificationEvidence[]
+> => {
+  const response = await http.get<IdentificationEvidence[]>(
+    "/witness/identification-evidence/",
+  );
+  return response.data;
+};
+
+export const getIdentificationEvidence = async (
+  id: number,
+): Promise<IdentificationEvidenceDetail> => {
+  const response = await http.get<IdentificationEvidenceDetail>(
+    `/witness/identification-evidence/${id}/`,
+  );
+  return response.data;
+};
+
+export const createIdentificationEvidence = async (
+  data: CreateIdentificationEvidenceRequest,
+): Promise<IdentificationEvidence> => {
+  const response = await http.post<IdentificationEvidence>(
+    "/witness/identification-evidence/",
+    data,
+  );
+  return response.data;
+};
+
+export const updateIdentificationEvidence = async (
+  id: number,
+  data: Partial<CreateIdentificationEvidenceRequest>,
+): Promise<IdentificationEvidence> => {
+  const response = await http.patch<IdentificationEvidence>(
+    `/witness/identification-evidence/${id}/`,
+    data,
+  );
+  return response.data;
+};
+
+export const deleteIdentificationEvidence = async (
+  id: number,
+): Promise<void> => {
+  await http.delete(`/witness/identification-evidence/${id}/`);
+};
+
+// ==================== Other Evidence ====================
+export const getOtherEvidences = async (): Promise<OtherEvidence[]> => {
+  const response = await http.get<OtherEvidence[]>("/witness/other-evidence/");
+  return response.data;
+};
+
+export const getOtherEvidence = async (
+  id: number,
+): Promise<OtherEvidenceDetail> => {
+  const response = await http.get<OtherEvidenceDetail>(
+    `/witness/other-evidence/${id}/`,
+  );
+  return response.data;
+};
+
+export const createOtherEvidence = async (
+  data: CreateOtherEvidenceRequest,
+): Promise<OtherEvidence> => {
+  const response = await http.post<OtherEvidence>(
+    "/witness/other-evidence/",
+    data,
+  );
+  return response.data;
+};
+
+export const updateOtherEvidence = async (
+  id: number,
+  data: Partial<CreateOtherEvidenceRequest>,
+): Promise<OtherEvidence> => {
+  const response = await http.patch<OtherEvidence>(
+    `/witness/other-evidence/${id}/`,
+    data,
+  );
+  return response.data;
+};
+
+export const deleteOtherEvidence = async (id: number): Promise<void> => {
+  await http.delete(`/witness/other-evidence/${id}/`);
 };

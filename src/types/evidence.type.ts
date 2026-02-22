@@ -1,132 +1,166 @@
-export type EvidenceType =
-  | "witness_testimony"
-  | "forensic"
-  | "vehicle"
-  | "identification"
-  | "other";
-
-export type ForensicSubType =
-  | "blood"
-  | "hair"
-  | "fingerprint"
-  | "dna"
-  | "fibers"
-  | "toxicology";
-
-export type VehicleInfoType = "plate" | "serial";
-
-// Base Evidence Interface
-export interface Evidence {
+// Image type
+export interface Image {
   id: number;
-  case: number;
+  image: string;
+  uploaded_by: number;
+  uploaded_at?: string;
+}
+
+export interface ImageRequest {
+  image: File;
+  uploaded_by: number;
+}
+
+// Attachment type
+export interface Attachment {
+  id: number;
+  file: string;
+  provided_by: number;
+  uploaded_at?: string;
+}
+
+export interface AttachmentRequest {
+  file: File;
+  provided_by: number;
+}
+
+// Testimony Evidence
+export interface Testimony {
+  id: number;
   title: string;
   description: string;
-  recorded_at: string;
-  recorded_by: number;
-  evidence_type: EvidenceType;
+  transcription: string;
+  attachments: number[];
   created_at: string;
+  created_by: number;
 }
 
-// Witness Testimony Evidence
-export interface WitnessTestimonyEvidence extends Evidence {
-  evidence_type: "witness_testimony";
-  witness_name?: string;
-  witness_contact?: string;
-  statement: string;
-  media_urls?: string[]; // Images, videos, audio files
+export interface TestimonyDetail extends Testimony {
+  attachment_details?: Attachment[];
+  created_by_name?: string;
 }
 
-// Forensic Evidence
-export interface ForensicEvidence extends Evidence {
-  evidence_type: "forensic";
-  forensic_type: ForensicSubType;
-  collection_location?: string;
-  tested_by?: number;
-  test_result?: string;
-  test_status: "pending" | "in_progress" | "completed" | "error";
-  media_urls?: string[];
+export interface CreateTestimonyRequest {
+  title: string;
+  description: string;
+  transcription: string;
+  attachments: number[];
+  created_at: string;
+  created_by: number;
+}
+
+// Biological Evidence
+export interface BiologicalEvidence {
+  id: number;
+  title: string;
+  description: string;
+  images: number[];
+  result?: string | null;
+  coronary?: number | null;
+  created_at: string;
+  created_by: number;
+}
+
+export interface BiologicalEvidenceDetail extends BiologicalEvidence {
+  image_details?: Image[];
+  created_by_name?: string;
+}
+
+export interface CreateBiologicalEvidenceRequest {
+  title: string;
+  description: string;
+  images: number[];
+  result?: string | null;
+  coronary?: number | null;
+  created_at: string;
+  created_by: number;
 }
 
 // Vehicle Evidence
-export interface VehicleEvidence extends Evidence {
-  evidence_type: "vehicle";
-  vehicle_model?: string;
-  vehicle_color?: string;
-  plate_number?: string;
-  serial_number?: string;
-  info_type: VehicleInfoType;
-  media_urls?: string[];
+export interface VehicleEvidence {
+  id: number;
+  title: string;
+  description: string;
+  vehicle_model: string;
+  color: string;
+  registration_plate_number?: string | null;
+  serial_number?: string | null;
+  created_at: string;
+  created_by: number;
+}
+
+export interface VehicleEvidenceDetail extends VehicleEvidence {
+  created_by_name?: string;
+}
+
+export interface CreateVehicleEvidenceRequest {
+  title: string;
+  description: string;
+  vehicle_model: string;
+  color: string;
+  registration_plate_number?: string | null;
+  serial_number?: string | null;
+  created_at: string;
+  created_by: number;
 }
 
 // Identification Evidence
-export interface IdentificationEvidence extends Evidence {
-  evidence_type: "identification";
-  discovered_person_name?: string;
-  person_details: Record<string, string>; // Key-value pairs for flexible storage
-  media_urls?: string[];
+export interface IdentificationEvidence {
+  id: number;
+  title: string;
+  description: string;
+  owner_first_name: string;
+  owner_last_name: string;
+  information?: Record<string, any>;
+  created_at: string;
+  created_by: number;
 }
 
-// Other Evidence (Generic)
-export interface OtherEvidence extends Evidence {
-  evidence_type: "other";
-  custom_properties?: Record<string, string | number | boolean>;
-  media_urls?: string[];
+export interface IdentificationEvidenceDetail extends IdentificationEvidence {
+  created_by_name?: string;
 }
 
-// Union type for all evidence
-export type EvidenceDetail =
-  | WitnessTestimonyEvidence
-  | ForensicEvidence
+export interface CreateIdentificationEvidenceRequest {
+  title: string;
+  description: string;
+  owner_first_name: string;
+  owner_last_name: string;
+  information?: Record<string, any>;
+  created_at: string;
+  created_by: number;
+}
+
+// Other Evidence
+export interface OtherEvidence {
+  id: number;
+  title: string;
+  description: string;
+  created_at: string;
+  created_by: number;
+}
+
+export interface OtherEvidenceDetail extends OtherEvidence {
+  created_by_name?: string;
+}
+
+export interface CreateOtherEvidenceRequest {
+  title: string;
+  description: string;
+  created_at: string;
+  created_by: number;
+}
+
+// Union types for all evidence
+export type AnyEvidence =
+  | Testimony
+  | BiologicalEvidence
   | VehicleEvidence
   | IdentificationEvidence
   | OtherEvidence;
 
-// Create Request
-export interface CreateEvidenceRequest {
-  case: number;
-  title: string;
-  description: string;
-  evidence_type: EvidenceType;
-  recorded_at: string;
-
-  // Witness testimony fields
-  witness_name?: string;
-  witness_contact?: string;
-  statement?: string;
-  media_files?: File[];
-
-  // Forensic fields
-  forensic_type?: ForensicSubType;
-  collection_location?: string;
-  test_status?: "pending" | "in_progress" | "completed" | "error";
-
-  // Vehicle fields
-  vehicle_model?: string;
-  vehicle_color?: string;
-  plate_number?: string;
-  serial_number?: string;
-  info_type?: VehicleInfoType;
-
-  // Identification fields
-  discovered_person_name?: string;
-  person_details?: Record<string, string>;
-
-  // Other fields
-  custom_properties?: Record<string, string | number | boolean>;
-}
-
-// List response with pagination
-export interface EvidenceListResponse {
-  count: number;
-  next?: string;
-  previous?: string;
-  results: Evidence[];
-}
-
-// Evidence Summary for dashboard
-export interface EvidenceSummary {
-  total_count: number;
-  by_type: Record<EvidenceType, number>;
-  pending_tests: number;
-  recent_evidence: Evidence[];
-}
+export type AnyEvidenceDetail =
+  | TestimonyDetail
+  | BiologicalEvidenceDetail
+  | VehicleEvidenceDetail
+  | IdentificationEvidenceDetail
+  | OtherEvidenceDetail;
