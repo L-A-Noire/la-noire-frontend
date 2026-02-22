@@ -193,7 +193,7 @@ export default function HomePage() {
                   <div className="space-y-1">
                     <CardTitle className="text-2xl font-mono text-primary flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                      DETECTIVE PROFILE
+                      PROFILE
                     </CardTitle>
                     <CardDescription>
                       Authorized personnel access only. Clearance verified.

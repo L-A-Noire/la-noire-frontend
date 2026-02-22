@@ -57,6 +57,8 @@ export const ComplaintDetailPage = () => {
     handleSubmit,
     formState: { errors, isSubmitting },
     watch,
+    setValue,
+    reset,
   } = useForm<ReviewFormData>({
     defaultValues: {
       is_confirmed: false,
@@ -122,14 +124,16 @@ export const ComplaintDetailPage = () => {
   const canReview =
     complaint &&
     ((session?.user.role_title === "Cadet" &&
-      complaint.status === "pending_cadet") ||
-      (session?.user.role_title === "Police Officer" &&
+      ["pending_cadet", "rejected_by_officer"].includes(
+        complaint.status
+      )) ||
+      (session?.user.role_title === "Police/Patrol Officer" &&
         complaint.status === "pending_officer"));
 
   const canCreateCase =
     complaint &&
     complaint.status === "approved" &&
-    session?.user.role_title === "Police Officer";
+    session?.user.role_title === "Police/Patrol Officer";
 
   if (isLoading)
     return (
@@ -221,9 +225,8 @@ export const ComplaintDetailPage = () => {
             <div>
               <p className="text-sm text-muted-foreground">Rejection Count</p>
               <p
-                className={`font-semibold mt-1 ${
-                  complaint.rejection_count >= 3 ? "text-destructive" : ""
-                }`}
+                className={`font-semibold mt-1 ${complaint.rejection_count >= 3 ? "text-destructive" : ""
+                  }`}
               >
                 {complaint.rejection_count}/3
               </p>
@@ -273,16 +276,11 @@ export const ComplaintDetailPage = () => {
                 <div className="flex gap-4">
                   <button
                     type="button"
-                    className={`flex-1 p-4 border-2 rounded-lg transition-all ${
-                      isConfirmed
-                        ? "border-green-500 bg-green-50 dark:bg-green-950/20"
-                        : "border-muted hover:border-green-300"
-                    }`}
-                    onClick={() => {
-                      register("is_confirmed").onChange({
-                        target: { checked: true, name: "is_confirmed" },
-                      });
-                    }}
+                    className={`flex-1 p-4 border-2 rounded-lg transition-all ${isConfirmed
+                      ? "border-green-500 bg-green-50 dark:bg-green-950/20"
+                      : "border-muted hover:border-green-300"
+                      }`}
+                    onClick={() => setValue("is_confirmed", true)}
                   >
                     <div className="flex items-center justify-center gap-2">
                       <HugeiconsIcon
@@ -297,16 +295,11 @@ export const ComplaintDetailPage = () => {
 
                   <button
                     type="button"
-                    className={`flex-1 p-4 border-2 rounded-lg transition-all ${
-                      !isConfirmed
-                        ? "border-red-500 bg-red-50 dark:bg-red-950/20"
-                        : "border-muted hover:border-red-300"
-                    }`}
-                    onClick={() => {
-                      register("is_confirmed").onChange({
-                        target: { checked: false, name: "is_confirmed" },
-                      });
-                    }}
+                    className={`flex-1 p-4 border-2 rounded-lg transition-all ${!isConfirmed
+                      ? "border-red-500 bg-red-50 dark:bg-red-950/20"
+                      : "border-muted hover:border-red-300"
+                      }`}
+                    onClick={() => setValue("is_confirmed", false)}
                   >
                     <div className="flex items-center justify-center gap-2">
                       <HugeiconsIcon
@@ -366,7 +359,7 @@ export const ComplaintDetailPage = () => {
                 }
               >
                 {reviewCadetMutation.isPending ||
-                reviewOfficerMutation.isPending
+                  reviewOfficerMutation.isPending
                   ? "Submitting..."
                   : "Submit Review"}
               </Button>

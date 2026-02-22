@@ -23,9 +23,8 @@ export const ComplaintItem = ({ complaint }: ComplaintItemProps) => {
 
   return (
     <Card
-      className={`relative overflow-hidden transition-all hover:shadow-md ${
-        isRejected ? "opacity-75" : ""
-      }`}
+      className={`relative overflow-hidden transition-all hover:shadow-md ${isRejected ? "opacity-75" : ""
+        }`}
     >
       {requiresAttention && (
         <div className="absolute top-4 right-4">
@@ -40,7 +39,7 @@ export const ComplaintItem = ({ complaint }: ComplaintItemProps) => {
         <div className="flex items-start justify-between gap-4 mr-6">
           <div className="flex-1 min-w-0">
             <CardTitle className="text-base line-clamp-2">
-              {complaint.description.substring(0, 60)}...
+              {complaint.description.substring(0, 20)}...
             </CardTitle>
             <p className="text-xs text-muted-foreground mt-1">
               #{complaint.id} • {format(new Date(complaint.created_at), "PPP")}
