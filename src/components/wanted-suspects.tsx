@@ -169,7 +169,7 @@ function WantedSuspectItem({ suspect }: { suspect: Suspect }) {
         variant="ghost"
         className="w-full text-xs h-7 mt-1 hover:bg-destructive hover:text-destructive-foreground"
       >
-        View Dossier
+        View Case
       </Button>
     </div>
   );

@@ -31,7 +31,6 @@ export const CaseCreatePage = () => {
   } = useForm<CreateCaseRequest>({
     defaultValues: {
       is_from_crime_scene: false,
-      is_closed: false,
     },
   });
 

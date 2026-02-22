@@ -10,6 +10,8 @@ import {
   CheckSquare,
   TimelineEventIcon,
   LockIcon,
+  Document,
+  Add01Icon,
 } from "@hugeicons/core-free-icons";
 import { format } from "date-fns";
 
@@ -71,6 +73,25 @@ export const CaseTimelinePage = () => {
             <p className="text-muted-foreground mt-2">
               {caseDetails.crime_title || "Criminal Case Timeline"}
             </p>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              onClick={() => navigate(`/cases/${caseDetails.id}/evidence`)}
+              className="gap-2"
+            >
+              <HugeiconsIcon icon={Document} className="h-4 w-4" />
+              Evidence
+            </Button>
+            <Button
+              onClick={() =>
+                navigate(`/cases/${caseDetails.id}/evidence/record`)
+              }
+              variant="outline"
+              className="gap-2"
+            >
+              <HugeiconsIcon icon={Add01Icon} className="h-4 w-4" />
+              Record
+            </Button>
           </div>
         </div>
       </div>

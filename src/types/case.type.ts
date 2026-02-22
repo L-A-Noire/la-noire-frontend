@@ -1,52 +1,93 @@
+/**
+ * Case - Basic/List response from API
+ * Used in list endpoints and as basic response
+ */
 export interface Case {
   id: number;
   created_at: string;
-  is_from_crime_scene: boolean;
-  is_closed: boolean;
-  detective_name?: string;
-  crime_title?: string;
-  // properties from raw response
-  crime?: number;
-  detective?: number;
-}
-
-export interface CreateCaseRequest {
   is_from_crime_scene: boolean;
   is_closed: boolean;
   crime: number;
   detective: number;
 }
 
-export type UpdateCaseRequest = Partial<CreateCaseRequest>;
+/**
+ * CaseDetail - Extended response with denormalized fields
+ * Used when fetching a single case by ID
+ */
+export interface CaseDetail extends Case {
+  detective_name?: string;
+  detective_details?: {
+    id: number;
+    name: string;
+    email?: string;
+  };
+  crime_title?: string;
+  crime_details?: {
+    id: number;
+    title: string;
+    description?: string;
+  };
+}
 
+/**
+ * CaseList - Summary view for list displays
+ * Contains only necessary fields for list rendering
+ */
+export interface CaseList {
+  id: number;
+  created_at: string;
+  is_from_crime_scene: boolean;
+  is_closed: boolean;
+  detective_name: string;
+  crime_title: string;
+}
+
+/**
+ * CreateCaseRequest - Request body for creating a new case
+ */
+export interface CreateCaseRequest {
+  is_from_crime_scene: boolean;
+  crime: number;
+  detective: number;
+}
+
+/**
+ * UpdateCaseRequest - Request body for full update (PUT)
+ */
+export interface UpdateCaseRequest extends CreateCaseRequest {
+  is_closed: boolean;
+}
+
+/**
+ * PatchCaseRequest - Request body for partial update (PATCH)
+ */
+export type PatchCaseRequest = Partial<UpdateCaseRequest>;
+
+/**
+ * AssignDetectiveRequest - Request body for assign_detective endpoint
+ */
 export interface AssignDetectiveRequest {
   detective: number;
 }
 
+/**
+ * CloseCaseRequest - Request body for close_case endpoint
+ */
 export interface CloseCaseRequest {
-  is_closed: boolean; // Assuming passing true closes it
+  is_closed: true;
 }
 
-export interface CaseTimeline {
-  // The user didn't specify the structure of timeline items, but said "complaints, crime scenes, reports"
-  // and showed the Case object as response example which seems wrong for a list of timeline events.
-  // I'll assume it returns a list of events or the case object itself?
-  // "Case timeline (complaints, crime scenes, reports) ... Response: { "id": 0 ... }"
-  // Wait, the documentation example response for timeline is just the Case object again?
-  // That might be a copy-paste error in the user's prompt or the API returns the Case with populated timeline fields.
-  // I will type it as `any` for now or `Case` if it matches, to be safe.
-  // Actually, looking closely at the user prompt:
-  /*
-    GET /api/crime/cases/{id}/timeline/
-    Case timeline (complaints, crime scenes, reports)
-    Response:
-    {
-      "id": 0,
-      ...
-    }
-    */
-  // It looks like it returns the case details, maybe with extra fields not shown?
-  // Or maybe it returns a list? The example shows a single object.
-  // I'll stick to `Case` for now.
-  [key: string]: any;
+/**
+ * CaseTimeline - Timeline events for a case
+ * Contains investigation events, complaints, crime scenes, reports
+ * Extends CaseDetail to include denormalized fields
+ */
+export interface CaseTimeline extends CaseDetail {
+  timeline_events?: Array<{
+    id: number;
+    timestamp: string;
+    event_type: "complaint" | "crime_scene" | "report" | "update";
+    description: string;
+  }>;
 }

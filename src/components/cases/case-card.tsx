@@ -10,11 +10,15 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { TimelineEventIcon, Delete02Icon } from "@hugeicons/core-free-icons";
-import type { Case } from "@/types/case.type";
+import {
+  TimelineEventIcon,
+  Delete02Icon,
+  Document,
+} from "@hugeicons/core-free-icons";
+import type { CaseList } from "@/types/case.type";
 
 interface CaseCardProps {
-  caseItem: Case;
+  caseItem: CaseList;
   onClose?: (caseId: number) => void;
   isClosing?: boolean;
 }
@@ -69,6 +73,13 @@ export const CaseCard = ({ caseItem, onClose, isClosing }: CaseCardProps) => {
           </div>
 
           <div className="pt-4 flex justify-end gap-2 border-t mt-4">
+            <Button variant="outline" size="sm" asChild>
+              <Link to={`/cases/${caseItem.id}/evidence`}>
+                <HugeiconsIcon icon={Document} className="mr-2 h-4 w-4" />
+                Evidence
+              </Link>
+            </Button>
+
             <Button variant="outline" size="sm" asChild>
               <Link to={`/cases/${caseItem.id}/timeline`}>
                 <HugeiconsIcon
