@@ -81,8 +81,9 @@ export const FileComplaintPage = () => {
         <CardHeader className="space-y-2">
           <CardTitle className="text-2xl">File a Complaint</CardTitle>
           <CardDescription>
-            Submit a detailed complaint about a criminal incident. Your complaint will be reviewed
-            first by a cadet, then by a police officer.
+            Submit a detailed complaint about a criminal incident. Your
+            complaint will be reviewed first by a cadet, then by a police
+            officer.
           </CardDescription>
         </CardHeader>
 
@@ -94,7 +95,7 @@ export const FileComplaintPage = () => {
                 <p className="text-muted-foreground">Your Information</p>
                 <p className="font-semibold">{session?.user.username}</p>
               </div>
-              
+
               <div className="border-t pt-3">
                 <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">
                   Review Process
@@ -102,13 +103,17 @@ export const FileComplaintPage = () => {
                 <ol className="space-y-2 text-xs">
                   <li className="flex gap-3">
                     <span className="font-bold text-primary">1.</span>
-                    <span>Your complaint is submitted and assigned to a cadet for initial
-                      review</span>
+                    <span>
+                      Your complaint is submitted and assigned to a cadet for
+                      initial review
+                    </span>
                   </li>
                   <li className="flex gap-3">
                     <span className="font-bold text-primary">2.</span>
-                    <span>If approved by cadet, forwarded to a police officer for final
-                      verification</span>
+                    <span>
+                      If approved by cadet, forwarded to a police officer for
+                      final verification
+                    </span>
                   </li>
                   <li className="flex gap-3">
                     <span className="font-bold text-primary">3.</span>
@@ -116,7 +121,9 @@ export const FileComplaintPage = () => {
                   </li>
                   <li className="flex gap-3">
                     <span className="font-bold text-destructive">⚠️</span>
-                    <span>If rejected 3 times, your complaint becomes invalid</span>
+                    <span>
+                      If rejected 3 times, your complaint becomes invalid
+                    </span>
                   </li>
                 </ol>
               </div>

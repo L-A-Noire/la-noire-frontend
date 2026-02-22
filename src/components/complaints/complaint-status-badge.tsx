@@ -22,8 +22,7 @@ const statusConfig: Record<
   rejected_by_cadet: {
     label: "Rejected by Cadet",
     variant: "destructive",
-    color:
-      "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
+    color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
   },
   pending_officer: {
     label: "Pending Officer Review",

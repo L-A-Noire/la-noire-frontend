@@ -20,9 +20,15 @@ import type { ComplaintStatus } from "@/types/complaint.type";
 export const ComplaintsListPage = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<ComplaintStatus | "all">("all");
+  const [statusFilter, setStatusFilter] = useState<ComplaintStatus | "all">(
+    "all",
+  );
 
-  const { data: complaints, isLoading, isError } = useQuery({
+  const {
+    data: complaints,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["complaints"],
     queryFn: getComplaints,
   });
@@ -32,7 +38,9 @@ export const ComplaintsListPage = () => {
 
     return complaints.filter((complaint) => {
       const matchesSearch =
-        complaint.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        complaint.description
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
         complaint.id.toString().includes(searchTerm);
 
       const matchesStatus =
@@ -43,11 +51,14 @@ export const ComplaintsListPage = () => {
   }, [complaints, searchTerm, statusFilter]);
 
   const stats = useMemo(() => {
-    if (!complaints) return { pending_cadet: 0, pending_officer: 0, rejected: 0, approved: 0 };
+    if (!complaints)
+      return { pending_cadet: 0, pending_officer: 0, rejected: 0, approved: 0 };
 
     return {
-      pending_cadet: complaints.filter((c) => c.status === "pending_cadet").length,
-      pending_officer: complaints.filter((c) => c.status === "pending_officer").length,
+      pending_cadet: complaints.filter((c) => c.status === "pending_cadet")
+        .length,
+      pending_officer: complaints.filter((c) => c.status === "pending_officer")
+        .length,
       rejected: complaints.filter(
         (c) =>
           c.status === "rejected_by_cadet" ||
@@ -128,16 +139,23 @@ export const ComplaintsListPage = () => {
 
           <div className="space-y-2">
             <Label htmlFor="status">Status</Label>
-            <Select value={statusFilter} onValueChange={(value: any) => setStatusFilter(value)}>
+            <Select
+              value={statusFilter}
+              onValueChange={(value: any) => setStatusFilter(value)}
+            >
               <SelectTrigger className="w-[200px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Status</SelectItem>
                 <SelectItem value="pending_cadet">Pending Cadet</SelectItem>
-                <SelectItem value="rejected_by_cadet">Rejected (Cadet)</SelectItem>
+                <SelectItem value="rejected_by_cadet">
+                  Rejected (Cadet)
+                </SelectItem>
                 <SelectItem value="pending_officer">Pending Officer</SelectItem>
-                <SelectItem value="rejected_by_officer">Rejected (Officer)</SelectItem>
+                <SelectItem value="rejected_by_officer">
+                  Rejected (Officer)
+                </SelectItem>
                 <SelectItem value="approved">Approved</SelectItem>
               </SelectContent>
             </Select>
@@ -159,16 +177,15 @@ export const ComplaintsListPage = () => {
         </div>
       ) : filteredComplaints.length === 0 ? (
         <div className="text-center py-12 border rounded-lg border-dashed">
-          <p className="text-muted-foreground">No complaints match your filters.</p>
+          <p className="text-muted-foreground">
+            No complaints match your filters.
+          </p>
         </div>
       ) : (
         /* Complaints Grid */
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredComplaints.map((complaint) => (
-            <ComplaintItem
-              key={complaint.id}
-              complaint={complaint}
-            />
+            <ComplaintItem key={complaint.id} complaint={complaint} />
           ))}
         </div>
       )}

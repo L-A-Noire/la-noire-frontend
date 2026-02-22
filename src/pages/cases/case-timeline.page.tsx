@@ -180,7 +180,7 @@ export const CaseTimelinePage = () => {
             {caseDetails.is_from_crime_scene && (
               <div className="pb-8 pl-6 relative">
                 <div className="absolute -left-[17px] top-0 w-5 h-5 bg-blue-500 rounded-full ring-4 ring-background flex items-center justify-center">
-                    <HugeiconsIcon icon={TimelineEventIcon} className="h-5 w-5" />
+                  <HugeiconsIcon icon={TimelineEventIcon} className="h-5 w-5" />
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">

@@ -10,13 +10,17 @@ export const getCrimeScenes = async (): Promise<CrimeSceneDetail[]> => {
   return response.data;
 };
 
-export const getCrimeSceneById = async (id: number): Promise<CrimeSceneDetail> => {
-  const response = await http.get<CrimeSceneDetail>(`/crime/crime-scenes/${id}/`);
+export const getCrimeSceneById = async (
+  id: number,
+): Promise<CrimeSceneDetail> => {
+  const response = await http.get<CrimeSceneDetail>(
+    `/crime/crime-scenes/${id}/`,
+  );
   return response.data;
 };
 
 export const createCrimeScene = async (
-  data: CreateCrimeSceneRequest
+  data: CreateCrimeSceneRequest,
 ): Promise<CrimeScene> => {
   const response = await http.post<CrimeScene>("/crime/crime-scenes/", data);
   return response.data;
@@ -24,11 +28,11 @@ export const createCrimeScene = async (
 
 export const updateCrimeScene = async (
   id: number,
-  data: Partial<CreateCrimeSceneRequest>
+  data: Partial<CreateCrimeSceneRequest>,
 ): Promise<CrimeScene> => {
   const response = await http.patch<CrimeScene>(
     `/crime/crime-scenes/${id}/`,
-    data
+    data,
   );
   return response.data;
 };
@@ -38,9 +42,8 @@ export const deleteCrimeScene = async (id: number): Promise<void> => {
 };
 
 export const confirmCrimeScene = async (id: number): Promise<CrimeScene> => {
-  const response = await http.patch<CrimeScene>(
-    `/crime/crime-scenes/${id}/`,
-    { is_confirmed: true }
-  );
+  const response = await http.patch<CrimeScene>(`/crime/crime-scenes/${id}/`, {
+    is_confirmed: true,
+  });
   return response.data;
 };

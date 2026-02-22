@@ -1,6 +1,11 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getComplaintById, reviewComplaintAsCadet, reviewComplaintAsOfficer, createCaseFromComplaint } from "@/api/complaints";
+import {
+  getComplaintById,
+  reviewComplaintAsCadet,
+  reviewComplaintAsOfficer,
+  createCaseFromComplaint,
+} from "@/api/complaints";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,7 +19,11 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowLeft01Icon, CheckSquare, Delete02Icon } from "@hugeicons/core-free-icons";
+import {
+  ArrowLeft01Icon,
+  CheckSquare,
+  Delete02Icon,
+} from "@hugeicons/core-free-icons";
 import { format } from "date-fns";
 import { toast } from "react-toastify";
 import { ComplaintStatusBadge } from "@/components/complaints/complaint-status-badge";
@@ -181,7 +190,9 @@ export const ComplaintDetailPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <p className="text-sm text-muted-foreground">Complainants</p>
-              <p className="font-semibold mt-1">{complaint.complainants.length}</p>
+              <p className="font-semibold mt-1">
+                {complaint.complainants.length}
+              </p>
               {complaint.complainants_details && (
                 <div className="mt-2 space-y-1">
                   {complaint.complainants_details.map((c) => (
@@ -313,8 +324,7 @@ export const ComplaintDetailPage = () => {
               {!isConfirmed && (
                 <div className="space-y-2">
                   <Label htmlFor="reason">
-                    Reason for Rejection{" "}
-                    <span className="text-red-500">*</span>
+                    Reason for Rejection <span className="text-red-500">*</span>
                   </Label>
                   <Textarea
                     id="reason"
@@ -355,7 +365,8 @@ export const ComplaintDetailPage = () => {
                   reviewOfficerMutation.isPending
                 }
               >
-                {reviewCadetMutation.isPending || reviewOfficerMutation.isPending
+                {reviewCadetMutation.isPending ||
+                reviewOfficerMutation.isPending
                   ? "Submitting..."
                   : "Submit Review"}
               </Button>

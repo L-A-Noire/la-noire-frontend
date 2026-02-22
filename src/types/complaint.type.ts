@@ -1,4 +1,4 @@
-export type ComplaintStatus = 
+export type ComplaintStatus =
   | "pending_cadet"
   | "rejected_by_cadet"
   | "pending_officer"

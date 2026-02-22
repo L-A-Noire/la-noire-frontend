@@ -10,7 +10,11 @@ import { format } from "date-fns";
 
 export const CrimeScenesListPage = () => {
   const navigate = useNavigate();
-  const { data: scenes, isLoading, isError } = useQuery({
+  const {
+    data: scenes,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["crime-scenes"],
     queryFn: getCrimeScenes,
   });

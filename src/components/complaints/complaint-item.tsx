@@ -1,16 +1,8 @@
 import { Link } from "react-router-dom";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
-import {
-  ChevronRight,
-  AlertCircle,
-} from "@hugeicons/core-free-icons";
+import { ChevronRight, AlertCircle } from "@hugeicons/core-free-icons";
 import { format } from "date-fns";
 import { ComplaintStatusBadge } from "./complaint-status-badge";
 import type { ComplaintDetail } from "@/types/complaint.type";
@@ -26,7 +18,8 @@ export const ComplaintItem = ({ complaint }: ComplaintItemProps) => {
     complaint.status === "rejected_by_officer";
 
   const requiresAttention =
-    complaint.status === "pending_cadet" || complaint.status === "pending_officer";
+    complaint.status === "pending_cadet" ||
+    complaint.status === "pending_officer";
 
   return (
     <Card
@@ -73,7 +66,9 @@ export const ComplaintItem = ({ complaint }: ComplaintItemProps) => {
           </div>
           <div>
             <p className="text-xs text-muted-foreground">Rejections</p>
-            <p className={`font-medium ${complaint.rejection_count >= 3 ? "text-destructive" : ""}`}>
+            <p
+              className={`font-medium ${complaint.rejection_count >= 3 ? "text-destructive" : ""}`}
+            >
               {complaint.rejection_count}/3
             </p>
           </div>

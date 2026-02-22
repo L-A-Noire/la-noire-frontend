@@ -90,8 +90,8 @@ export const ReportCrimeScenePage = () => {
         <CardHeader className="space-y-2">
           <CardTitle className="text-2xl">Report Crime Scene</CardTitle>
           <CardDescription>
-            Document a crime scene investigation. This report will be reviewed and confirmed
-            by a senior officer.
+            Document a crime scene investigation. This report will be reviewed
+            and confirmed by a senior officer.
           </CardDescription>
         </CardHeader>
 
@@ -167,7 +167,7 @@ export const ReportCrimeScenePage = () => {
             {/* Guidelines */}
             <div className="bg-blue-50 dark:bg-blue-950/20 p-4 rounded-lg border border-blue-200 dark:border-blue-900">
               <p className="text-xs font-semibold text-blue-900 dark:text-blue-300 mb-2">
-                ℹ️ Documentation Guidelines
+                Documentation Guidelines
               </p>
               <ul className="text-xs text-blue-800 dark:text-blue-200 space-y-1">
                 <li>• Be objective and factual</li>
