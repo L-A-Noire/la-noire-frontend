@@ -1,5 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuthStore } from "@/stores/auth.store";
+import { Button } from "@/components/ui/button";
 
 export const Header = () => {
   const { session } = useAuthStore();
@@ -19,56 +20,72 @@ export const Header = () => {
               L.A. NOIRE
             </span>
           </Link>
-          <nav className="flex items-center gap-4 text-sm lg:gap-6">
-            <Link
-              to="/cases"
-              className={`transition-colors font-mono ${
-                isActive("/cases")
-                  ? "text-primary font-semibold"
-                  : "text-foreground/60 hover:text-foreground/80"
-              }`}
-            >
-              Cases
-            </Link>
-            <Link
-              to="/complaints"
-              className={`transition-colors font-mono ${
-                isActive("/complaints")
-                  ? "text-primary font-semibold"
-                  : "text-foreground/60 hover:text-foreground/80"
-              }`}
-            >
-              Complaints
-            </Link>
-            <Link
-              to="/crime-scenes"
-              className={`transition-colors font-mono ${
-                isActive("/crime-scenes")
-                  ? "text-primary font-semibold"
-                  : "text-foreground/60 hover:text-foreground/80"
-              }`}
-            >
-              Scenes
-            </Link>
-            {isAdmin && (
+          {session && (
+            <nav className="flex items-center gap-4 text-sm lg:gap-6">
               <Link
-                to="/roles"
+                to="/cases"
                 className={`transition-colors font-mono ${
-                  isActive("/roles")
+                  isActive("/cases")
                     ? "text-primary font-semibold"
                     : "text-foreground/60 hover:text-foreground/80"
                 }`}
               >
-                Roles
+                Cases
               </Link>
-            )}
-          </nav>
+              <Link
+                to="/complaints"
+                className={`transition-colors font-mono ${
+                  isActive("/complaints")
+                    ? "text-primary font-semibold"
+                    : "text-foreground/60 hover:text-foreground/80"
+                }`}
+              >
+                Complaints
+              </Link>
+              <Link
+                to="/crime-scenes"
+                className={`transition-colors font-mono ${
+                  isActive("/crime-scenes")
+                    ? "text-primary font-semibold"
+                    : "text-foreground/60 hover:text-foreground/80"
+                }`}
+              >
+                Scenes
+              </Link>
+              {isAdmin && (
+                <Link
+                  to="/roles"
+                  className={`transition-colors font-mono ${
+                    isActive("/roles")
+                      ? "text-primary font-semibold"
+                      : "text-foreground/60 hover:text-foreground/80"
+                  }`}
+                >
+                  Roles
+                </Link>
+              )}
+            </nav>
+          )}
         </div>
         <div className="flex items-center gap-2">
-          {session && (
+          {session ? (
             <div className="text-xs font-mono text-muted-foreground hidden md:block">
               Logged in as:{" "}
               <span className="text-primary">{session.user.username}</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                asChild
+                className="font-mono text-xs"
+              >
+                <Link to="/login">Login</Link>
+              </Button>
+              <Button size="sm" asChild className="font-mono text-xs">
+                <Link to="/register">Register</Link>
+              </Button>
             </div>
           )}
         </div>

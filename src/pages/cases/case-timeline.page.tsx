@@ -13,7 +13,23 @@ import {
   Document,
   Add01Icon,
 } from "@hugeicons/core-free-icons";
-import { format } from "date-fns";
+import { format, isValid, parseISO } from "date-fns";
+
+// Helper function to safely format dates
+const safeFormatDate = (
+  dateString: string | undefined,
+  formatString: string,
+  fallback: string = "N/A",
+): string => {
+  if (!dateString) return fallback;
+  try {
+    const date = parseISO(dateString);
+    if (!isValid(date)) return fallback;
+    return format(date, formatString);
+  } catch {
+    return fallback;
+  }
+};
 
 export const CaseTimelinePage = () => {
   const { id } = useParams<{ id: string }>();
@@ -29,6 +45,7 @@ export const CaseTimelinePage = () => {
     queryFn: () => getCaseTimeline(caseId),
     enabled: !isNaN(caseId),
   });
+  console.log(caseDetails);
 
   if (isLoading)
     return (
@@ -68,7 +85,7 @@ export const CaseTimelinePage = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">
-              Case #{caseDetails.id}
+              Case #{caseId}
             </h1>
             <p className="text-muted-foreground mt-2">
               {caseDetails.crime_title || "Criminal Case Timeline"}
@@ -76,16 +93,14 @@ export const CaseTimelinePage = () => {
           </div>
           <div className="flex gap-2">
             <Button
-              onClick={() => navigate(`/cases/${caseDetails.id}/evidence`)}
+              onClick={() => navigate(`/cases/${caseId}/evidence`)}
               className="gap-2"
             >
               <HugeiconsIcon icon={Document} className="h-4 w-4" />
               Evidence
             </Button>
             <Button
-              onClick={() =>
-                navigate(`/cases/${caseDetails.id}/evidence/record`)
-              }
+              onClick={() => navigate(`/cases/${caseId}/evidence/record`)}
               variant="outline"
               className="gap-2"
             >
@@ -151,7 +166,7 @@ export const CaseTimelinePage = () => {
                 Opened Date
               </p>
               <p className="font-semibold">
-                {format(new Date(caseDetails.created_at), "MMM dd, yyyy")}
+                {safeFormatDate(caseDetails.created_at, "MMM dd, yyyy")}
               </p>
             </div>
           </div>
@@ -167,7 +182,7 @@ export const CaseTimelinePage = () => {
           <div className="relative border-l-2 border-muted space-y-0">
             {/* Case Created Event */}
             <div className="pb-8 pl-6 relative">
-              <div className="absolute -left-[17px] top-0 w-5 h-5 bg-green-500 rounded-full ring-4 ring-background flex items-center justify-center">
+              <div className="absolute -left-[10px] top-0 w-5 h-5 bg-green-500 rounded-full ring-4 ring-background flex items-center justify-center">
                 <HugeiconsIcon
                   icon={CheckSquare}
                   className="h-3 w-3 text-white"
@@ -179,8 +194,8 @@ export const CaseTimelinePage = () => {
                   <Badge variant="outline">Initial</Badge>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  {format(
-                    new Date(caseDetails.created_at),
+                  {safeFormatDate(
+                    caseDetails.created_at,
                     "EEEE, MMMM dd, yyyy 'at' h:mm a",
                   )}
                 </p>
@@ -200,7 +215,7 @@ export const CaseTimelinePage = () => {
             {/* Case Status Updates */}
             {caseDetails.is_from_crime_scene && (
               <div className="pb-8 pl-6 relative">
-                <div className="absolute -left-[17px] top-0 w-5 h-5 bg-blue-500 rounded-full ring-4 ring-background flex items-center justify-center">
+                <div className="absolute -left-[10px] top-0 w-5 h-5 bg-blue-500 rounded-full ring-4 ring-background flex items-center justify-center">
                   <HugeiconsIcon icon={TimelineEventIcon} className="h-5 w-5" />
                 </div>
                 <div className="space-y-2">
@@ -211,8 +226,8 @@ export const CaseTimelinePage = () => {
                     <Badge variant="secondary">Active</Badge>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    {format(
-                      new Date(caseDetails.created_at),
+                    {safeFormatDate(
+                      caseDetails.created_at,
                       "EEEE, MMMM dd, yyyy",
                     )}
                   </p>
@@ -227,7 +242,7 @@ export const CaseTimelinePage = () => {
             {/* Case Closed Event */}
             {caseDetails.is_closed && (
               <div className="pb-8 pl-6 relative">
-                <div className="absolute -left-[17px] top-0 w-5 h-5 bg-red-500 rounded-full ring-4 ring-background flex items-center justify-center">
+                <div className="absolute -left-[10px] top-0 w-5 h-5 bg-red-500 rounded-full ring-4 ring-background flex items-center justify-center">
                   <HugeiconsIcon
                     icon={LockIcon}
                     className="h-3 w-3 text-white"
@@ -249,7 +264,7 @@ export const CaseTimelinePage = () => {
             {/* Current Status */}
             {!caseDetails.is_closed && (
               <div className="pb-8 pl-6 relative">
-                <div className="absolute -left-[17px] top-0 w-5 h-5 bg-yellow-500 rounded-full ring-4 ring-background flex items-center justify-center">
+                <div className="absolute -left-[10px] top-0 w-5 h-5 bg-yellow-500 rounded-full ring-4 ring-background flex items-center justify-center">
                   <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
                 </div>
                 <div className="space-y-2">
