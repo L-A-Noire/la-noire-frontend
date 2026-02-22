@@ -17,7 +17,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useForm } from "react-hook-form";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowLeft01Icon, CheckIcon } from "@hugeicons/core-free-icons";
+import { ArrowLeft01Icon, CheckSquare } from "@hugeicons/core-free-icons";
 
 export const CaseCreatePage = () => {
   const queryClient = useQueryClient();
@@ -159,7 +159,7 @@ export const CaseCreatePage = () => {
                   </p>
                   {isFromCrimeScene && (
                     <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400 mt-2">
-                      <HugeiconsIcon icon={CheckIcon} className="h-4 w-4" />
+                      <HugeiconsIcon icon={CheckSquare} className="h-4 w-4" />
                       Marked as crime scene case
                     </div>
                   )}
@@ -189,7 +189,7 @@ export const CaseCreatePage = () => {
                 </>
               ) : (
                 <>
-                  <HugeiconsIcon icon={CheckIcon} className="h-4 w-4" />
+                  <HugeiconsIcon icon={CheckSquare} className="h-4 w-4" />
                   Create Case
                 </>
               )}

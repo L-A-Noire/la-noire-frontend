@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   ArrowLeft01Icon,
-  CheckIcon,
+  CheckSquare,
   TimelineEventIcon,
   LockIcon,
 } from "@hugeicons/core-free-icons";
@@ -148,7 +148,7 @@ export const CaseTimelinePage = () => {
             <div className="pb-8 pl-6 relative">
               <div className="absolute -left-[17px] top-0 w-5 h-5 bg-green-500 rounded-full ring-4 ring-background flex items-center justify-center">
                 <HugeiconsIcon
-                  icon={CheckIcon}
+                  icon={CheckSquare}
                   className="h-3 w-3 text-white"
                 />
               </div>
@@ -180,7 +180,7 @@ export const CaseTimelinePage = () => {
             {caseDetails.is_from_crime_scene && (
               <div className="pb-8 pl-6 relative">
                 <div className="absolute -left-[17px] top-0 w-5 h-5 bg-blue-500 rounded-full ring-4 ring-background flex items-center justify-center">
-                  <TimelineEventIcon className="h-3 w-3 text-white" />
+                    <HugeiconsIcon icon={TimelineEventIcon} className="h-5 w-5" />
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
