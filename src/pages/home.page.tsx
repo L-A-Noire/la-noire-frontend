@@ -40,142 +40,149 @@ export default function HomePage() {
 
   return (
     <div className="container mx-auto p-4 md:p-6 space-y-8">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-extrabold tracking-tight lg:text-4xl text-primary font-mono">
-          LOS ANGELES POLICE DEPARTMENT
-        </h1>
-        <p className="text-muted-foreground font-mono text-sm">
-          {session
-            ? `OFFICER ON DUTY: ${`${session.user.last_name}`.toUpperCase()}`
-            : "UNAUTHORIZED ACCESS"}
-        </p>
-      </div>
+      {!session && (
+        <>
+          <div className="flex flex-col gap-2">
+            <h1 className="text-3xl font-extrabold tracking-tight lg:text-4xl text-primary font-mono">
+              LOS ANGELES POLICE DEPARTMENT
+            </h1>
+            <p className="text-muted-foreground font-mono text-sm">
+              {session
+                ? `OFFICER ON DUTY: ${`${session.user.last_name}`.toUpperCase()}`
+                : "UNAUTHORIZED ACCESS"}
+            </p>
+          </div>
 
-      {/* Department Introduction */}
-      <Card className="border-primary/20 bg-gradient-to-br from-card/95 to-card/50 backdrop-blur-sm shadow-lg">
-        <CardHeader>
-          <CardTitle className="text-2xl font-mono text-primary">
-            COMMAND CENTER
-          </CardTitle>
-          <CardDescription className="text-base">
-            Los Angeles Police Department - Protecting and Serving Since 1869
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-sm leading-relaxed text-muted-foreground">
-            The Los Angeles Police Department stands as a beacon of justice in
-            the city of angels. Our detectives work tirelessly to solve crimes,
-            protect citizens, and maintain law and order across the sprawling
-            metropolis. From patrol officers on the beat to specialized
-            detectives investigating homicides, vice, arson, and traffic cases,
-            every member of the LAPD plays a crucial role in keeping our streets
-            safe.
-          </p>
-          <p className="text-sm leading-relaxed text-muted-foreground">
-            This case management system provides authorized personnel with tools
-            to track investigations, manage evidence, coordinate with witnesses,
-            and bring criminals to justice. Every case matters. Every clue
-            counts. Every citizen deserves protection.
-          </p>
-        </CardContent>
-      </Card>
-
-      {/* Statistics Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="border-l-4 border-l-green-500 hover:shadow-lg transition-shadow">
-          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <CardDescription className="text-xs uppercase font-bold tracking-wider">
-                Solved Cases
+          {/* Department Introduction */}
+          <Card className="border-primary/20 bg-gradient-to-br from-card/95 to-card/50 backdrop-blur-sm shadow-lg">
+            <CardHeader>
+              <CardTitle className="text-2xl font-mono text-primary">
+                COMMAND CENTER
+              </CardTitle>
+              <CardDescription className="text-base">
+                Los Angeles Police Department - Protecting and Serving Since
+                1869
               </CardDescription>
-              <HugeiconsIcon
-                icon={CheckmarkCircle01Icon}
-                className="h-5 w-5 text-green-600"
-              />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-1">
-              <p className="text-3xl font-bold text-foreground font-mono">
-                {MOCK_STATISTICS.solvedCases.toLocaleString()}
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                The Los Angeles Police Department stands as a beacon of justice
+                in the city of angels. Our detectives work tirelessly to solve
+                crimes, protect citizens, and maintain law and order across the
+                sprawling metropolis. From patrol officers on the beat to
+                specialized detectives investigating homicides, vice, arson, and
+                traffic cases, every member of the LAPD plays a crucial role in
+                keeping our streets safe.
               </p>
-              <p className="text-xs text-muted-foreground">
-                {MOCK_STATISTICS.solveRate}% solve rate
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                This case management system provides authorized personnel with
+                tools to track investigations, manage evidence, coordinate with
+                witnesses, and bring criminals to justice. Every case matters.
+                Every clue counts. Every citizen deserves protection.
               </p>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        <Card className="border-l-4 border-l-blue-500 hover:shadow-lg transition-shadow">
-          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <CardDescription className="text-xs uppercase font-bold tracking-wider">
-                Active Cases
-              </CardDescription>
-              <HugeiconsIcon
-                icon={TimelineEventIcon}
-                className="h-5 w-5 text-blue-600"
-              />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-1">
-              <p className="text-3xl font-bold text-foreground font-mono">
-                {MOCK_STATISTICS.activeCases.toLocaleString()}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Currently under investigation
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+          {/* Statistics Section */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Card className="border-l-4 border-l-green-500 hover:shadow-lg transition-shadow">
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between">
+                  <CardDescription className="text-xs uppercase font-bold tracking-wider">
+                    Solved Cases
+                  </CardDescription>
+                  <HugeiconsIcon
+                    icon={CheckmarkCircle01Icon}
+                    className="h-5 w-5 text-green-600"
+                  />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-1">
+                  <p className="text-3xl font-bold text-foreground font-mono">
+                    {MOCK_STATISTICS.solvedCases.toLocaleString()}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {MOCK_STATISTICS.solveRate}% solve rate
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
 
-        <Card className="border-l-4 border-l-amber-500 hover:shadow-lg transition-shadow">
-          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <CardDescription className="text-xs uppercase font-bold tracking-wider">
-                Total Cases
-              </CardDescription>
-              <HugeiconsIcon
-                icon={FolderOpenIcon}
-                className="h-5 w-5 text-amber-600"
-              />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-1">
-              <p className="text-3xl font-bold text-foreground font-mono">
-                {MOCK_STATISTICS.totalCases.toLocaleString()}
-              </p>
-              <p className="text-xs text-muted-foreground">All time records</p>
-            </div>
-          </CardContent>
-        </Card>
+            <Card className="border-l-4 border-l-blue-500 hover:shadow-lg transition-shadow">
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between">
+                  <CardDescription className="text-xs uppercase font-bold tracking-wider">
+                    Active Cases
+                  </CardDescription>
+                  <HugeiconsIcon
+                    icon={TimelineEventIcon}
+                    className="h-5 w-5 text-blue-600"
+                  />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-1">
+                  <p className="text-3xl font-bold text-foreground font-mono">
+                    {MOCK_STATISTICS.activeCases.toLocaleString()}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Currently under investigation
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
 
-        <Card className="border-l-4 border-l-purple-500 hover:shadow-lg transition-shadow">
-          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <CardDescription className="text-xs uppercase font-bold tracking-wider">
-                Personnel
-              </CardDescription>
-              <HugeiconsIcon
-                icon={UserGroupIcon}
-                className="h-5 w-5 text-purple-600"
-              />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-1">
-              <p className="text-3xl font-bold text-foreground font-mono">
-                {MOCK_STATISTICS.totalEmployees.toLocaleString()}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Active duty officers
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            <Card className="border-l-4 border-l-amber-500 hover:shadow-lg transition-shadow">
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between">
+                  <CardDescription className="text-xs uppercase font-bold tracking-wider">
+                    Total Cases
+                  </CardDescription>
+                  <HugeiconsIcon
+                    icon={FolderOpenIcon}
+                    className="h-5 w-5 text-amber-600"
+                  />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-1">
+                  <p className="text-3xl font-bold text-foreground font-mono">
+                    {MOCK_STATISTICS.totalCases.toLocaleString()}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    All time records
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-l-4 border-l-purple-500 hover:shadow-lg transition-shadow">
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between">
+                  <CardDescription className="text-xs uppercase font-bold tracking-wider">
+                    Personnel
+                  </CardDescription>
+                  <HugeiconsIcon
+                    icon={UserGroupIcon}
+                    className="h-5 w-5 text-purple-600"
+                  />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-1">
+                  <p className="text-3xl font-bold text-foreground font-mono">
+                    {MOCK_STATISTICS.totalEmployees.toLocaleString()}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Active duty officers
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </>
+      )}
 
       {session ? (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
