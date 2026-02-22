@@ -237,12 +237,6 @@ export default function HomePage() {
                         <span className="font-mono text-lg font-semibold text-primary tracking-tight">
                           {session.user.role_title}
                         </span>
-                        <Badge
-                          variant="secondary"
-                          className="font-mono text-xs"
-                        >
-                          Lvl {session.user.role}
-                        </Badge>
                       </div>
                     </div>
                   </div>
