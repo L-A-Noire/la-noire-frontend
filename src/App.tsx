@@ -17,6 +17,7 @@ import { CrimeSceneDetailPage } from "@/pages/crime-scenes/crime-scene-detail.pa
 import { CaseEvidencePage } from "@/pages/evidence/case-evidence.page";
 import RecordEvidencePage from "@/pages/evidence/record-evidence.page";
 import { EvidenceDetailPage } from "@/pages/evidence/evidence-detail.page";
+import DetectiveBoardPage from "@/pages/detective-board/detective-board.page";
 import RoleGuard from "./guards/role.guard";
 import { ALLOWED_CASE_ROLES } from "./types/role.type";
 
@@ -29,12 +30,15 @@ export function App() {
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
 
-          <Route element={<RoleGuard allowedRoles={ALLOWED_CASE_ROLES}  />}>
+          <Route element={<RoleGuard allowedRoles={ALLOWED_CASE_ROLES} />}>
             <Route path="cases" element={<CasesListPage />} />
             <Route path="cases/new" element={<CaseCreatePage />} />
             <Route path="cases/:id" element={<CaseDetailPage />} />
             <Route path="cases/:id/timeline" element={<CaseTimelinePage />} />
-            <Route path="cases/:caseId/evidence" element={<CaseEvidencePage />} />
+            <Route
+              path="cases/:caseId/evidence"
+              element={<CaseEvidencePage />}
+            />
             <Route
               path="cases/:caseId/evidence/record"
               element={<RecordEvidencePage />}
@@ -43,6 +47,7 @@ export function App() {
               path="cases/:caseId/evidence/:evidenceType/:evidenceId"
               element={<EvidenceDetailPage />}
             />
+            <Route path="detective-board" element={<DetectiveBoardPage />} />
           </Route>
 
           <Route path="complaints" element={<ComplaintsListPage />} />
