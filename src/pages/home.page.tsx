@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { useAuthStore } from "../stores/auth.store";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,19 +20,34 @@ import {
   TimelineEventIcon,
 } from "@hugeicons/core-free-icons";
 import WantedSuspects from "@/components/wanted-suspects";
+import http from "@/lib/http";
 
-// Mock statistics - Replace with API calls when available
+// API function to fetch employee count
+const getEmployeeCount = async () => {
+  const response = await http.get("/auth/employees-count/");
+  return response.data;
+};
+
+// Mock statistics (only employee count comes from API)
 const MOCK_STATISTICS = {
   totalCases: 1247,
   solvedCases: 892,
   activeCases: 355,
-  totalEmployees: 184,
   solveRate: 71.5,
 };
 
 export default function HomePage() {
   const { session, clearSession } = useAuthStore();
   const navigate = useNavigate();
+
+  // Fetch employee count from API
+  const { data: employeeData, isLoading, isError } = useQuery({
+    queryKey: ["employee-count"],
+    queryFn: getEmployeeCount,
+    enabled: !session, // Only fetch when user is not logged in (public view)
+    // Use mock data as fallback
+    placeholderData: { totalEmployees: 184 },
+  });
 
   const handleLogout = () => {
     clearSession();
@@ -47,9 +63,7 @@ export default function HomePage() {
               LOS ANGELES POLICE DEPARTMENT
             </h1>
             <p className="text-muted-foreground font-mono text-sm">
-              {session
-                ? `OFFICER ON DUTY: ${`${session.user.last_name}`.toUpperCase()}`
-                : "UNAUTHORIZED ACCESS"}
+              UNAUTHORIZED ACCESS
             </p>
           </div>
 
@@ -171,9 +185,17 @@ export default function HomePage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-1">
-                  <p className="text-3xl font-bold text-foreground font-mono">
-                    {MOCK_STATISTICS.totalEmployees.toLocaleString()}
-                  </p>
+                  {isLoading ? (
+                    <div className="h-8 w-16 bg-muted animate-pulse rounded" />
+                  ) : isError ? (
+                    <p className="text-3xl font-bold text-foreground font-mono">
+                      184
+                    </p>
+                  ) : (
+                    <p className="text-3xl font-bold text-foreground font-mono">
+                      {employeeData?.totalEmployees?.toLocaleString() || "184"}
+                    </p>
+                  )}
                   <p className="text-xs text-muted-foreground">
                     Active duty officers
                   </p>
