@@ -11,3 +11,17 @@ export interface CreateRolePayload {
 export interface UpdateRolePayload {
   title?: string;
 }
+
+export const ALLOWED_CASE_ROLES = [
+  "Administrator",
+  "Chief",
+  "Captain",
+  "Sergent",
+  "Detective",
+  "Police/Patrol Officer",
+  "Cadet",
+  "Judge",
+  "Coronary",
+] as const;
+
+export type AllowedCaseRole = (typeof ALLOWED_CASE_ROLES)[number];

@@ -3,8 +3,6 @@ import MainLayout from "@/components/layout/main-layout";
 import HomePage from "./pages/home.page";
 import LoginPage from "@/pages/login.page";
 import RegisterPage from "@/pages/register.page";
-import RoleGuard from "@/guards/role.guard";
-import CaseGuard from "@/guards/case.guard";
 import { RolesListPage, RoleFormPage } from "@/pages/roles.page";
 import { CasesListPage } from "@/pages/cases/cases-list.page";
 import { CaseCreatePage } from "@/pages/cases/create-case.page";
@@ -19,6 +17,8 @@ import { CrimeSceneDetailPage } from "@/pages/crime-scenes/crime-scene-detail.pa
 import { CaseEvidencePage } from "@/pages/evidence/case-evidence.page";
 import RecordEvidencePage from "@/pages/evidence/record-evidence.page";
 import { EvidenceDetailPage } from "@/pages/evidence/evidence-detail.page";
+import RoleGuard from "./guards/role.guard";
+import { ALLOWED_CASE_ROLES } from "./types/role.type";
 
 export function App() {
   return (
@@ -29,7 +29,7 @@ export function App() {
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
 
-          <Route element={<CaseGuard />}>
+          <Route element={<RoleGuard allowedRoles={ALLOWED_CASE_ROLES}  />}>
             <Route path="cases" element={<CasesListPage />} />
             <Route path="cases/new" element={<CaseCreatePage />} />
             <Route path="cases/:id" element={<CaseDetailPage />} />

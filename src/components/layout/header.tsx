@@ -1,18 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuthStore } from "@/stores/auth.store";
 import { Button } from "@/components/ui/button";
+import { ALLOWED_CASE_ROLES } from "@/types/role.type";
 
-const ALLOWED_CASE_ROLES = [
-  "Administrator",
-  "Chief",
-  "Captain",
-  "Sergent",
-  "Detective",
-  "Police/Patrol Officer",
-  "Cadet",
-  "Judge",
-  "Coronary",
-];
 
 export const Header = () => {
   const { session } = useAuthStore();

@@ -1,20 +1,17 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuthStore } from "@/stores/auth.store";
+import type { AllowedCaseRole } from "@/types/role.type";
 
-interface RoleGuardProps {
-  allowedRoles: string[];
-}
+export default function RoleGuard({allowedRoles}: { allowedRoles:readonly AllowedCaseRole[]}) {
+    const session = useAuthStore((s)=>s.session);
 
-export default function RoleGuard({ allowedRoles }: RoleGuardProps) {
-  const { session } = useAuthStore();
+    if (!session) {
+        return <Navigate to="/login" replace />;
+    }
 
-  if (!session) {
-    return <Navigate to="/login" replace />;
-  }
+    if (!allowedRoles.includes(session.user.role_title)) {
+        return <Navigate to="/" replace />;
+    }
 
-  if (!allowedRoles.includes(session.user.role_title)) {
-    return <Navigate to="/" replace />;
-  }
-
-  return <Outlet />;
+    return <Outlet />;
 }

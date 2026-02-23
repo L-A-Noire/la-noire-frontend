@@ -40,10 +40,6 @@ interface CaseStats {
   closed_count: number;
 }
 
-interface EmployeeStats {
-  totalEmployees: number;
-}
-
 // Mock data as fallback
 const MOCK_CASE_STATS: CaseStats = {
   total_count: 1247,

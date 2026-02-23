@@ -58,7 +58,6 @@ export const ComplaintDetailPage = () => {
     formState: { errors, isSubmitting },
     watch,
     setValue,
-    reset,
   } = useForm<ReviewFormData>({
     defaultValues: {
       is_confirmed: false,
