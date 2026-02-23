@@ -28,31 +28,68 @@ const getEmployeeCount = async () => {
   return response.data;
 };
 
-// Mock statistics (only employee count comes from API)
-const MOCK_STATISTICS = {
-  totalCases: 1247,
-  solvedCases: 892,
-  activeCases: 355,
-  solveRate: 71.5,
+// API function to fetch case statistics
+const getCaseStatistics = async () => {
+  const response = await http.get("/crime/cases-count/");
+  return response.data;
 };
+
+interface CaseStats {
+  total_count: number;
+  open_count: number;
+  closed_count: number;
+}
+
+interface EmployeeStats {
+  totalEmployees: number;
+}
+
+// Mock data as fallback
+const MOCK_CASE_STATS: CaseStats = {
+  total_count: 1247,
+  open_count: 355,
+  closed_count: 892,
+};
+
+const MOCK_EMPLOYEE_COUNT = 184;
 
 export default function HomePage() {
   const { session, clearSession } = useAuthStore();
   const navigate = useNavigate();
 
   // Fetch employee count from API
-  const { data: employeeData, isLoading, isError } = useQuery({
+  const {
+    data: employeeData,
+    isLoading: isLoadingEmployees,
+    isError: isErrorEmployees
+  } = useQuery({
     queryKey: ["employee-count"],
     queryFn: getEmployeeCount,
     enabled: !session, // Only fetch when user is not logged in (public view)
-    // Use mock data as fallback
-    placeholderData: { totalEmployees: 184 },
+    placeholderData: { totalEmployees: MOCK_EMPLOYEE_COUNT },
+  });
+
+  // Fetch case statistics from API
+  const {
+    data: caseStats,
+    isLoading: isLoadingCases,
+    isError: isErrorCases
+  } = useQuery({
+    queryKey: ["case-statistics"],
+    queryFn: getCaseStatistics,
+    enabled: !session, // Only fetch when user is not logged in (public view)
+    placeholderData: MOCK_CASE_STATS,
   });
 
   const handleLogout = () => {
     clearSession();
     navigate("/login");
   };
+
+  // Calculate solve rate
+  const solveRate = caseStats?.total_count
+    ? Math.round((caseStats.closed_count / caseStats.total_count) * 100)
+    : 71.5;
 
   return (
     <div className="container mx-auto p-4 md:p-6 space-y-8">
@@ -99,6 +136,7 @@ export default function HomePage() {
 
           {/* Statistics Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Solved Cases Card */}
             <Card className="border-l-4 border-l-green-500 hover:shadow-lg transition-shadow">
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
@@ -113,16 +151,21 @@ export default function HomePage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-1">
-                  <p className="text-3xl font-bold text-foreground font-mono">
-                    {MOCK_STATISTICS.solvedCases.toLocaleString()}
-                  </p>
+                  {isLoadingCases ? (
+                    <div className="h-8 w-16 bg-muted animate-pulse rounded" />
+                  ) : (
+                    <p className="text-3xl font-bold text-foreground font-mono">
+                      {caseStats?.closed_count?.toLocaleString() || MOCK_CASE_STATS.closed_count.toLocaleString()}
+                    </p>
+                  )}
                   <p className="text-xs text-muted-foreground">
-                    {MOCK_STATISTICS.solveRate}% solve rate
+                    {solveRate}% solve rate
                   </p>
                 </div>
               </CardContent>
             </Card>
 
+            {/* Active Cases Card */}
             <Card className="border-l-4 border-l-blue-500 hover:shadow-lg transition-shadow">
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
@@ -137,9 +180,13 @@ export default function HomePage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-1">
-                  <p className="text-3xl font-bold text-foreground font-mono">
-                    {MOCK_STATISTICS.activeCases.toLocaleString()}
-                  </p>
+                  {isLoadingCases ? (
+                    <div className="h-8 w-16 bg-muted animate-pulse rounded" />
+                  ) : (
+                    <p className="text-3xl font-bold text-foreground font-mono">
+                      {caseStats?.open_count?.toLocaleString() || MOCK_CASE_STATS.open_count.toLocaleString()}
+                    </p>
+                  )}
                   <p className="text-xs text-muted-foreground">
                     Currently under investigation
                   </p>
@@ -147,6 +194,7 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
+            {/* Total Cases Card */}
             <Card className="border-l-4 border-l-amber-500 hover:shadow-lg transition-shadow">
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
@@ -161,9 +209,13 @@ export default function HomePage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-1">
-                  <p className="text-3xl font-bold text-foreground font-mono">
-                    {MOCK_STATISTICS.totalCases.toLocaleString()}
-                  </p>
+                  {isLoadingCases ? (
+                    <div className="h-8 w-16 bg-muted animate-pulse rounded" />
+                  ) : (
+                    <p className="text-3xl font-bold text-foreground font-mono">
+                      {caseStats?.total_count?.toLocaleString() || MOCK_CASE_STATS.total_count.toLocaleString()}
+                    </p>
+                  )}
                   <p className="text-xs text-muted-foreground">
                     All time records
                   </p>
@@ -171,6 +223,7 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
+            {/* Personnel Card */}
             <Card className="border-l-4 border-l-purple-500 hover:shadow-lg transition-shadow">
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
@@ -185,15 +238,11 @@ export default function HomePage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-1">
-                  {isLoading ? (
+                  {isLoadingEmployees ? (
                     <div className="h-8 w-16 bg-muted animate-pulse rounded" />
-                  ) : isError ? (
-                    <p className="text-3xl font-bold text-foreground font-mono">
-                      184
-                    </p>
                   ) : (
                     <p className="text-3xl font-bold text-foreground font-mono">
-                      {employeeData?.totalEmployees?.toLocaleString() || "184"}
+                      {employeeData?.totalEmployees?.toLocaleString() || MOCK_EMPLOYEE_COUNT.toLocaleString()}
                     </p>
                   )}
                   <p className="text-xs text-muted-foreground">
@@ -203,6 +252,15 @@ export default function HomePage() {
               </CardContent>
             </Card>
           </div>
+
+          {/* Error Messages (if any) */}
+          {(isErrorEmployees || isErrorCases) && (
+            <div className="text-center text-amber-600 dark:text-amber-400 text-sm p-2">
+              {isErrorEmployees && "Failed to load personnel count. "}
+              {isErrorCases && "Failed to load case statistics. "}
+              Showing estimated data.
+            </div>
+          )}
         </>
       )}
 
