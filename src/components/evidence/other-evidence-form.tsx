@@ -18,12 +18,17 @@ import {
   type OtherEvidenceFormData,
 } from "@/schemas/evidence.schema";
 import { createOtherEvidence } from "@/api/evidence";
+import { useAuthStore } from "@/stores/auth.store";
+import { useParams } from "react-router-dom";
 
 interface OtherEvidenceFormProps {
   onSuccess?: () => void;
 }
 
 export function OtherEvidenceForm({ onSuccess }: OtherEvidenceFormProps) {
+  const { caseId } = useParams<{ caseId: string }>();
+  const { session } = useAuthStore();
+
   const {
     register,
     handleSubmit,
@@ -31,6 +36,9 @@ export function OtherEvidenceForm({ onSuccess }: OtherEvidenceFormProps) {
     reset,
   } = useForm<OtherEvidenceFormData>({
     resolver: zodResolver(otherEvidenceSchema),
+    defaultValues: {
+      case: caseId ? parseInt(caseId) : 0,
+    },
   });
 
   const createMutation = useMutation({
@@ -46,10 +54,21 @@ export function OtherEvidenceForm({ onSuccess }: OtherEvidenceFormProps) {
   });
 
   const onSubmit = (data: OtherEvidenceFormData) => {
+    if (!session?.user.id) {
+      toast.error("You must be logged in to record evidence");
+      return;
+    }
+
+    if (!caseId) {
+      toast.error("Case ID is missing");
+      return;
+    }
+
     createMutation.mutate({
       ...data,
+      case: parseInt(caseId),
       created_at: new Date().toISOString(),
-      created_by: 0, // Will be set by backend
+      created_by: session.user.id,
     });
   };
 

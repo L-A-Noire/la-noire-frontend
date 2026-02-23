@@ -4,6 +4,7 @@ import { z } from "zod";
 const baseEvidenceSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters").max(200),
   description: z.string().min(10, "Description must be at least 10 characters"),
+  case: z.number().min(1, "Case ID is required"),
   created_at: z.string().optional(),
   created_by: z.number().optional(),
 });
@@ -41,7 +42,6 @@ export const vehicleEvidenceSchema = baseEvidenceSchema
   })
   .refine(
     (data) => {
-      // Either registration_plate_number OR serial_number must be provided, but not both
       const hasPlate =
         data.registration_plate_number &&
         data.registration_plate_number.length > 0;

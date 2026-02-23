@@ -49,32 +49,28 @@ export const CaseEvidencePage = () => {
 
   // Fetch all evidence types
   const { data: testimonies = [], isLoading: loadingTestimonies } = useQuery({
-    queryKey: ["testimonies"],
-    queryFn: getTestimonies,
+    queryKey: ["testimonies", caseId],
+    queryFn: () => getTestimonies(caseId ? parseInt(caseId) : undefined),
   });
 
-  const { data: biologicalEvidence = [], isLoading: loadingBiological } =
-    useQuery({
-      queryKey: ["biologicalEvidence"],
-      queryFn: getBiologicalEvidences,
-    });
+  const { data: biologicalEvidence = [], isLoading: loadingBiological } = useQuery({
+    queryKey: ["biologicalEvidence", caseId],
+    queryFn: () => getBiologicalEvidences(caseId ? parseInt(caseId) : undefined),
+  });
 
   const { data: vehicleEvidence = [], isLoading: loadingVehicle } = useQuery({
-    queryKey: ["vehicleEvidence"],
-    queryFn: getVehicleEvidences,
+    queryKey: ["vehicleEvidence", caseId],
+    queryFn: () => getVehicleEvidences(caseId ? parseInt(caseId) : undefined),
   });
 
-  const {
-    data: identificationEvidence = [],
-    isLoading: loadingIdentification,
-  } = useQuery({
-    queryKey: ["identificationEvidence"],
-    queryFn: getIdentificationEvidences,
+  const { data: identificationEvidence = [], isLoading: loadingIdentification } = useQuery({
+    queryKey: ["identificationEvidence", caseId],
+    queryFn: () => getIdentificationEvidences(caseId ? parseInt(caseId) : undefined),
   });
 
   const { data: otherEvidence = [], isLoading: loadingOther } = useQuery({
-    queryKey: ["otherEvidence"],
-    queryFn: getOtherEvidences,
+    queryKey: ["otherEvidence", caseId],
+    queryFn: () => getOtherEvidences(caseId ? parseInt(caseId) : undefined),
   });
 
   const isLoading =

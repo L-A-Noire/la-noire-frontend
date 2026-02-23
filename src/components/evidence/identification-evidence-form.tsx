@@ -19,6 +19,8 @@ import {
   type IdentificationEvidenceFormData,
 } from "@/schemas/evidence.schema";
 import { createIdentificationEvidence } from "@/api/evidence";
+import { useAuthStore } from "@/stores/auth.store";
+import { useParams } from "react-router-dom";
 
 interface IdentificationEvidenceFormProps {
   onSuccess?: () => void;
@@ -27,6 +29,8 @@ interface IdentificationEvidenceFormProps {
 export function IdentificationEvidenceForm({
   onSuccess,
 }: IdentificationEvidenceFormProps) {
+  const { caseId } = useParams<{ caseId: string }>();
+  const { session } = useAuthStore();
   const [additionalFields, setAdditionalFields] = useState<Record<string, any>>(
     {},
   );
@@ -43,6 +47,7 @@ export function IdentificationEvidenceForm({
     resolver: zodResolver(identificationEvidenceSchema),
     defaultValues: {
       information: {},
+      case: caseId ? parseInt(caseId) : 0,
     },
   });
 
@@ -57,7 +62,7 @@ export function IdentificationEvidenceForm({
     onError: (error: any) => {
       toast.error(
         error.response?.data?.message ||
-          "Failed to record identification evidence",
+        "Failed to record identification evidence",
       );
     },
   });
@@ -80,12 +85,23 @@ export function IdentificationEvidenceForm({
   };
 
   const onSubmit = (data: IdentificationEvidenceFormData) => {
+    if (!session?.user.id) {
+      toast.error("You must be logged in to record evidence");
+      return;
+    }
+
+    if (!caseId) {
+      toast.error("Case ID is missing");
+      return;
+    }
+
     createMutation.mutate({
       ...data,
+      case: parseInt(caseId),
       information:
         Object.keys(additionalFields).length > 0 ? additionalFields : undefined,
       created_at: new Date().toISOString(),
-      created_by: 0, // Will be set by backend
+      created_by: session.user.id,
     });
   };
 

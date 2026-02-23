@@ -20,12 +20,16 @@ import {
 } from "@/schemas/evidence.schema";
 import { createTestimony, uploadAttachment } from "@/api/evidence";
 import type { Attachment } from "@/types/evidence.type";
+import { useAuthStore } from "@/stores/auth.store";
+import { useParams } from "react-router-dom";
 
 interface TestimonyFormProps {
   onSuccess?: () => void;
 }
 
 export function TestimonyForm({ onSuccess }: TestimonyFormProps) {
+  const { caseId } = useParams<{ caseId: string }>();
+  const { session } = useAuthStore();
   const [uploadedAttachments, setUploadedAttachments] = useState<Attachment[]>(
     [],
   );
@@ -40,6 +44,7 @@ export function TestimonyForm({ onSuccess }: TestimonyFormProps) {
     resolver: zodResolver(testimonySchema),
     defaultValues: {
       attachments: [],
+      case: caseId ? parseInt(caseId) : 0,
     },
   });
 
@@ -80,11 +85,22 @@ export function TestimonyForm({ onSuccess }: TestimonyFormProps) {
   };
 
   const onSubmit = (data: TestimonyFormData) => {
+    if (!session?.user.id) {
+      toast.error("You must be logged in to record evidence");
+      return;
+    }
+
+    if (!caseId) {
+      toast.error("Case ID is missing");
+      return;
+    }
+
     createMutation.mutate({
       ...data,
+      case: parseInt(caseId),
       attachments: uploadedAttachments.map((a) => a.id),
       created_at: new Date().toISOString(),
-      created_by: 0, // Will be set by backend
+      created_by: session.user.id,
     });
   };
 

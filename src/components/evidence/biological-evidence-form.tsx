@@ -20,6 +20,8 @@ import {
 } from "@/schemas/evidence.schema";
 import { createBiologicalEvidence, uploadImage } from "@/api/evidence";
 import type { Image } from "@/types/evidence.type";
+import { useAuthStore } from "@/stores/auth.store";
+import { useParams } from "react-router-dom";
 
 interface BiologicalEvidenceFormProps {
   onSuccess?: () => void;
@@ -28,6 +30,8 @@ interface BiologicalEvidenceFormProps {
 export function BiologicalEvidenceForm({
   onSuccess,
 }: BiologicalEvidenceFormProps) {
+  const { caseId } = useParams<{ caseId: string }>();
+  const { session } = useAuthStore();
   const [uploadedImages, setUploadedImages] = useState<Image[]>([]);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -39,6 +43,9 @@ export function BiologicalEvidenceForm({
     setValue,
   } = useForm<BiologicalEvidenceFormData>({
     resolver: zodResolver(biologicalEvidenceSchema),
+    defaultValues: {
+      case: caseId ? parseInt(caseId) : 0,
+    },
   });
 
   const createMutation = useMutation({
@@ -58,18 +65,30 @@ export function BiologicalEvidenceForm({
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
 
+    if (!session?.user.id) {
+      toast.error("You must be logged in to upload images");
+      return;
+    }
+
     setIsUploading(true);
     try {
-      const uploadPromises = files.map((file) => uploadImage(file));
+      const uploadPromises = files.map((file) =>
+        uploadImage({
+          image: file,
+          uploaded_by: session.user.id
+        })
+      );
       const uploaded = await Promise.all(uploadPromises);
-      setUploadedImages((prev) => [...prev, ...uploaded]);
+      const newImages = [...uploadedImages, ...uploaded];
+      setUploadedImages(newImages);
       setValue(
         "images",
-        [...uploadedImages, ...uploaded].map((img) => img.id),
+        newImages.map((img) => img.id),
       );
       toast.success(`${files.length} image(s) uploaded successfully`);
-    } catch (error) {
-      toast.error("Failed to upload images");
+    } catch (error: any) {
+      console.error("Upload error:", error);
+      toast.error(error.response?.data?.message || "Failed to upload images");
     } finally {
       setIsUploading(false);
     }
@@ -85,11 +104,27 @@ export function BiologicalEvidenceForm({
   };
 
   const onSubmit = (data: BiologicalEvidenceFormData) => {
+    if (!session?.user.id) {
+      toast.error("You must be logged in to record evidence");
+      return;
+    }
+
+    if (!caseId) {
+      toast.error("Case ID is missing");
+      return;
+    }
+
+    if (uploadedImages.length === 0) {
+      toast.error("At least one image is required");
+      return;
+    }
+
     createMutation.mutate({
       ...data,
+      case: parseInt(caseId),
       images: uploadedImages.map((img) => img.id),
       created_at: new Date().toISOString(),
-      created_by: 0, // Will be set by backend
+      created_by: session.user.id,
     });
   };
 
@@ -139,7 +174,7 @@ export function BiologicalEvidenceForm({
               multiple
               accept="image/*"
               onChange={handleImageChange}
-              disabled={isUploading}
+              disabled={isUploading || !session?.user.id}
             />
             {errors.images && (
               <p className="text-sm text-red-500">{errors.images.message}</p>
@@ -165,6 +200,9 @@ export function BiologicalEvidenceForm({
                   </div>
                 ))}
               </div>
+            )}
+            {isUploading && (
+              <p className="text-sm text-blue-500">Uploading images...</p>
             )}
           </div>
 

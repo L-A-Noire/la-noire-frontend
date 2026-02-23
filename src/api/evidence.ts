@@ -20,9 +20,10 @@ import type {
 } from "@/types/evidence.type";
 
 // ==================== Images ====================
-export const uploadImage = async (file: File): Promise<Image> => {
+export const uploadImage = async (data: { image: File; uploaded_by: number }): Promise<Image> => {
   const formData = new FormData();
-  formData.append("image", file);
+  formData.append("image", data.image);
+  formData.append("uploaded_by", data.uploaded_by.toString());
 
   const response = await http.post<Image>("/witness/images/", formData, {
     headers: {
@@ -68,8 +69,9 @@ export const deleteAttachment = async (id: number): Promise<void> => {
 };
 
 // ==================== Testimonies ====================
-export const getTestimonies = async (): Promise<Testimony[]> => {
-  const response = await http.get<Testimony[]>("/witness/testimonies/");
+export const getTestimonies = async (caseId?: number): Promise<Testimony[]> => {
+  const url = caseId ? `/witness/testimonies/?case=${caseId}` : "/witness/testimonies/";
+  const response = await http.get<Testimony[]>(url);
   return response.data;
 };
 
@@ -103,12 +105,9 @@ export const deleteTestimony = async (id: number): Promise<void> => {
 };
 
 // ==================== Biological Evidence ====================
-export const getBiologicalEvidences = async (): Promise<
-  BiologicalEvidence[]
-> => {
-  const response = await http.get<BiologicalEvidence[]>(
-    "/witness/biological-evidence/",
-  );
+export const getBiologicalEvidences = async (caseId?: number): Promise<BiologicalEvidence[]> => {
+  const url = caseId ? `/witness/biological-evidence/?case=${caseId}` : "/witness/biological-evidence/";
+  const response = await http.get<BiologicalEvidence[]>(url);
   return response.data;
 };
 
@@ -147,10 +146,9 @@ export const deleteBiologicalEvidence = async (id: number): Promise<void> => {
 };
 
 // ==================== Vehicle Evidence ====================
-export const getVehicleEvidences = async (): Promise<VehicleEvidence[]> => {
-  const response = await http.get<VehicleEvidence[]>(
-    "/witness/vehicle-evidence/",
-  );
+export const getVehicleEvidences = async (caseId?: number): Promise<VehicleEvidence[]> => {
+  const url = caseId ? `/witness/vehicle-evidence/?case=${caseId}` : "/witness/vehicle-evidence/";
+  const response = await http.get<VehicleEvidence[]>(url);
   return response.data;
 };
 
@@ -189,12 +187,9 @@ export const deleteVehicleEvidence = async (id: number): Promise<void> => {
 };
 
 // ==================== Identification Evidence ====================
-export const getIdentificationEvidences = async (): Promise<
-  IdentificationEvidence[]
-> => {
-  const response = await http.get<IdentificationEvidence[]>(
-    "/witness/identification-evidence/",
-  );
+export const getIdentificationEvidences = async (caseId?: number): Promise<IdentificationEvidence[]> => {
+  const url = caseId ? `/witness/identification-evidence/?case=${caseId}` : "/witness/identification-evidence/";
+  const response = await http.get<IdentificationEvidence[]>(url);
   return response.data;
 };
 
@@ -235,8 +230,9 @@ export const deleteIdentificationEvidence = async (
 };
 
 // ==================== Other Evidence ====================
-export const getOtherEvidences = async (): Promise<OtherEvidence[]> => {
-  const response = await http.get<OtherEvidence[]>("/witness/other-evidence/");
+export const getOtherEvidences = async (caseId?: number): Promise<OtherEvidence[]> => {
+  const url = caseId ? `/witness/other-evidence/?case=${caseId}` : "/witness/other-evidence/";
+  const response = await http.get<OtherEvidence[]>(url);
   return response.data;
 };
 

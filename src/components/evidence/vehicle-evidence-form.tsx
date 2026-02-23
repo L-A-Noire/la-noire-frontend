@@ -19,12 +19,16 @@ import {
   type VehicleEvidenceFormData,
 } from "@/schemas/evidence.schema";
 import { createVehicleEvidence } from "@/api/evidence";
+import { useAuthStore } from "@/stores/auth.store";
+import { useParams } from "react-router-dom";
 
 interface VehicleEvidenceFormProps {
   onSuccess?: () => void;
 }
 
 export function VehicleEvidenceForm({ onSuccess }: VehicleEvidenceFormProps) {
+  const { caseId } = useParams<{ caseId: string }>();
+  const { session } = useAuthStore();
   const [identificationType, setIdentificationType] = useState<
     "plate" | "serial"
   >("plate");
@@ -37,6 +41,9 @@ export function VehicleEvidenceForm({ onSuccess }: VehicleEvidenceFormProps) {
     setValue,
   } = useForm<VehicleEvidenceFormData>({
     resolver: zodResolver(vehicleEvidenceSchema),
+    defaultValues: {
+      case: caseId ? parseInt(caseId) : 0,
+    },
   });
 
   const createMutation = useMutation({
@@ -64,10 +71,21 @@ export function VehicleEvidenceForm({ onSuccess }: VehicleEvidenceFormProps) {
   };
 
   const onSubmit = (data: VehicleEvidenceFormData) => {
+    if (!session?.user.id) {
+      toast.error("You must be logged in to record evidence");
+      return;
+    }
+
+    if (!caseId) {
+      toast.error("Case ID is missing");
+      return;
+    }
+
     createMutation.mutate({
       ...data,
+      case: parseInt(caseId),
       created_at: new Date().toISOString(),
-      created_by: 0, // Will be set by backend
+      created_by: session.user.id,
     });
   };
 
