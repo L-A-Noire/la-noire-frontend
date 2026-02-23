@@ -25,13 +25,13 @@ export function NoteNode({ data, id }: NodeProps) {
     >
       <button
         onClick={onDelete}
-        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 z-20"
+        className="absolute -top-2 -right-2 bg-primary text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-primary/90 z-20"
       >
         <HugeiconsIcon icon={Cancel01Icon} className="size-3" />
       </button>
 
-      <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-red-800/20 blur-sm pointer-events-none" />
-      <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-red-600 shadow-sm border border-red-700 z-10" />
+      <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-primary/20 blur-sm pointer-events-none" />
+      <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-primary shadow-sm border border-primary z-10" />
 
       <Textarea
         defaultValue={data.label as string}
@@ -44,24 +44,24 @@ export function NoteNode({ data, id }: NodeProps) {
       <Handle
         type="source"
         position={Position.Top}
-        className="!bg-red-500 !w-3 !h-3 !border-2 !border-white dark:!border-zinc-900 !-top-1.5 opacity-0 group-hover:opacity-100 transition-opacity"
+        className="!bg-primary !w-3 !h-3 !border-2 !border-white dark:!border-zinc-900 !-top-1.5 opacity-0 group-hover:opacity-100 transition-opacity"
       />
       <Handle
         type="target"
         position={Position.Bottom}
-        className="!bg-red-500 !w-3 !h-3 !border-2 !border-white dark:!border-zinc-900 !-bottom-1.5 opacity-0 group-hover:opacity-100 transition-opacity"
+        className="!bg-primary !w-3 !h-3 !border-2 !border-white dark:!border-zinc-900 !-bottom-1.5 opacity-0 group-hover:opacity-100 transition-opacity"
       />
       <Handle
         type="source"
         position={Position.Left}
         id="l"
-        className="!bg-red-500 !w-3 !h-3 !border-2 !border-white dark:!border-zinc-900 !-left-1.5 opacity-0 group-hover:opacity-100 transition-opacity"
+        className="!bg-primary !w-3 !h-3 !border-2 !border-white dark:!border-zinc-900 !-left-1.5 opacity-0 group-hover:opacity-100 transition-opacity"
       />
       <Handle
         type="source"
         position={Position.Right}
         id="r"
-        className="!bg-red-500 !w-3 !h-3 !border-2 !border-white dark:!border-zinc-900 !-right-1.5 opacity-0 group-hover:opacity-100 transition-opacity"
+        className="!bg-primary !w-3 !h-3 !border-2 !border-white dark:!border-zinc-900 !-right-1.5 opacity-0 group-hover:opacity-100 transition-opacity"
       />
     </div>
   );

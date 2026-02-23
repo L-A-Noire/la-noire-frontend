@@ -40,7 +40,7 @@ export function EvidenceNode({ data, selected }: NodeProps) {
       <Card
         className={`bg-yellow-50 dark:bg-zinc-800 border-2 shadow-md transition-all duration-200 ${
           selected
-            ? "border-red-500 ring-2 ring-red-500/20"
+            ? "border-primary ring-2 ring-primary/20"
             : "border-stone-300 dark:border-stone-700"
         } rotate-1 hover:rotate-0 hover:z-50 hover:shadow-xl`}
       >

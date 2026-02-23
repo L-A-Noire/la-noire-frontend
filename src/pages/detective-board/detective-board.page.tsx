@@ -50,7 +50,7 @@ const nodeTypes = {
 };
 
 const defaultEdgeOptions = {
-  style: { stroke: "#ef4444", strokeWidth: 3, opacity: 0.8 },
+  style: { stroke: "var(--primary)", strokeWidth: 3, opacity: 0.8 },
   type: "straight",
   animated: true,
 };
@@ -192,7 +192,7 @@ export function DetectiveBoardPage() {
       <div className="flex items-center justify-between bg-card p-4 rounded-lg border shadow-sm">
         <div className="flex items-center gap-4">
           <h1 className="text-2xl font-bold font-serif tracking-tight flex items-center gap-2">
-            <HugeiconsIcon icon={FileEditIcon} className="text-red-700" />
+            <HugeiconsIcon icon={FileEditIcon} className="text-primary" />
             Detective Board
           </h1>
           <Select
@@ -226,7 +226,7 @@ export function DetectiveBoardPage() {
           <Button
             onClick={saveImage}
             variant="default"
-            className="bg-red-700 hover:bg-red-800"
+            className="bg-primary hover:bg-primary/90"
             disabled={!selectedCaseId}
           >
             <HugeiconsIcon icon={Camera01Icon} className="mr-2 size-4" /> Save

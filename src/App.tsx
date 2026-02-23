@@ -47,6 +47,9 @@ export function App() {
               path="cases/:caseId/evidence/:evidenceType/:evidenceId"
               element={<EvidenceDetailPage />}
             />
+          </Route>
+
+          <Route element={<RoleGuard allowedRoles={["Detective"]} />}>
             <Route path="detective-board" element={<DetectiveBoardPage />} />
           </Route>
 
