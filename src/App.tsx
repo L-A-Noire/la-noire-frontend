@@ -4,6 +4,7 @@ import HomePage from "./pages/home.page";
 import LoginPage from "@/pages/login.page";
 import RegisterPage from "@/pages/register.page";
 import RoleGuard from "@/guards/role.guard";
+import CaseGuard from "@/guards/case.guard";
 import { RolesListPage, RoleFormPage } from "@/pages/roles.page";
 import { CasesListPage } from "@/pages/cases/cases-list.page";
 import { CaseCreatePage } from "@/pages/cases/create-case.page";
@@ -28,19 +29,21 @@ export function App() {
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
 
-          <Route path="cases" element={<CasesListPage />} />
-          <Route path="cases/new" element={<CaseCreatePage />} />
-          <Route path="cases/:id" element={<CaseDetailPage />} />
-          <Route path="cases/:id/timeline" element={<CaseTimelinePage />} />
-          <Route path="cases/:caseId/evidence" element={<CaseEvidencePage />} />
-          <Route
-            path="cases/:caseId/evidence/record"
-            element={<RecordEvidencePage />}
-          />
-          <Route
-            path="cases/:caseId/evidence/:evidenceType/:evidenceId"
-            element={<EvidenceDetailPage />}
-          />
+          <Route element={<CaseGuard />}>
+            <Route path="cases" element={<CasesListPage />} />
+            <Route path="cases/new" element={<CaseCreatePage />} />
+            <Route path="cases/:id" element={<CaseDetailPage />} />
+            <Route path="cases/:id/timeline" element={<CaseTimelinePage />} />
+            <Route path="cases/:caseId/evidence" element={<CaseEvidencePage />} />
+            <Route
+              path="cases/:caseId/evidence/record"
+              element={<RecordEvidencePage />}
+            />
+            <Route
+              path="cases/:caseId/evidence/:evidenceType/:evidenceId"
+              element={<EvidenceDetailPage />}
+            />
+          </Route>
 
           <Route path="complaints" element={<ComplaintsListPage />} />
           <Route path="complaints/new" element={<FileComplaintPage />} />
