@@ -5,6 +5,7 @@ import {
   reviewComplaintAsCadet,
   reviewComplaintAsOfficer,
   createCaseFromComplaint,
+  updateComplaint,
 } from "@/api/complaints";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -23,16 +24,22 @@ import {
   ArrowLeft01Icon,
   CheckSquare,
   Delete02Icon,
+  PencilEdit01Icon,
 } from "@hugeicons/core-free-icons";
 import { format } from "date-fns";
 import { toast } from "react-toastify";
 import { ComplaintStatusBadge } from "@/components/complaints/complaint-status-badge";
 import { useAuthStore } from "@/stores/auth.store";
 import type { ComplaintReviewRequest } from "@/types/complaint.type";
+import { useState, useEffect } from "react";
 
 interface ReviewFormData {
   is_confirmed: boolean;
   rejection_reason?: string;
+}
+
+interface EditFormData {
+  description: string;
 }
 
 export const ComplaintDetailPage = () => {
@@ -41,11 +48,13 @@ export const ComplaintDetailPage = () => {
   const queryClient = useQueryClient();
   const { session } = useAuthStore();
   const complaintId = Number(id);
+  const [isEditing, setIsEditing] = useState(false);
 
   const {
     data: complaint,
     isLoading,
     isError,
+    refetch,
   } = useQuery({
     queryKey: ["complaint", complaintId],
     queryFn: () => getComplaintById(complaintId),
@@ -58,6 +67,7 @@ export const ComplaintDetailPage = () => {
     formState: { errors, isSubmitting },
     watch,
     setValue,
+    reset,
   } = useForm<ReviewFormData>({
     defaultValues: {
       is_confirmed: false,
@@ -65,7 +75,54 @@ export const ComplaintDetailPage = () => {
     },
   });
 
+  // Edit form
+  const {
+    register: registerEdit,
+    handleSubmit: handleSubmitEdit,
+    formState: { errors: editErrors, isSubmitting: isEditSubmitting },
+    reset: resetEdit,
+    setValue: setEditValue,
+  } = useForm<EditFormData>({
+    defaultValues: {
+      description: "",
+    },
+  });
+
+  useEffect(() => {
+    if (complaint) {
+      setEditValue("description", complaint.description);
+    }
+  }, [complaint, setEditValue]);
+
   const isConfirmed = watch("is_confirmed");
+
+  // Update complaint mutation
+  const updateComplaintMutation = useMutation({
+    mutationFn: (data: EditFormData) => updateComplaint(complaintId, data),
+    onSuccess: (response) => {
+      queryClient.invalidateQueries({ queryKey: ["complaint", complaintId] });
+      queryClient.invalidateQueries({ queryKey: ["complaints"] });
+
+      const newStatus = response?.status;
+      console.log("Updated complaint status:", newStatus);
+
+      if (newStatus === "pending_cadet") {
+        toast.success("Complaint updated and sent for cadet review.");
+      } else {
+        toast.success("Complaint updated successfully.");
+      }
+
+      setIsEditing(false);
+
+      setTimeout(() => {
+        refetch();
+      }, 100);
+    },
+    onError: (error: any) => {
+      console.error("Update error:", error);
+      toast.error(error.response?.data?.detail || "Failed to update complaint");
+    },
+  });
 
   // Review as Cadet
   const reviewCadetMutation = useMutation({
@@ -73,7 +130,9 @@ export const ComplaintDetailPage = () => {
       reviewComplaintAsCadet(complaintId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["complaint", complaintId] });
+      queryClient.invalidateQueries({ queryKey: ["complaints"] });
       toast.success("Complaint reviewed successfully");
+      refetch();
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.detail || "Failed to review complaint");
@@ -86,7 +145,9 @@ export const ComplaintDetailPage = () => {
       reviewComplaintAsOfficer(complaintId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["complaint", complaintId] });
+      queryClient.invalidateQueries({ queryKey: ["complaints"] });
       toast.success("Complaint reviewed successfully");
+      refetch();
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.detail || "Failed to review complaint");
@@ -120,6 +181,21 @@ export const ComplaintDetailPage = () => {
     }
   };
 
+  const onEditSubmit = (data: EditFormData) => {
+    // Check if description actually changed
+    if (data.description === complaint?.description) {
+      toast.info("No changes made to the complaint.");
+      setIsEditing(false);
+      return;
+    }
+
+    updateComplaintMutation.mutate(data);
+  };
+
+  // Check if the current user is a complainant
+  const isComplainant = complaint?.complainants.includes(session?.user.id || 0);
+
+  // Cadet can review when status is pending_cadet or rejected_by_officer
   const canReview =
     complaint &&
     ((session?.user.role_title === "Cadet" &&
@@ -127,10 +203,21 @@ export const ComplaintDetailPage = () => {
       (session?.user.role_title === "Police/Patrol Officer" &&
         complaint.status === "pending_officer"));
 
+  // User can edit when complaint is rejected by cadet AND they are the complainant
+  const canEdit =
+    complaint &&
+    complaint.status === "rejected_by_cadet" &&
+    isComplainant;
+
   const canCreateCase =
     complaint &&
     complaint.status === "approved" &&
     session?.user.role_title === "Police/Patrol Officer";
+
+  // Log current state for debugging
+  console.log("Current complaint status:", complaint?.status);
+  console.log("Can edit:", canEdit);
+  console.log("Is editing:", isEditing);
 
   if (isLoading)
     return (
@@ -142,7 +229,7 @@ export const ComplaintDetailPage = () => {
   if (isError)
     return (
       <div className="p-8 text-center text-destructive">
-        Error loading complaint
+        Complaint was transfered.
       </div>
     );
 
@@ -174,18 +261,92 @@ export const ComplaintDetailPage = () => {
                 Filed on {format(new Date(complaint.created_at), "PPP p")}
               </CardDescription>
             </div>
-            <ComplaintStatusBadge status={complaint.status} />
+            <div className="flex items-center gap-2">
+              {canEdit && !isEditing && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setIsEditing(true);
+                  }}
+                  className="gap-2"
+                >
+                  <HugeiconsIcon icon={PencilEdit01Icon} className="h-4 w-4" />
+                  Edit Complaint
+                </Button>
+              )}
+              <ComplaintStatusBadge status={complaint.status} />
+            </div>
           </div>
         </CardHeader>
 
         <CardContent className="space-y-6">
-          {/* Complaint Description */}
-          <div>
-            <h3 className="font-semibold mb-2">Description</h3>
-            <p className="text-foreground bg-muted/50 p-4 rounded-lg whitespace-pre-wrap">
-              {complaint.description}
-            </p>
-          </div>
+          {/* Complaint Description - Show edit form or read-only */}
+          {isEditing ? (
+            <form onSubmit={handleSubmitEdit(onEditSubmit)} className="space-y-4">
+              <h3 className="font-semibold">Edit Your Complaint</h3>
+
+              {/* Status change indicator */}
+              <div className="bg-blue-50 dark:bg-blue-950/20 p-3 rounded border border-blue-200 dark:border-blue-900">
+                <p className="text-xs text-blue-800 dark:text-blue-200">
+                  After submitting your update, the complaint status will change to <span className="font-bold">pending_cadet</span> and will be reviewed again by a cadet.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="edit-description">Description</Label>
+                <Textarea
+                  id="edit-description"
+                  className="min-h-[200px]"
+                  placeholder="Update your complaint description..."
+                  {...registerEdit("description", {
+                    required: "Description is required",
+                    minLength: {
+                      value: 20,
+                      message: "Description must be at least 20 characters",
+                    },
+                  })}
+                />
+                {editErrors.description && (
+                  <p className="text-sm text-destructive">
+                    {editErrors.description.message}
+                  </p>
+                )}
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsEditing(false)}
+                  disabled={isEditSubmitting}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isEditSubmitting || updateComplaintMutation.isPending}
+                >
+                  {updateComplaintMutation.isPending ? "Updating..." : "Submit Update"}
+                </Button>
+              </div>
+            </form>
+          ) : (
+            <div>
+              <h3 className="font-semibold mb-2">Description</h3>
+              <p className="text-foreground bg-muted/50 p-4 rounded-lg whitespace-pre-wrap">
+                {complaint.description}
+              </p>
+            </div>
+          )}
+
+          {/* Next step indicator for rejected complaints */}
+          {complaint.status === "rejected_by_cadet" && isComplainant && !isEditing && (
+            <div className="bg-green-50 dark:bg-green-950/20 p-4 rounded border border-green-200 dark:border-green-900">
+              <p className="text-sm text-green-800 dark:text-green-200">
+                Click the "Edit Complaint" button to update your complaint based on the feedback. After submitting, it will be sent back to a cadet for review (status: <span className="font-bold">pending_cadet</span>).
+              </p>
+            </div>
+          )}
 
           {/* Details Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -231,7 +392,7 @@ export const ComplaintDetailPage = () => {
           </div>
 
           {/* Rejection Reasons */}
-          {complaint.cadet_rejection_reason && (
+          {complaint.cadet_rejection_reason && complaint.cadet_rejection_reason !== "Null" && (
             <div className="bg-red-50 dark:bg-red-950/20 p-4 rounded border border-red-200 dark:border-red-900">
               <p className="text-sm font-semibold text-red-900 dark:text-red-300 mb-2">
                 Cadet Rejection Reason
@@ -239,6 +400,11 @@ export const ComplaintDetailPage = () => {
               <p className="text-sm text-red-800 dark:text-red-200">
                 {complaint.cadet_rejection_reason}
               </p>
+              {complaint.status === "rejected_by_cadet" && isComplainant && !isEditing && (
+                <p className="text-sm text-red-600 dark:text-red-400 mt-2">
+                  Please edit your complaint based on the feedback above and resubmit.
+                </p>
+              )}
             </div>
           )}
 
@@ -264,6 +430,11 @@ export const ComplaintDetailPage = () => {
                 ? "Cadet Review"
                 : "Officer Review"}
             </CardTitle>
+            {session?.user.role_title === "Cadet" && complaint.status === "rejected_by_officer" && (
+              <CardDescription className="text-purple-600 dark:text-purple-400">
+                This complaint was rejected by an officer. Please review it again.
+              </CardDescription>
+            )}
           </CardHeader>
 
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -274,8 +445,8 @@ export const ComplaintDetailPage = () => {
                   <button
                     type="button"
                     className={`flex-1 p-4 border-2 rounded-lg transition-all ${isConfirmed
-                        ? "border-green-500 bg-green-50 dark:bg-green-950/20"
-                        : "border-muted hover:border-green-300"
+                      ? "border-green-500 bg-green-50 dark:bg-green-950/20"
+                      : "border-muted hover:border-green-300"
                       }`}
                     onClick={() => setValue("is_confirmed", true)}
                   >
@@ -293,8 +464,8 @@ export const ComplaintDetailPage = () => {
                   <button
                     type="button"
                     className={`flex-1 p-4 border-2 rounded-lg transition-all ${!isConfirmed
-                        ? "border-red-500 bg-red-50 dark:bg-red-950/20"
-                        : "border-muted hover:border-red-300"
+                      ? "border-red-500 bg-red-50 dark:bg-red-950/20"
+                      : "border-muted hover:border-red-300"
                       }`}
                     onClick={() => setValue("is_confirmed", false)}
                   >
@@ -313,20 +484,15 @@ export const ComplaintDetailPage = () => {
 
               {!isConfirmed && (
                 <div className="space-y-2">
-                  <Label htmlFor="reason">
+                  <Label htmlFor="rejection_reason">
                     Reason for Rejection <span className="text-red-500">*</span>
                   </Label>
                   <Textarea
-                    id="reason"
+                    id="rejection_reason"
                     placeholder="Explain why you are rejecting this complaint..."
                     className="min-h-[100px]"
                     {...register("rejection_reason", {
-                      validate: (value) => {
-                        if (!isConfirmed && !value) {
-                          return "Rejection reason is required";
-                        }
-                        return true;
-                      },
+                      required: !isConfirmed && "Rejection reason is required",
                     })}
                   />
                   {errors.rejection_reason && (
