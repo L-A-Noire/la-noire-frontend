@@ -222,9 +222,8 @@ export const ComplaintDetailPage = () => {
             <div>
               <p className="text-sm text-muted-foreground">Rejection Count</p>
               <p
-                className={`font-semibold mt-1 ${
-                  complaint.rejection_count >= 3 ? "text-destructive" : ""
-                }`}
+                className={`font-semibold mt-1 ${complaint.rejection_count >= 3 ? "text-destructive" : ""
+                  }`}
               >
                 {complaint.rejection_count}/3
               </p>
@@ -274,11 +273,10 @@ export const ComplaintDetailPage = () => {
                 <div className="flex gap-4">
                   <button
                     type="button"
-                    className={`flex-1 p-4 border-2 rounded-lg transition-all ${
-                      isConfirmed
+                    className={`flex-1 p-4 border-2 rounded-lg transition-all ${isConfirmed
                         ? "border-green-500 bg-green-50 dark:bg-green-950/20"
                         : "border-muted hover:border-green-300"
-                    }`}
+                      }`}
                     onClick={() => setValue("is_confirmed", true)}
                   >
                     <div className="flex items-center justify-center gap-2">
@@ -294,11 +292,10 @@ export const ComplaintDetailPage = () => {
 
                   <button
                     type="button"
-                    className={`flex-1 p-4 border-2 rounded-lg transition-all ${
-                      !isConfirmed
+                    className={`flex-1 p-4 border-2 rounded-lg transition-all ${!isConfirmed
                         ? "border-red-500 bg-red-50 dark:bg-red-950/20"
                         : "border-muted hover:border-red-300"
-                    }`}
+                      }`}
                     onClick={() => setValue("is_confirmed", false)}
                   >
                     <div className="flex items-center justify-center gap-2">
@@ -359,7 +356,7 @@ export const ComplaintDetailPage = () => {
                 }
               >
                 {reviewCadetMutation.isPending ||
-                reviewOfficerMutation.isPending
+                  reviewOfficerMutation.isPending
                   ? "Submitting..."
                   : "Submit Review"}
               </Button>
