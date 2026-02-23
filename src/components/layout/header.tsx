@@ -3,13 +3,13 @@ import { useAuthStore } from "@/stores/auth.store";
 import { Button } from "@/components/ui/button";
 import { ALLOWED_CASE_ROLES } from "@/types/role.type";
 
-
 export const Header = () => {
-  const { session } = useAuthStore();
+  const session = useAuthStore((s) => s.session);
   const { pathname } = useLocation();
   const isAdmin = session?.user.role_title === "Administrator";
 
-  const canAccessCases = session && ALLOWED_CASE_ROLES.includes(session.user.role_title);
+  const canAccessCases =
+    session && ALLOWED_CASE_ROLES.includes(session.user.role_title);
 
   const isActive = (path: string) => {
     return pathname.startsWith(path);
@@ -28,41 +28,57 @@ export const Header = () => {
             <nav className="flex items-center gap-4 text-sm lg:gap-6">
               {/* Only show Cases menu if user has access */}
               {canAccessCases && (
-                <Link
-                  to="/cases"
-                  className={`transition-colors font-mono ${isActive("/cases")
-                    ? "text-primary font-semibold"
-                    : "text-foreground/60 hover:text-foreground/80"
+                <>
+                  <Link
+                    to="/cases"
+                    className={`transition-colors font-mono ${
+                      isActive("/cases")
+                        ? "text-primary font-semibold"
+                        : "text-foreground/60 hover:text-foreground/80"
                     }`}
-                >
-                  Cases
-                </Link>
+                  >
+                    Cases
+                  </Link>
+                  <Link
+                    to="/detective-board"
+                    className={`transition-colors font-mono ${
+                      isActive("/detective-board")
+                        ? "text-primary font-semibold"
+                        : "text-foreground/60 hover:text-foreground/80"
+                    }`}
+                  >
+                    Board
+                  </Link>
+                </>
               )}
               <Link
                 to="/complaints"
-                className={`transition-colors font-mono ${isActive("/complaints")
-                  ? "text-primary font-semibold"
-                  : "text-foreground/60 hover:text-foreground/80"
-                  }`}
+                className={`transition-colors font-mono ${
+                  isActive("/complaints")
+                    ? "text-primary font-semibold"
+                    : "text-foreground/60 hover:text-foreground/80"
+                }`}
               >
                 Complaints
               </Link>
               <Link
                 to="/crime-scenes"
-                className={`transition-colors font-mono ${isActive("/crime-scenes")
-                  ? "text-primary font-semibold"
-                  : "text-foreground/60 hover:text-foreground/80"
-                  }`}
+                className={`transition-colors font-mono ${
+                  isActive("/crime-scenes")
+                    ? "text-primary font-semibold"
+                    : "text-foreground/60 hover:text-foreground/80"
+                }`}
               >
                 Scenes
               </Link>
               {isAdmin && (
                 <Link
                   to="/roles"
-                  className={`transition-colors font-mono ${isActive("/roles")
-                    ? "text-primary font-semibold"
-                    : "text-foreground/60 hover:text-foreground/80"
-                    }`}
+                  className={`transition-colors font-mono ${
+                    isActive("/roles")
+                      ? "text-primary font-semibold"
+                      : "text-foreground/60 hover:text-foreground/80"
+                  }`}
                 >
                   Roles
                 </Link>

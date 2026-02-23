@@ -53,19 +53,25 @@ export const CaseEvidencePage = () => {
     queryFn: () => getTestimonies(caseId ? parseInt(caseId) : undefined),
   });
 
-  const { data: biologicalEvidence = [], isLoading: loadingBiological } = useQuery({
-    queryKey: ["biologicalEvidence", caseId],
-    queryFn: () => getBiologicalEvidences(caseId ? parseInt(caseId) : undefined),
-  });
+  const { data: biologicalEvidence = [], isLoading: loadingBiological } =
+    useQuery({
+      queryKey: ["biologicalEvidence", caseId],
+      queryFn: () =>
+        getBiologicalEvidences(caseId ? parseInt(caseId) : undefined),
+    });
 
   const { data: vehicleEvidence = [], isLoading: loadingVehicle } = useQuery({
     queryKey: ["vehicleEvidence", caseId],
     queryFn: () => getVehicleEvidences(caseId ? parseInt(caseId) : undefined),
   });
 
-  const { data: identificationEvidence = [], isLoading: loadingIdentification } = useQuery({
+  const {
+    data: identificationEvidence = [],
+    isLoading: loadingIdentification,
+  } = useQuery({
     queryKey: ["identificationEvidence", caseId],
-    queryFn: () => getIdentificationEvidences(caseId ? parseInt(caseId) : undefined),
+    queryFn: () =>
+      getIdentificationEvidences(caseId ? parseInt(caseId) : undefined),
   });
 
   const { data: otherEvidence = [], isLoading: loadingOther } = useQuery({

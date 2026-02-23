@@ -23,8 +23,9 @@ export const ComplaintItem = ({ complaint }: ComplaintItemProps) => {
 
   return (
     <Card
-      className={`relative overflow-hidden transition-all hover:shadow-md ${isRejected ? "opacity-75" : ""
-        }`}
+      className={`relative overflow-hidden transition-all hover:shadow-md ${
+        isRejected ? "opacity-75" : ""
+      }`}
     >
       {requiresAttention && (
         <div className="absolute top-4 right-4">

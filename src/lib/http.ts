@@ -29,26 +29,26 @@ export const extractErrorMessage = (error: any): string => {
   if (error.response?.data) {
     const data = error.response.data;
 
-    if (typeof data === 'string') return data;
+    if (typeof data === "string") return data;
 
-    if (typeof data === 'object') {
+    if (typeof data === "object") {
       if (data.non_field_errors) {
-        return Array.isArray(data.non_field_errors) 
-          ? data.non_field_errors[0] 
+        return Array.isArray(data.non_field_errors)
+          ? data.non_field_errors[0]
           : data.non_field_errors;
       }
 
       const fieldErrors: string[] = [];
       Object.entries(data).forEach(([field, errors]) => {
         if (Array.isArray(errors)) {
-          fieldErrors.push(`${field}: ${errors.join(', ')}`);
-        } else if (typeof errors === 'string') {
+          fieldErrors.push(`${field}: ${errors.join(", ")}`);
+        } else if (typeof errors === "string") {
           fieldErrors.push(`${field}: ${errors}`);
         }
       });
 
       if (fieldErrors.length > 0) {
-        return fieldErrors.join('\n');
+        return fieldErrors.join("\n");
       }
 
       if (data.detail) return data.detail;

@@ -57,7 +57,7 @@ export default function HomePage() {
   const {
     data: employeeData,
     isLoading: isLoadingEmployees,
-    isError: isErrorEmployees
+    isError: isErrorEmployees,
   } = useQuery({
     queryKey: ["employee-count"],
     queryFn: getEmployeeCount,
@@ -69,7 +69,7 @@ export default function HomePage() {
   const {
     data: caseStats,
     isLoading: isLoadingCases,
-    isError: isErrorCases
+    isError: isErrorCases,
   } = useQuery({
     queryKey: ["case-statistics"],
     queryFn: getCaseStatistics,
@@ -151,7 +151,8 @@ export default function HomePage() {
                     <div className="h-8 w-16 bg-muted animate-pulse rounded" />
                   ) : (
                     <p className="text-3xl font-bold text-foreground font-mono">
-                      {caseStats?.closed_count?.toLocaleString() || MOCK_CASE_STATS.closed_count.toLocaleString()}
+                      {caseStats?.closed_count?.toLocaleString() ||
+                        MOCK_CASE_STATS.closed_count.toLocaleString()}
                     </p>
                   )}
                   <p className="text-xs text-muted-foreground">
@@ -180,7 +181,8 @@ export default function HomePage() {
                     <div className="h-8 w-16 bg-muted animate-pulse rounded" />
                   ) : (
                     <p className="text-3xl font-bold text-foreground font-mono">
-                      {caseStats?.open_count?.toLocaleString() || MOCK_CASE_STATS.open_count.toLocaleString()}
+                      {caseStats?.open_count?.toLocaleString() ||
+                        MOCK_CASE_STATS.open_count.toLocaleString()}
                     </p>
                   )}
                   <p className="text-xs text-muted-foreground">
@@ -209,7 +211,8 @@ export default function HomePage() {
                     <div className="h-8 w-16 bg-muted animate-pulse rounded" />
                   ) : (
                     <p className="text-3xl font-bold text-foreground font-mono">
-                      {caseStats?.total_count?.toLocaleString() || MOCK_CASE_STATS.total_count.toLocaleString()}
+                      {caseStats?.total_count?.toLocaleString() ||
+                        MOCK_CASE_STATS.total_count.toLocaleString()}
                     </p>
                   )}
                   <p className="text-xs text-muted-foreground">
@@ -238,7 +241,8 @@ export default function HomePage() {
                     <div className="h-8 w-16 bg-muted animate-pulse rounded" />
                   ) : (
                     <p className="text-3xl font-bold text-foreground font-mono">
-                      {employeeData?.totalEmployees?.toLocaleString() || MOCK_EMPLOYEE_COUNT.toLocaleString()}
+                      {employeeData?.totalEmployees?.toLocaleString() ||
+                        MOCK_EMPLOYEE_COUNT.toLocaleString()}
                     </p>
                   )}
                   <p className="text-xs text-muted-foreground">

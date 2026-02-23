@@ -75,8 +75,8 @@ export function BiologicalEvidenceForm({
       const uploadPromises = files.map((file) =>
         uploadImage({
           image: file,
-          uploaded_by: session.user.id
-        })
+          uploaded_by: session.user.id,
+        }),
       );
       const uploaded = await Promise.all(uploadPromises);
       const newImages = [...uploadedImages, ...uploaded];

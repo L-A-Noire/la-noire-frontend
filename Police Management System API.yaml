@@ -4,6 +4,18 @@ info:
   version: 1.0.0
   description: API for managing police cases and investigations
 paths:
+  /api/auth/employees-count/:
+    get:
+      operationId: auth_employees_count_retrieve
+      tags:
+        - auth
+      security:
+        - jwtAuth: []
+        - Bearer: []
+        - {}
+      responses:
+        "200":
+          description: No response body
   /api/auth/login/:
     post:
       operationId: auth_login_create
@@ -501,6 +513,11 @@ paths:
   /api/crime/cases/:
     get:
       operationId: crime_cases_list
+      parameters:
+        - in: query
+          name: is_closed
+          schema:
+            type: boolean
       tags:
         - crime
       security:
@@ -540,6 +557,18 @@ paths:
               schema:
                 $ref: "#/components/schemas/Case"
           description: ""
+  /api/crime/cases-count/:
+    get:
+      operationId: crime_cases_count_retrieve
+      tags:
+        - crime
+      security:
+        - jwtAuth: []
+        - Bearer: []
+        - {}
+      responses:
+        "200":
+          description: No response body
   /api/crime/cases/{id}/:
     get:
       operationId: crime_cases_retrieve
@@ -3488,12 +3517,15 @@ components:
         result:
           type: string
           nullable: true
+        case:
+          type: integer
         created_by:
           type: integer
         coronary:
           type: integer
           nullable: true
       required:
+        - case
         - created_at
         - created_by
         - description
@@ -3520,12 +3552,15 @@ components:
         result:
           type: string
           nullable: true
+        case:
+          type: integer
         created_by:
           type: integer
         coronary:
           type: integer
           nullable: true
       required:
+        - case
         - created_at
         - created_by
         - description
@@ -4220,9 +4255,12 @@ components:
           type: string
           maxLength: 100
         information: {}
+        case:
+          type: integer
         created_by:
           type: integer
       required:
+        - case
         - created_at
         - created_by
         - description
@@ -4252,9 +4290,12 @@ components:
           minLength: 1
           maxLength: 100
         information: {}
+        case:
+          type: integer
         created_by:
           type: integer
       required:
+        - case
         - created_at
         - created_by
         - description
@@ -4560,9 +4601,12 @@ components:
         created_at:
           type: string
           format: date-time
+        case:
+          type: integer
         created_by:
           type: integer
       required:
+        - case
         - created_at
         - created_by
         - description
@@ -4581,9 +4625,12 @@ components:
         created_at:
           type: string
           format: date-time
+        case:
+          type: integer
         created_by:
           type: integer
       required:
+        - case
         - created_at
         - created_by
         - description
@@ -4616,6 +4663,8 @@ components:
         result:
           type: string
           nullable: true
+        case:
+          type: integer
         created_by:
           type: integer
         coronary:
@@ -4768,6 +4817,8 @@ components:
           minLength: 1
           maxLength: 100
         information: {}
+        case:
+          type: integer
         created_by:
           type: integer
     PatchedImageRequest:
@@ -4834,6 +4885,8 @@ components:
         created_at:
           type: string
           format: date-time
+        case:
+          type: integer
         created_by:
           type: integer
     PatchedPunishmentRequest:
@@ -4920,7 +4973,7 @@ components:
       type: object
       properties:
         status:
-          $ref: "#/components/schemas/StatusD62Enum"
+          $ref: "#/components/schemas/StatusD95Enum"
         wanted_since:
           type: string
           format: date-time
@@ -4956,6 +5009,8 @@ components:
         transcription:
           type: string
           minLength: 1
+        case:
+          type: integer
         created_by:
           type: integer
     PatchedUserRequest:
@@ -5017,6 +5072,8 @@ components:
           type: string
           nullable: true
           maxLength: 50
+        case:
+          type: integer
         created_by:
           type: integer
     PaymentCreate:
@@ -5357,13 +5414,8 @@ components:
           type: string
           writeOnly: true
           minLength: 8
-        password2:
-          type: string
-          writeOnly: true
-          minLength: 8
       required:
         - password
-        - password2
     Report:
       type: object
       properties:
@@ -5734,9 +5786,10 @@ components:
         * `pending` - pending state
         * `approved` - aproved state
         * `rejected` - rejected state
-    StatusD62Enum:
+    StatusD95Enum:
       enum:
         - suspect
+        - wanted
         - most_wanted
         - arrested
         - convicted
@@ -5744,6 +5797,7 @@ components:
       type: string
       description: |-
         * `suspect` - Suspect
+        * `wanted` - Wanted
         * `most_wanted` - Most Wanted
         * `arrested` - Arrested
         * `convicted` - Convicted
@@ -5759,7 +5813,7 @@ components:
           format: date-time
           readOnly: true
         status:
-          $ref: "#/components/schemas/StatusD62Enum"
+          $ref: "#/components/schemas/StatusD95Enum"
         wanted_since:
           type: string
           format: date-time
@@ -5797,7 +5851,7 @@ components:
           type: integer
           nullable: true
         status:
-          $ref: "#/components/schemas/StatusD62Enum"
+          $ref: "#/components/schemas/StatusD95Enum"
       required:
         - suspect
     SuspectCrimeCreateRequest:
@@ -5809,7 +5863,7 @@ components:
           type: integer
           nullable: true
         status:
-          $ref: "#/components/schemas/StatusD62Enum"
+          $ref: "#/components/schemas/StatusD95Enum"
       required:
         - suspect
     SuspectCrimeDetail:
@@ -5838,7 +5892,7 @@ components:
           format: date-time
           readOnly: true
         status:
-          $ref: "#/components/schemas/StatusD62Enum"
+          $ref: "#/components/schemas/StatusD95Enum"
         wanted_since:
           type: string
           format: date-time
@@ -5877,7 +5931,7 @@ components:
       type: object
       properties:
         status:
-          $ref: "#/components/schemas/StatusD62Enum"
+          $ref: "#/components/schemas/StatusD95Enum"
         wanted_since:
           type: string
           format: date-time
@@ -5916,10 +5970,13 @@ components:
           format: date-time
         transcription:
           type: string
+        case:
+          type: integer
         created_by:
           type: integer
       required:
         - attachments
+        - case
         - created_at
         - created_by
         - description
@@ -5946,10 +6003,13 @@ components:
         transcription:
           type: string
           minLength: 1
+        case:
+          type: integer
         created_by:
           type: integer
       required:
         - attachments
+        - case
         - created_at
         - created_by
         - description
@@ -6055,9 +6115,12 @@ components:
           type: string
           nullable: true
           maxLength: 50
+        case:
+          type: integer
         created_by:
           type: integer
       required:
+        - case
         - color
         - created_at
         - created_by
@@ -6094,9 +6157,12 @@ components:
           type: string
           nullable: true
           maxLength: 50
+        case:
+          type: integer
         created_by:
           type: integer
       required:
+        - case
         - color
         - created_at
         - created_by
@@ -6119,12 +6185,18 @@ components:
         crime_level:
           type: string
           readOnly: true
+        crime_level_display:
+          type: string
+          readOnly: true
         status:
-          $ref: "#/components/schemas/StatusD62Enum"
+          $ref: "#/components/schemas/StatusD95Enum"
         wanted_since:
           type: string
           format: date-time
           nullable: true
+        days_wanted:
+          type: string
+          readOnly: true
         priority_score:
           type: integer
           maximum: 9223372036854775807
@@ -6137,7 +6209,9 @@ components:
           format: int64
       required:
         - crime_level
+        - crime_level_display
         - crime_title
+        - days_wanted
         - id
         - suspect_details
   securitySchemes:

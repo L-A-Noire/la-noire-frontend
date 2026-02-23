@@ -62,7 +62,7 @@ export function IdentificationEvidenceForm({
     onError: (error: any) => {
       toast.error(
         error.response?.data?.message ||
-        "Failed to record identification evidence",
+          "Failed to record identification evidence",
       );
     },
   });

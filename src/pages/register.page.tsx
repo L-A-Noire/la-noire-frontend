@@ -89,7 +89,11 @@ export default function RegisterPage() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="national_id">National ID</Label>
-              <Input id="national_id" type="text" {...register("national_id")} />
+              <Input
+                id="national_id"
+                type="text"
+                {...register("national_id")}
+              />
               {errors.national_id && (
                 <p className="text-sm text-red-500">
                   {errors.national_id.message}

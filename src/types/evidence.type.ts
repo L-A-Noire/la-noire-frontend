@@ -32,7 +32,7 @@ export interface BaseEvidence {
   created_at: string;
   created_by: number;
   created_by_name?: string;
-  case: number
+  case: number;
 }
 
 export interface Testimony extends BaseEvidence {
