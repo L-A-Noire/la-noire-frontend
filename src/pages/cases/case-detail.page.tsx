@@ -166,10 +166,10 @@ export const CaseDetailPage = () => {
       </Card>
 
       {/* Interrogations Section */}
-      <InterrogationList
+      {/* <InterrogationList
         caseId={caseId}
         caseLevel={caseDetail.crime_details?.level}
-      />
+      /> */}
 
       {/* Detective Assignment */}
       <Card>

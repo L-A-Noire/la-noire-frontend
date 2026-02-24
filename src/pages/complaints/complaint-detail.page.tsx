@@ -4,9 +4,9 @@ import {
   getComplaintById,
   reviewComplaintAsCadet,
   reviewComplaintAsOfficer,
-  createCaseFromComplaint,
   updateComplaint,
 } from "@/api/complaints";
+import { createCase } from "@/api/cases";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +19,14 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   ArrowLeft01Icon,
@@ -32,10 +40,25 @@ import { ComplaintStatusBadge } from "@/components/complaints/complaint-status-b
 import { useAuthStore } from "@/stores/auth.store";
 import type { ComplaintReviewRequest } from "@/types/complaint.type";
 import { useState, useEffect } from "react";
+import http from "@/lib/http";
+
+// Crime level options matching backend
+const CRIME_LEVELS = [
+  { value: "1", label: "Level 3" },
+  { value: "2", label: "Level 2" },
+  { value: "3", label: "Level 1" },
+  { value: "4", label: "Critical" },
+];
 
 interface ReviewFormData {
   is_confirmed: boolean;
   rejection_reason?: string;
+}
+
+interface CreateCaseFormData {
+  crime_level: string;
+  crime_location?: string;
+  detective_id?: number;
 }
 
 interface EditFormData {
@@ -49,6 +72,7 @@ export const ComplaintDetailPage = () => {
   const { session } = useAuthStore();
   const complaintId = Number(id);
   const [isEditing, setIsEditing] = useState(false);
+  const [selectedCrimeLevel, setSelectedCrimeLevel] = useState<string>("");
 
   const {
     data: complaint,
@@ -67,10 +91,25 @@ export const ComplaintDetailPage = () => {
     formState: { errors, isSubmitting },
     watch,
     setValue,
+    reset,
   } = useForm<ReviewFormData>({
     defaultValues: {
       is_confirmed: false,
       rejection_reason: "",
+    },
+  });
+
+  // Crime level selection form
+  const {
+    register: registerCase,
+    handleSubmit: handleSubmitCase,
+    formState: { errors: caseErrors, isSubmitting: isCaseSubmitting },
+    setValue: setCaseValue,
+  } = useForm<CreateCaseFormData>({
+    defaultValues: {
+      crime_level: "",
+      crime_location: "",
+      detective_id: undefined,
     },
   });
 
@@ -93,6 +132,15 @@ export const ComplaintDetailPage = () => {
   }, [complaint, setEditValue]);
 
   const isConfirmed = watch("is_confirmed");
+  const isOfficer = session?.user.role_title === "Police/Patrol Officer";
+  const isCadet = session?.user.role_title === "Cadet";
+
+  // Reset crime level when approve is deselected
+  useEffect(() => {
+    if (!isConfirmed) {
+      setSelectedCrimeLevel("");
+    }
+  }, [isConfirmed]);
 
   // Update complaint mutation
   const updateComplaintMutation = useMutation({
@@ -137,47 +185,102 @@ export const ComplaintDetailPage = () => {
     },
   });
 
-  // Review as Officer
+  // Create Crime and Case (for Officer approval)
+  const createCrimeAndCaseMutation = useMutation({
+    mutationFn: async (data: CreateCaseFormData) => {
+      if (!complaint) throw new Error("Complaint not found");
+
+      // Step 1: Create Crime
+      const crimeResponse = await http.post("/crime/crimes/", {
+        title: `Case from Complaint #${complaint.id}`,
+        description: complaint.description.substring(0, 200),
+        level: data.crime_level,
+        location: data.crime_location || "Unknown",
+        committed_at: new Date().toISOString(),
+      });
+
+      // Step 2: Create Case linked to Crime
+      const caseData = {
+        crime: crimeResponse.data.id,
+        detective: data.detective_id || null,
+        is_from_crime_scene: false,
+      };
+
+      const caseResponse = await createCase(caseData);
+
+      // Step 3: Link Case to Complaint
+      await http.patch(`/crime/complaints/${complaintId}/`, {
+        case: caseResponse.id,
+      });
+
+      return caseResponse;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["complaint", complaintId] });
+      queryClient.invalidateQueries({ queryKey: ["complaints"] });
+      queryClient.invalidateQueries({ queryKey: ["cases"] });
+      toast.success("Case created successfully from complaint");
+      navigate("/cases");
+    },
+    onError: (error: any) => {
+      console.error("Error creating case:", error);
+      toast.error(error.response?.data?.detail || "Failed to create case");
+    },
+  });
+
+  // Handle form submission
+  const onSubmit = async (data: ReviewFormData) => {
+    const reviewData: ComplaintReviewRequest = {
+      is_confirmed: data.is_confirmed,
+      rejection_reason: data.rejection_reason,
+    };
+
+    if (isCadet) {
+      // Cadet review - just submit the review
+      reviewCadetMutation.mutate(reviewData);
+    } else if (isOfficer) {
+      if (data.is_confirmed) {
+        // Officer approving - need to create case with crime level
+        if (!selectedCrimeLevel) {
+          toast.error("Please select a crime level");
+          return;
+        }
+
+        // First submit the review to approve the complaint
+        await reviewOfficerMutation.mutateAsync(reviewData);
+
+        // Then create the case with crime level
+        createCrimeAndCaseMutation.mutate({
+          crime_level: selectedCrimeLevel,
+          crime_location: registerCase("crime_location").value,
+          detective_id: registerCase("detective_id").value,
+        });
+      } else {
+        // Officer rejecting - just submit the review
+        reviewOfficerMutation.mutate(reviewData);
+      }
+    }
+  };
+
+  // Review as Officer (separate mutation for tracking)
   const reviewOfficerMutation = useMutation({
     mutationFn: (data: ComplaintReviewRequest) =>
       reviewComplaintAsOfficer(complaintId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["complaint", complaintId] });
       queryClient.invalidateQueries({ queryKey: ["complaints"] });
-      toast.success("Complaint reviewed successfully");
-      refetch();
+
+      if (isConfirmed) {
+        toast.success("Complaint approved");
+      } else {
+        toast.success("Complaint rejected successfully");
+        refetch();
+      }
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.detail || "Failed to review complaint");
     },
   });
-
-  // Create Case from Complaint
-  const createCaseMutation = useMutation({
-    mutationFn: () => createCaseFromComplaint(complaintId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["complaint", complaintId] });
-      queryClient.invalidateQueries({ queryKey: ["cases"] });
-      toast.success("Case created from complaint");
-      navigate("/cases");
-    },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.detail || "Failed to create case");
-    },
-  });
-
-  const onSubmit = (data: ReviewFormData) => {
-    const reviewData: ComplaintReviewRequest = {
-      is_confirmed: data.is_confirmed,
-      rejection_reason: data.rejection_reason,
-    };
-
-    if (session?.user.role_title === "Cadet") {
-      reviewCadetMutation.mutate(reviewData);
-    } else {
-      reviewOfficerMutation.mutate(reviewData);
-    }
-  };
 
   const onEditSubmit = (data: EditFormData) => {
     // Check if description actually changed
@@ -193,27 +296,30 @@ export const ComplaintDetailPage = () => {
   // Check if the current user is a complainant
   const isComplainant = complaint?.complainants.includes(session?.user.id || 0);
 
-  // Cadet can review when status is pending_cadet or rejected_by_officer
-  const canReview =
-    complaint &&
-    ((session?.user.role_title === "Cadet" &&
-      ["pending_cadet", "rejected_by_officer"].includes(complaint.status)) ||
-      (session?.user.role_title === "Police/Patrol Officer" &&
-        complaint.status === "pending_officer"));
+  // Determine if user can review based on role and status
+  const canReview = (() => {
+    if (!complaint || !session) return false;
+
+    if (isCadet) {
+      return ["pending_cadet", "rejected_by_officer"].includes(complaint.status);
+    }
+
+    if (isOfficer) {
+      return complaint.status === "pending_officer";
+    }
+
+    return false;
+  })();
 
   // User can edit when complaint is rejected by cadet AND they are the complainant
   const canEdit =
     complaint && complaint.status === "rejected_by_cadet" && isComplainant;
 
-  const canCreateCase =
-    complaint &&
-    complaint.status === "approved" &&
-    session?.user.role_title === "Police/Patrol Officer";
-
   // Log current state for debugging
   console.log("Current complaint status:", complaint?.status);
-  console.log("Can edit:", canEdit);
-  console.log("Is editing:", isEditing);
+  console.log("User role:", session?.user.role_title);
+  console.log("Can review:", canReview);
+  console.log("Is confirmed:", isConfirmed);
 
   if (isLoading)
     return (
@@ -393,9 +499,8 @@ export const ComplaintDetailPage = () => {
             <div>
               <p className="text-sm text-muted-foreground">Rejection Count</p>
               <p
-                className={`font-semibold mt-1 ${
-                  complaint.rejection_count >= 3 ? "text-destructive" : ""
-                }`}
+                className={`font-semibold mt-1 ${complaint.rejection_count >= 3 ? "text-destructive" : ""
+                  }`}
               >
                 {complaint.rejection_count}/3
               </p>
@@ -441,17 +546,14 @@ export const ComplaintDetailPage = () => {
         <Card className="border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-950/20">
           <CardHeader>
             <CardTitle className="text-lg">
-              {session?.user.role_title === "Cadet"
-                ? "Cadet Review"
-                : "Officer Review"}
+              {isCadet ? "Cadet Review" : "Officer Review"}
             </CardTitle>
-            {session?.user.role_title === "Cadet" &&
-              complaint.status === "rejected_by_officer" && (
-                <CardDescription className="text-purple-600 dark:text-purple-400">
-                  This complaint was rejected by an officer. Please review it
-                  again.
-                </CardDescription>
-              )}
+            {isCadet && complaint.status === "rejected_by_officer" && (
+              <CardDescription className="text-purple-600 dark:text-purple-400">
+                This complaint was rejected by an officer. Please review it
+                again.
+              </CardDescription>
+            )}
           </CardHeader>
 
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -461,11 +563,10 @@ export const ComplaintDetailPage = () => {
                 <div className="flex gap-4">
                   <button
                     type="button"
-                    className={`flex-1 p-4 border-2 rounded-lg transition-all ${
-                      isConfirmed
-                        ? "border-green-500 bg-green-50 dark:bg-green-950/20"
-                        : "border-muted hover:border-green-300"
-                    }`}
+                    className={`flex-1 p-4 border-2 rounded-lg transition-all ${isConfirmed
+                      ? "border-green-500 bg-green-50 dark:bg-green-950/20"
+                      : "border-muted hover:border-green-300"
+                      }`}
                     onClick={() => setValue("is_confirmed", true)}
                   >
                     <div className="flex items-center justify-center gap-2">
@@ -481,11 +582,10 @@ export const ComplaintDetailPage = () => {
 
                   <button
                     type="button"
-                    className={`flex-1 p-4 border-2 rounded-lg transition-all ${
-                      !isConfirmed
-                        ? "border-red-500 bg-red-50 dark:bg-red-950/20"
-                        : "border-muted hover:border-red-300"
-                    }`}
+                    className={`flex-1 p-4 border-2 rounded-lg transition-all ${!isConfirmed
+                      ? "border-red-500 bg-red-50 dark:bg-red-950/20"
+                      : "border-muted hover:border-red-300"
+                      }`}
                     onClick={() => setValue("is_confirmed", false)}
                   >
                     <div className="flex items-center justify-center gap-2">
@@ -521,6 +621,61 @@ export const ComplaintDetailPage = () => {
                   )}
                 </div>
               )}
+
+              {/* Crime Level Selection - Only for Officers when approving */}
+              {isConfirmed && isOfficer && (
+                <div className="mt-6 p-4 border-2 border-green-200 dark:border-green-800 rounded-lg bg-green-50/50 dark:bg-green-950/10">
+                  <h4 className="font-semibold text-green-700 dark:text-green-300 mb-3">
+                    Case Details
+                  </h4>
+
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="crime_level">Crime Level *</Label>
+                      <Select
+                        onValueChange={(value) => setSelectedCrimeLevel(value)}
+                        value={selectedCrimeLevel}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select crime level" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {CRIME_LEVELS.map((level) => (
+                            <SelectItem key={level.value} value={level.value}>
+                              {level.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="crime_location">Crime Location (Optional)</Label>
+                      <Input
+                        id="crime_location"
+                        placeholder="Enter crime location"
+                        {...registerCase("crime_location")}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="detective_id">Assign Detective ID (Optional)</Label>
+                      <Input
+                        id="detective_id"
+                        type="number"
+                        placeholder="Enter detective ID"
+                        {...registerCase("detective_id", { valueAsNumber: true })}
+                      />
+                    </div>
+
+                    <div className="bg-blue-50 dark:bg-blue-950/20 p-3 rounded border border-blue-200 dark:border-blue-900">
+                      <p className="text-xs text-blue-800 dark:text-blue-200">
+                        After approving, a case will be created with the selected crime level.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </CardContent>
 
             <div className="border-t p-6 flex justify-end gap-2">
@@ -528,7 +683,7 @@ export const ComplaintDetailPage = () => {
                 type="button"
                 variant="outline"
                 onClick={() => navigate("/complaints")}
-                disabled={isSubmitting}
+                disabled={isSubmitting || reviewCadetMutation.isPending || reviewOfficerMutation.isPending || createCrimeAndCaseMutation.isPending}
               >
                 Back
               </Button>
@@ -537,44 +692,21 @@ export const ComplaintDetailPage = () => {
                 disabled={
                   isSubmitting ||
                   reviewCadetMutation.isPending ||
-                  reviewOfficerMutation.isPending
+                  reviewOfficerMutation.isPending ||
+                  createCrimeAndCaseMutation.isPending ||
+                  (isConfirmed && isOfficer && !selectedCrimeLevel)
                 }
               >
                 {reviewCadetMutation.isPending ||
-                reviewOfficerMutation.isPending
-                  ? "Submitting..."
-                  : "Submit Review"}
+                  reviewOfficerMutation.isPending ||
+                  createCrimeAndCaseMutation.isPending
+                  ? "Processing..."
+                  : isConfirmed && isOfficer
+                    ? "Approve & Create Case"
+                    : "Submit Review"}
               </Button>
             </div>
           </form>
-        </Card>
-      )}
-
-      {/* Create Case Button - For Officer when approved */}
-      {canCreateCase && (
-        <Card className="border-green-200 dark:border-green-900 bg-green-50 dark:bg-green-950/20">
-          <CardHeader>
-            <CardTitle className="text-lg">Complaint Approved</CardTitle>
-            <CardDescription>
-              Create a case from this approved complaint
-            </CardDescription>
-          </CardHeader>
-
-          <div className="p-6 flex gap-2 justify-end border-t">
-            <Button
-              variant="outline"
-              onClick={() => navigate("/complaints")}
-              disabled={createCaseMutation.isPending}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={() => createCaseMutation.mutate()}
-              disabled={createCaseMutation.isPending}
-            >
-              {createCaseMutation.isPending ? "Creating..." : "Create Case"}
-            </Button>
-          </div>
         </Card>
       )}
     </div>
