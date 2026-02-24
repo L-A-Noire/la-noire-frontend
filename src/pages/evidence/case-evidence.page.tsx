@@ -16,6 +16,7 @@ import {
   SearchIcon,
 } from "@hugeicons/core-free-icons";
 import {
+  // getEvidenceByCase,
   getTestimonies,
   getBiologicalEvidences,
   getVehicleEvidences,
@@ -32,14 +33,15 @@ type EvidenceType =
   | "identification"
   | "other";
 
-type UnifiedEvidence = {
+interface UnifiedEvidence {
   id: number;
   type: EvidenceType;
   title: string;
   description: string;
   created_at: string;
   created_by: number;
-};
+  case: number;
+}
 
 export const CaseEvidencePage = () => {
   const navigate = useNavigate();
@@ -47,22 +49,25 @@ export const CaseEvidencePage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedType, setSelectedType] = useState<EvidenceType>("all");
 
-  // Fetch all evidence types
+  const parsedCaseId = caseId ? parseInt(caseId) : undefined;
+
   const { data: testimonies = [], isLoading: loadingTestimonies } = useQuery({
     queryKey: ["testimonies", caseId],
-    queryFn: () => getTestimonies(caseId ? parseInt(caseId) : undefined),
+    queryFn: () => getTestimonies(parsedCaseId),
+    enabled: !!parsedCaseId,
   });
 
   const { data: biologicalEvidence = [], isLoading: loadingBiological } =
     useQuery({
       queryKey: ["biologicalEvidence", caseId],
-      queryFn: () =>
-        getBiologicalEvidences(caseId ? parseInt(caseId) : undefined),
+      queryFn: () => getBiologicalEvidences(parsedCaseId),
+      enabled: !!parsedCaseId,
     });
 
   const { data: vehicleEvidence = [], isLoading: loadingVehicle } = useQuery({
     queryKey: ["vehicleEvidence", caseId],
-    queryFn: () => getVehicleEvidences(caseId ? parseInt(caseId) : undefined),
+    queryFn: () => getVehicleEvidences(parsedCaseId),
+    enabled: !!parsedCaseId,
   });
 
   const {
@@ -70,13 +75,14 @@ export const CaseEvidencePage = () => {
     isLoading: loadingIdentification,
   } = useQuery({
     queryKey: ["identificationEvidence", caseId],
-    queryFn: () =>
-      getIdentificationEvidences(caseId ? parseInt(caseId) : undefined),
+    queryFn: () => getIdentificationEvidences(parsedCaseId),
+    enabled: !!parsedCaseId,
   });
 
   const { data: otherEvidence = [], isLoading: loadingOther } = useQuery({
     queryKey: ["otherEvidence", caseId],
-    queryFn: () => getOtherEvidences(caseId ? parseInt(caseId) : undefined),
+    queryFn: () => getOtherEvidences(parsedCaseId),
+    enabled: !!parsedCaseId,
   });
 
   const isLoading =
@@ -86,7 +92,6 @@ export const CaseEvidencePage = () => {
     loadingIdentification ||
     loadingOther;
 
-  // Combine all evidence into unified format
   const allEvidence = useMemo<UnifiedEvidence[]>(() => {
     const unified: UnifiedEvidence[] = [];
 
@@ -98,6 +103,7 @@ export const CaseEvidencePage = () => {
         description: item.description,
         created_at: item.created_at,
         created_by: item.created_by,
+        case: item.case,
       });
     });
 
@@ -109,6 +115,7 @@ export const CaseEvidencePage = () => {
         description: item.description,
         created_at: item.created_at,
         created_by: item.created_by,
+        case: item.case,
       });
     });
 
@@ -120,6 +127,7 @@ export const CaseEvidencePage = () => {
         description: item.description,
         created_at: item.created_at,
         created_by: item.created_by,
+        case: item.case,
       });
     });
 
@@ -131,6 +139,7 @@ export const CaseEvidencePage = () => {
         description: item.description,
         created_at: item.created_at,
         created_by: item.created_by,
+        case: item.case,
       });
     });
 
@@ -142,10 +151,10 @@ export const CaseEvidencePage = () => {
         description: item.description,
         created_at: item.created_at,
         created_by: item.created_by,
+        case: item.case,
       });
     });
 
-    // Sort by creation date (newest first)
     return unified.sort(
       (a, b) =>
         new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
@@ -158,34 +167,30 @@ export const CaseEvidencePage = () => {
     otherEvidence,
   ]);
 
-  // Filter evidence
+  const evidenceForThisCase = useMemo(() => {
+    return allEvidence.filter(item => item.case === parsedCaseId);
+  }, [allEvidence, parsedCaseId]);
+
   const filteredEvidence = useMemo(() => {
-    return allEvidence.filter((item) => {
+    return evidenceForThisCase.filter((item) => {
       const matchesSearch =
         item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.description.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesType = selectedType === "all" || item.type === selectedType;
       return matchesSearch && matchesType;
     });
-  }, [allEvidence, searchQuery, selectedType]);
+  }, [evidenceForThisCase, searchQuery, selectedType]);
 
   const statistics = useMemo(() => {
     return {
-      total: allEvidence.length,
-      testimony: testimonies.length,
-      biological: biologicalEvidence.length,
-      vehicle: vehicleEvidence.length,
-      identification: identificationEvidence.length,
-      other: otherEvidence.length,
+      total: evidenceForThisCase.length,
+      testimony: evidenceForThisCase.filter((e) => e.type === "testimony").length,
+      biological: evidenceForThisCase.filter((e) => e.type === "biological").length,
+      vehicle: evidenceForThisCase.filter((e) => e.type === "vehicle").length,
+      identification: evidenceForThisCase.filter((e) => e.type === "identification").length,
+      other: evidenceForThisCase.filter((e) => e.type === "other").length,
     };
-  }, [
-    allEvidence,
-    testimonies,
-    biologicalEvidence,
-    vehicleEvidence,
-    identificationEvidence,
-    otherEvidence,
-  ]);
+  }, [evidenceForThisCase]);
 
   const getTypeIcon = (type: EvidenceType) => {
     switch (type) {
@@ -236,6 +241,11 @@ export const CaseEvidencePage = () => {
       default:
         return type;
     }
+  };
+
+  // Add click handler to navigate to evidence detail
+  const handleEvidenceClick = (item: UnifiedEvidence) => {
+    navigate(`/cases/${caseId}/evidence/${item.type}/${item.id}`);
   };
 
   return (
@@ -397,7 +407,7 @@ export const CaseEvidencePage = () => {
       {/* Evidence Grid */}
       {isLoading ? (
         <div className="flex justify-center py-12">
-          <div className="text-muted-foreground">Loading...</div>
+          <div className="text-muted-foreground">Loading evidence...</div>
         </div>
       ) : filteredEvidence.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -406,7 +416,8 @@ export const CaseEvidencePage = () => {
             return (
               <Card
                 key={`${item.type}-${item.id}`}
-                className="hover:shadow-md transition-shadow"
+                className="hover:shadow-md transition-shadow cursor-pointer"
+                onClick={() => handleEvidenceClick(item)}
               >
                 <CardHeader className="pb-3">
                   <div className="flex items-start gap-3">
@@ -441,11 +452,11 @@ export const CaseEvidencePage = () => {
         <Card className="border-dashed">
           <CardContent className="pt-6 text-center">
             <p className="text-muted-foreground mb-4">
-              {allEvidence.length === 0
-                ? "No evidence recorded yet"
+              {evidenceForThisCase.length === 0
+                ? "No evidence recorded for this case yet"
                 : "No evidence matches this filter"}
             </p>
-            {allEvidence.length === 0 && (
+            {evidenceForThisCase.length === 0 && (
               <Button
                 onClick={() => navigate(`/cases/${caseId}/evidence/record`)}
                 className="gap-2"
