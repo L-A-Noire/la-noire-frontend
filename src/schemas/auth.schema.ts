@@ -29,5 +29,6 @@ export const RegisterSchema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters"),
   first_name: z.string().optional(),
   national_id: z.string(),
+  phone: z.string(),
   last_name: z.string().optional(),
 });
