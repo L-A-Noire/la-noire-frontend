@@ -18,6 +18,7 @@ import { CaseEvidencePage } from "@/pages/evidence/case-evidence.page";
 import RecordEvidencePage from "@/pages/evidence/record-evidence.page";
 import { EvidenceDetailPage } from "@/pages/evidence/evidence-detail.page";
 import DetectiveBoardPage from "@/pages/detective-board/detective-board.page";
+import { AddSuspectPage } from "@/pages/cases/add-suspect.page";
 import RoleGuard from "./guards/role.guard";
 import { ALLOWED_CASE_ROLES } from "./types/role.type";
 
@@ -47,6 +48,7 @@ export function App() {
               path="cases/:caseId/evidence/:evidenceType/:evidenceId"
               element={<EvidenceDetailPage />}
             />
+            <Route path="cases/:id/suspects/add" element={<AddSuspectPage />} />
           </Route>
 
           <Route element={<RoleGuard allowedRoles={["Detective"]} />}>
