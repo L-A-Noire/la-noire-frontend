@@ -27,6 +27,7 @@ export interface CaseDetail extends Case {
     id: number;
     title: string;
     description?: string;
+    level?: string;
   };
 }
 

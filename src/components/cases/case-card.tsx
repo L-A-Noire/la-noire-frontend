@@ -47,7 +47,12 @@ export const CaseCard = ({ caseItem, onClose, isClosing }: CaseCardProps) => {
 
       <CardHeader>
         <CardTitle className="pr-12 truncate">
-          {caseItem.crime_title || `Case #${caseItem.id}`}
+          <Link
+            to={`/cases/${caseItem.id}`}
+            className="hover:underline hover:text-primary transition-colors"
+          >
+            {caseItem.crime_title || `Case #${caseItem.id}`}
+          </Link>
         </CardTitle>
         <CardDescription>
           Created: {format(new Date(caseItem.created_at), "PPP")}

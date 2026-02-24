@@ -205,9 +205,7 @@ export const ComplaintDetailPage = () => {
 
   // User can edit when complaint is rejected by cadet AND they are the complainant
   const canEdit =
-    complaint &&
-    complaint.status === "rejected_by_cadet" &&
-    isComplainant;
+    complaint && complaint.status === "rejected_by_cadet" && isComplainant;
 
   const canCreateCase =
     complaint &&
@@ -283,13 +281,18 @@ export const ComplaintDetailPage = () => {
         <CardContent className="space-y-6">
           {/* Complaint Description - Show edit form or read-only */}
           {isEditing ? (
-            <form onSubmit={handleSubmitEdit(onEditSubmit)} className="space-y-4">
+            <form
+              onSubmit={handleSubmitEdit(onEditSubmit)}
+              className="space-y-4"
+            >
               <h3 className="font-semibold">Edit Your Complaint</h3>
 
               {/* Status change indicator */}
               <div className="bg-blue-50 dark:bg-blue-950/20 p-3 rounded border border-blue-200 dark:border-blue-900">
                 <p className="text-xs text-blue-800 dark:text-blue-200">
-                  After submitting your update, the complaint status will change to <span className="font-bold">pending_cadet</span> and will be reviewed again by a cadet.
+                  After submitting your update, the complaint status will change
+                  to <span className="font-bold">pending_cadet</span> and will
+                  be reviewed again by a cadet.
                 </p>
               </div>
 
@@ -324,9 +327,13 @@ export const ComplaintDetailPage = () => {
                 </Button>
                 <Button
                   type="submit"
-                  disabled={isEditSubmitting || updateComplaintMutation.isPending}
+                  disabled={
+                    isEditSubmitting || updateComplaintMutation.isPending
+                  }
                 >
-                  {updateComplaintMutation.isPending ? "Updating..." : "Submit Update"}
+                  {updateComplaintMutation.isPending
+                    ? "Updating..."
+                    : "Submit Update"}
                 </Button>
               </div>
             </form>
@@ -340,13 +347,18 @@ export const ComplaintDetailPage = () => {
           )}
 
           {/* Next step indicator for rejected complaints */}
-          {complaint.status === "rejected_by_cadet" && isComplainant && !isEditing && (
-            <div className="bg-green-50 dark:bg-green-950/20 p-4 rounded border border-green-200 dark:border-green-900">
-              <p className="text-sm text-green-800 dark:text-green-200">
-                Click the "Edit Complaint" button to update your complaint based on the feedback. After submitting, it will be sent back to a cadet for review (status: <span className="font-bold">pending_cadet</span>).
-              </p>
-            </div>
-          )}
+          {complaint.status === "rejected_by_cadet" &&
+            isComplainant &&
+            !isEditing && (
+              <div className="bg-green-50 dark:bg-green-950/20 p-4 rounded border border-green-200 dark:border-green-900">
+                <p className="text-sm text-green-800 dark:text-green-200">
+                  Click the "Edit Complaint" button to update your complaint
+                  based on the feedback. After submitting, it will be sent back
+                  to a cadet for review (status:{" "}
+                  <span className="font-bold">pending_cadet</span>).
+                </p>
+              </div>
+            )}
 
           {/* Details Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -383,8 +395,9 @@ export const ComplaintDetailPage = () => {
             <div>
               <p className="text-sm text-muted-foreground">Rejection Count</p>
               <p
-                className={`font-semibold mt-1 ${complaint.rejection_count >= 3 ? "text-destructive" : ""
-                  }`}
+                className={`font-semibold mt-1 ${
+                  complaint.rejection_count >= 3 ? "text-destructive" : ""
+                }`}
               >
                 {complaint.rejection_count}/3
               </p>
@@ -392,21 +405,25 @@ export const ComplaintDetailPage = () => {
           </div>
 
           {/* Rejection Reasons */}
-          {complaint.cadet_rejection_reason && complaint.cadet_rejection_reason !== "Null" && (
-            <div className="bg-red-50 dark:bg-red-950/20 p-4 rounded border border-red-200 dark:border-red-900">
-              <p className="text-sm font-semibold text-red-900 dark:text-red-300 mb-2">
-                Cadet Rejection Reason
-              </p>
-              <p className="text-sm text-red-800 dark:text-red-200">
-                {complaint.cadet_rejection_reason}
-              </p>
-              {complaint.status === "rejected_by_cadet" && isComplainant && !isEditing && (
-                <p className="text-sm text-red-600 dark:text-red-400 mt-2">
-                  Please edit your complaint based on the feedback above and resubmit.
+          {complaint.cadet_rejection_reason &&
+            complaint.cadet_rejection_reason !== "Null" && (
+              <div className="bg-red-50 dark:bg-red-950/20 p-4 rounded border border-red-200 dark:border-red-900">
+                <p className="text-sm font-semibold text-red-900 dark:text-red-300 mb-2">
+                  Cadet Rejection Reason
                 </p>
-              )}
-            </div>
-          )}
+                <p className="text-sm text-red-800 dark:text-red-200">
+                  {complaint.cadet_rejection_reason}
+                </p>
+                {complaint.status === "rejected_by_cadet" &&
+                  isComplainant &&
+                  !isEditing && (
+                    <p className="text-sm text-red-600 dark:text-red-400 mt-2">
+                      Please edit your complaint based on the feedback above and
+                      resubmit.
+                    </p>
+                  )}
+              </div>
+            )}
 
           {complaint.officer_rejection_reason && (
             <div className="bg-orange-50 dark:bg-orange-950/20 p-4 rounded border border-orange-200 dark:border-orange-900">
@@ -430,11 +447,13 @@ export const ComplaintDetailPage = () => {
                 ? "Cadet Review"
                 : "Officer Review"}
             </CardTitle>
-            {session?.user.role_title === "Cadet" && complaint.status === "rejected_by_officer" && (
-              <CardDescription className="text-purple-600 dark:text-purple-400">
-                This complaint was rejected by an officer. Please review it again.
-              </CardDescription>
-            )}
+            {session?.user.role_title === "Cadet" &&
+              complaint.status === "rejected_by_officer" && (
+                <CardDescription className="text-purple-600 dark:text-purple-400">
+                  This complaint was rejected by an officer. Please review it
+                  again.
+                </CardDescription>
+              )}
           </CardHeader>
 
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -444,10 +463,11 @@ export const ComplaintDetailPage = () => {
                 <div className="flex gap-4">
                   <button
                     type="button"
-                    className={`flex-1 p-4 border-2 rounded-lg transition-all ${isConfirmed
-                      ? "border-green-500 bg-green-50 dark:bg-green-950/20"
-                      : "border-muted hover:border-green-300"
-                      }`}
+                    className={`flex-1 p-4 border-2 rounded-lg transition-all ${
+                      isConfirmed
+                        ? "border-green-500 bg-green-50 dark:bg-green-950/20"
+                        : "border-muted hover:border-green-300"
+                    }`}
                     onClick={() => setValue("is_confirmed", true)}
                   >
                     <div className="flex items-center justify-center gap-2">
@@ -463,10 +483,11 @@ export const ComplaintDetailPage = () => {
 
                   <button
                     type="button"
-                    className={`flex-1 p-4 border-2 rounded-lg transition-all ${!isConfirmed
-                      ? "border-red-500 bg-red-50 dark:bg-red-950/20"
-                      : "border-muted hover:border-red-300"
-                      }`}
+                    className={`flex-1 p-4 border-2 rounded-lg transition-all ${
+                      !isConfirmed
+                        ? "border-red-500 bg-red-50 dark:bg-red-950/20"
+                        : "border-muted hover:border-red-300"
+                    }`}
                     onClick={() => setValue("is_confirmed", false)}
                   >
                     <div className="flex items-center justify-center gap-2">
@@ -522,7 +543,7 @@ export const ComplaintDetailPage = () => {
                 }
               >
                 {reviewCadetMutation.isPending ||
-                  reviewOfficerMutation.isPending
+                reviewOfficerMutation.isPending
                   ? "Submitting..."
                   : "Submit Review"}
               </Button>

@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getCaseById, assignDetective, closeCase } from "@/api/cases";
-import { useParams, useNavigate } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -15,6 +15,7 @@ import {
   SecurityLockIcon,
 } from "@hugeicons/core-free-icons";
 import { format } from "date-fns";
+import { InterrogationList } from "@/components/cases/interrogations/interrogation-list";
 
 export const CaseDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -164,6 +165,12 @@ export const CaseDetailPage = () => {
         </CardContent>
       </Card>
 
+      {/* Interrogations Section */}
+      <InterrogationList
+        caseId={caseId}
+        caseLevel={caseDetail.crime_details?.level}
+      />
+
       {/* Detective Assignment */}
       <Card>
         <CardHeader>
@@ -224,10 +231,10 @@ export const CaseDetailPage = () => {
       {/* Actions */}
       <div className="flex gap-2 justify-end">
         <Button variant="outline" asChild className="gap-2">
-          <a href={`/cases/${caseId}/timeline`}>
+          <Link to={`/cases/${caseId}/timeline`}>
             <HugeiconsIcon icon={Document} className="h-4 w-4" />
             View Timeline
-          </a>
+          </Link>
         </Button>
 
         {isOpen && (
