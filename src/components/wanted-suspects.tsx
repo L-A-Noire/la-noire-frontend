@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getWantedSuspects } from "@/api/suspect";
+import { getSuspectCrimes } from "@/api/suspect";
 import {
   Card,
   CardContent,
@@ -20,8 +20,8 @@ export default function WantedSuspects() {
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["wanted-suspects"],
-    queryFn: getWantedSuspects,
+    queryKey: ["suspect-crimes"],
+    queryFn: getSuspectCrimes,
   });
 
   if (isLoading) {

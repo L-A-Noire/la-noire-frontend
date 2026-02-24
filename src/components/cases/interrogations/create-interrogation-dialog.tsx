@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { getWantedSuspects } from "@/api/suspect";
+import { getSuspectCrimes } from "@/api/suspect";
 import { createInterrogation } from "@/api/interrogations";
 import { toast } from "react-toastify";
 import { Add01Icon } from "@hugeicons/core-free-icons";
@@ -38,8 +38,8 @@ export function CreateInterrogationDialog({
   const queryClient = useQueryClient();
 
   const { data: suspects, isLoading: isLoadingSuspects } = useQuery({
-    queryKey: ["wanted-suspects"],
-    queryFn: getWantedSuspects,
+    queryKey: ["suspect-crimes"],
+    queryFn: getSuspectCrimes,
   });
 
   const createMutation = useMutation({
