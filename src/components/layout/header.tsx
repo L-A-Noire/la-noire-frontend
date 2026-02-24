@@ -8,6 +8,7 @@ export const Header = () => {
   const { pathname } = useLocation();
   const isAdmin = session?.user.role_title === "Administrator";
   const isDetective = session?.user.role_title === "Detective";
+  const isJudge = session?.user.role_title === "Judge";
 
   const canAccessCases =
     session && ALLOWED_CASE_ROLES.includes(session.user.role_title);
@@ -74,6 +75,18 @@ export const Header = () => {
               >
                 Scenes
               </Link>
+              {isJudge && (
+                <Link
+                  to="/court"
+                  className={`transition-colors font-mono ${
+                    isActive("/court")
+                      ? "text-primary font-semibold"
+                      : "text-foreground/60 hover:text-foreground/80"
+                  }`}
+                >
+                  Court
+                </Link>
+              )}
               {isAdmin && (
                 <Link
                   to="/roles"

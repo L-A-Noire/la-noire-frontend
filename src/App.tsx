@@ -3,6 +3,8 @@ import MainLayout from "@/components/layout/main-layout";
 import HomePage from "./pages/home.page";
 import LoginPage from "@/pages/login.page";
 import RegisterPage from "@/pages/register.page";
+import { CourtDashboardPage } from "@/pages/court/court-dashboard.page";
+import { TrialPage } from "@/pages/court/trial.page";
 import { RolesListPage, RoleFormPage } from "@/pages/roles.page";
 import { CasesListPage } from "@/pages/cases/cases-list.page";
 import { CaseCreatePage } from "@/pages/cases/create-case.page";
@@ -53,6 +55,12 @@ export function App() {
 
           <Route element={<RoleGuard allowedRoles={["Detective"]} />}>
             <Route path="detective-board" element={<DetectiveBoardPage />} />
+          </Route>
+
+          {/* Court Routes - Judge Only */}
+          <Route element={<RoleGuard allowedRoles={["Judge"]} />}>
+            <Route path="court" element={<CourtDashboardPage />} />
+            <Route path="court/trial/:id" element={<TrialPage />} />
           </Route>
 
           <Route path="complaints" element={<ComplaintsListPage />} />
