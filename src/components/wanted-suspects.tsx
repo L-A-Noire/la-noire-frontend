@@ -39,7 +39,7 @@ export default function WantedSuspects() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {[1, 2, 3].map((i) => (
+            {[1, 2, 3, 4, 5, 6].map((i) => (
               <div key={i} className="flex gap-3 animate-pulse">
                 <div className="w-12 h-12 rounded-full bg-muted" />
                 <div className="flex-1 space-y-2">

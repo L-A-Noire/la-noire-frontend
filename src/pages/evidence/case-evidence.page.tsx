@@ -168,7 +168,7 @@ export const CaseEvidencePage = () => {
   ]);
 
   const evidenceForThisCase = useMemo(() => {
-    return allEvidence.filter(item => item.case === parsedCaseId);
+    return allEvidence.filter((item) => item.case === parsedCaseId);
   }, [allEvidence, parsedCaseId]);
 
   const filteredEvidence = useMemo(() => {
@@ -184,10 +184,14 @@ export const CaseEvidencePage = () => {
   const statistics = useMemo(() => {
     return {
       total: evidenceForThisCase.length,
-      testimony: evidenceForThisCase.filter((e) => e.type === "testimony").length,
-      biological: evidenceForThisCase.filter((e) => e.type === "biological").length,
+      testimony: evidenceForThisCase.filter((e) => e.type === "testimony")
+        .length,
+      biological: evidenceForThisCase.filter((e) => e.type === "biological")
+        .length,
       vehicle: evidenceForThisCase.filter((e) => e.type === "vehicle").length,
-      identification: evidenceForThisCase.filter((e) => e.type === "identification").length,
+      identification: evidenceForThisCase.filter(
+        (e) => e.type === "identification",
+      ).length,
       other: evidenceForThisCase.filter((e) => e.type === "other").length,
     };
   }, [evidenceForThisCase]);

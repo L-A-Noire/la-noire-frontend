@@ -301,7 +301,9 @@ export const ComplaintDetailPage = () => {
     if (!complaint || !session) return false;
 
     if (isCadet) {
-      return ["pending_cadet", "rejected_by_officer"].includes(complaint.status);
+      return ["pending_cadet", "rejected_by_officer"].includes(
+        complaint.status,
+      );
     }
 
     if (isOfficer) {
@@ -499,8 +501,9 @@ export const ComplaintDetailPage = () => {
             <div>
               <p className="text-sm text-muted-foreground">Rejection Count</p>
               <p
-                className={`font-semibold mt-1 ${complaint.rejection_count >= 3 ? "text-destructive" : ""
-                  }`}
+                className={`font-semibold mt-1 ${
+                  complaint.rejection_count >= 3 ? "text-destructive" : ""
+                }`}
               >
                 {complaint.rejection_count}/3
               </p>
@@ -563,10 +566,11 @@ export const ComplaintDetailPage = () => {
                 <div className="flex gap-4">
                   <button
                     type="button"
-                    className={`flex-1 p-4 border-2 rounded-lg transition-all ${isConfirmed
-                      ? "border-green-500 bg-green-50 dark:bg-green-950/20"
-                      : "border-muted hover:border-green-300"
-                      }`}
+                    className={`flex-1 p-4 border-2 rounded-lg transition-all ${
+                      isConfirmed
+                        ? "border-green-500 bg-green-50 dark:bg-green-950/20"
+                        : "border-muted hover:border-green-300"
+                    }`}
                     onClick={() => setValue("is_confirmed", true)}
                   >
                     <div className="flex items-center justify-center gap-2">
@@ -582,10 +586,11 @@ export const ComplaintDetailPage = () => {
 
                   <button
                     type="button"
-                    className={`flex-1 p-4 border-2 rounded-lg transition-all ${!isConfirmed
-                      ? "border-red-500 bg-red-50 dark:bg-red-950/20"
-                      : "border-muted hover:border-red-300"
-                      }`}
+                    className={`flex-1 p-4 border-2 rounded-lg transition-all ${
+                      !isConfirmed
+                        ? "border-red-500 bg-red-50 dark:bg-red-950/20"
+                        : "border-muted hover:border-red-300"
+                    }`}
                     onClick={() => setValue("is_confirmed", false)}
                   >
                     <div className="flex items-center justify-center gap-2">
@@ -650,7 +655,9 @@ export const ComplaintDetailPage = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="crime_location">Crime Location (Optional)</Label>
+                      <Label htmlFor="crime_location">
+                        Crime Location (Optional)
+                      </Label>
                       <Input
                         id="crime_location"
                         placeholder="Enter crime location"
@@ -659,18 +666,23 @@ export const ComplaintDetailPage = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="detective_id">Assign Detective ID (Optional)</Label>
+                      <Label htmlFor="detective_id">
+                        Assign Detective ID (Optional)
+                      </Label>
                       <Input
                         id="detective_id"
                         type="number"
                         placeholder="Enter detective ID"
-                        {...registerCase("detective_id", { valueAsNumber: true })}
+                        {...registerCase("detective_id", {
+                          valueAsNumber: true,
+                        })}
                       />
                     </div>
 
                     <div className="bg-blue-50 dark:bg-blue-950/20 p-3 rounded border border-blue-200 dark:border-blue-900">
                       <p className="text-xs text-blue-800 dark:text-blue-200">
-                        After approving, a case will be created with the selected crime level.
+                        After approving, a case will be created with the
+                        selected crime level.
                       </p>
                     </div>
                   </div>
@@ -683,7 +695,12 @@ export const ComplaintDetailPage = () => {
                 type="button"
                 variant="outline"
                 onClick={() => navigate("/complaints")}
-                disabled={isSubmitting || reviewCadetMutation.isPending || reviewOfficerMutation.isPending || createCrimeAndCaseMutation.isPending}
+                disabled={
+                  isSubmitting ||
+                  reviewCadetMutation.isPending ||
+                  reviewOfficerMutation.isPending ||
+                  createCrimeAndCaseMutation.isPending
+                }
               >
                 Back
               </Button>
@@ -698,8 +715,8 @@ export const ComplaintDetailPage = () => {
                 }
               >
                 {reviewCadetMutation.isPending ||
-                  reviewOfficerMutation.isPending ||
-                  createCrimeAndCaseMutation.isPending
+                reviewOfficerMutation.isPending ||
+                createCrimeAndCaseMutation.isPending
                   ? "Processing..."
                   : isConfirmed && isOfficer
                     ? "Approve & Create Case"
