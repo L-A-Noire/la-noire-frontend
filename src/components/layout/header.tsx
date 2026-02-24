@@ -7,6 +7,7 @@ export const Header = () => {
   const session = useAuthStore((s) => s.session);
   const { pathname } = useLocation();
   const isAdmin = session?.user.role_title === "Administrator";
+  const isDetective = session?.user.role_title === "Detective";
 
   const canAccessCases =
     session && ALLOWED_CASE_ROLES.includes(session.user.role_title);
@@ -39,16 +40,18 @@ export const Header = () => {
                   >
                     Cases
                   </Link>
-                  <Link
-                    to="/detective-board"
-                    className={`transition-colors font-mono ${
-                      isActive("/detective-board")
-                        ? "text-primary font-semibold"
-                        : "text-foreground/60 hover:text-foreground/80"
-                    }`}
-                  >
-                    Board
-                  </Link>
+                  {isDetective && (
+                    <Link
+                      to="/detective-board"
+                      className={`transition-colors font-mono ${
+                        isActive("/detective-board")
+                          ? "text-primary font-semibold"
+                          : "text-foreground/60 hover:text-foreground/80"
+                      }`}
+                    >
+                      Board
+                    </Link>
+                  )}
                 </>
               )}
               <Link
