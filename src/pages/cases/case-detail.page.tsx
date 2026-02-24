@@ -15,7 +15,6 @@ import {
   SecurityLockIcon,
 } from "@hugeicons/core-free-icons";
 import { format } from "date-fns";
-import { InterrogationList } from "@/components/cases/interrogations/interrogation-list";
 
 export const CaseDetailPage = () => {
   const { id } = useParams<{ id: string }>();

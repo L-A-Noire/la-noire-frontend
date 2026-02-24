@@ -23,6 +23,14 @@ import DetectiveBoardPage from "@/pages/detective-board/detective-board.page";
 import { AddSuspectPage } from "@/pages/cases/add-suspect.page";
 import RoleGuard from "./guards/role.guard";
 import { ALLOWED_CASE_ROLES } from "./types/role.type";
+import AdminLayout from "@/components/layout/admin-layout";
+import AdminDashboardPage from "@/pages/admin/admin-dashboard.page";
+import AdminCasesPage from "@/pages/admin/admin-cases.page";
+import AdminRolesPage from "@/pages/admin/admin-roles.page";
+import AdminComplaintsPage from "@/pages/admin/admin-complaints.page";
+import AdminCrimeScenesPage from "@/pages/admin/admin-crime-scenes.page";
+import AdminSuspectsPage from "@/pages/admin/admin-suspects.page";
+import AdminPunishmentsPage from "@/pages/admin/admin-punishments.page";
 
 export function App() {
   return (
@@ -79,6 +87,19 @@ export function App() {
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />
+        </Route>
+
+        {/* Admin Panel Routes */}
+        <Route element={<RoleGuard allowedRoles={["Administrator"]} />}>
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboardPage />} />
+            <Route path="cases" element={<AdminCasesPage />} />
+            <Route path="roles" element={<AdminRolesPage />} />
+            <Route path="complaints" element={<AdminComplaintsPage />} />
+            <Route path="crime-scenes" element={<AdminCrimeScenesPage />} />
+            <Route path="suspects" element={<AdminSuspectsPage />} />
+            <Route path="punishments" element={<AdminPunishmentsPage />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>

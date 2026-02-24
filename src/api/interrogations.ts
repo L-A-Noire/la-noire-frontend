@@ -42,7 +42,7 @@ export const submitInterrogationScore = async (
   data: SubmitScoreRequest,
 ): Promise<Interrogation> => {
   const response = await http.patch<Interrogation>(
-    `/suspect/interrogations/${id}/score/`,
+    `/suspect/interrogations/${id}/submit-score/`,
     data,
   );
   return response.data;

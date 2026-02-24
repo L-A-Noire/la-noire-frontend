@@ -34,21 +34,6 @@ const getCaseStatistics = async () => {
   return response.data;
 };
 
-interface CaseStats {
-  total_count: number;
-  open_count: number;
-  closed_count: number;
-}
-
-// Mock data as fallback
-const MOCK_CASE_STATS: CaseStats = {
-  total_count: 1247,
-  open_count: 355,
-  closed_count: 892,
-};
-
-const MOCK_EMPLOYEE_COUNT = 184;
-
 export default function HomePage() {
   const { session, clearSession } = useAuthStore();
   const navigate = useNavigate();
@@ -62,7 +47,6 @@ export default function HomePage() {
     queryKey: ["employee-count"],
     queryFn: getEmployeeCount,
     enabled: !session, // Only fetch when user is not logged in (public view)
-    placeholderData: { totalEmployees: MOCK_EMPLOYEE_COUNT },
   });
 
   // Fetch case statistics from API
@@ -74,7 +58,6 @@ export default function HomePage() {
     queryKey: ["case-statistics"],
     queryFn: getCaseStatistics,
     enabled: !session, // Only fetch when user is not logged in (public view)
-    placeholderData: MOCK_CASE_STATS,
   });
 
   const handleLogout = () => {
@@ -151,8 +134,7 @@ export default function HomePage() {
                     <div className="h-8 w-16 bg-muted animate-pulse rounded" />
                   ) : (
                     <p className="text-3xl font-bold text-foreground font-mono">
-                      {caseStats?.closed_count?.toLocaleString() ||
-                        MOCK_CASE_STATS.closed_count.toLocaleString()}
+                      {caseStats?.closed_count?.toLocaleString() || "0"}
                     </p>
                   )}
                   <p className="text-xs text-muted-foreground">
@@ -181,8 +163,7 @@ export default function HomePage() {
                     <div className="h-8 w-16 bg-muted animate-pulse rounded" />
                   ) : (
                     <p className="text-3xl font-bold text-foreground font-mono">
-                      {caseStats?.open_count?.toLocaleString() ||
-                        MOCK_CASE_STATS.open_count.toLocaleString()}
+                      {caseStats?.open_count?.toLocaleString() || "0"}
                     </p>
                   )}
                   <p className="text-xs text-muted-foreground">
@@ -211,8 +192,7 @@ export default function HomePage() {
                     <div className="h-8 w-16 bg-muted animate-pulse rounded" />
                   ) : (
                     <p className="text-3xl font-bold text-foreground font-mono">
-                      {caseStats?.total_count?.toLocaleString() ||
-                        MOCK_CASE_STATS.total_count.toLocaleString()}
+                      {caseStats?.total_count?.toLocaleString() || "0"}
                     </p>
                   )}
                   <p className="text-xs text-muted-foreground">
@@ -241,8 +221,7 @@ export default function HomePage() {
                     <div className="h-8 w-16 bg-muted animate-pulse rounded" />
                   ) : (
                     <p className="text-3xl font-bold text-foreground font-mono">
-                      {employeeData?.totalEmployees?.toLocaleString() ||
-                        MOCK_EMPLOYEE_COUNT.toLocaleString()}
+                      {employeeData?.count?.toLocaleString() || "0"}
                     </p>
                   )}
                   <p className="text-xs text-muted-foreground">
@@ -258,7 +237,6 @@ export default function HomePage() {
             <div className="text-center text-amber-600 dark:text-amber-400 text-sm p-2">
               {isErrorEmployees && "Failed to load personnel count. "}
               {isErrorCases && "Failed to load case statistics. "}
-              Showing estimated data.
             </div>
           )}
         </>

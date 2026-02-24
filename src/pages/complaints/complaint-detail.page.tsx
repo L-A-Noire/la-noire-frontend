@@ -91,7 +91,6 @@ export const ComplaintDetailPage = () => {
     formState: { errors, isSubmitting },
     watch,
     setValue,
-    reset,
   } = useForm<ReviewFormData>({
     defaultValues: {
       is_confirmed: false,
@@ -100,18 +99,14 @@ export const ComplaintDetailPage = () => {
   });
 
   // Crime level selection form
-  const {
-    register: registerCase,
-    handleSubmit: handleSubmitCase,
-    formState: { errors: caseErrors, isSubmitting: isCaseSubmitting },
-    setValue: setCaseValue,
-  } = useForm<CreateCaseFormData>({
-    defaultValues: {
-      crime_level: "",
-      crime_location: "",
-      detective_id: undefined,
-    },
-  });
+  const { register: registerCase, getValues: getCaseValues } =
+    useForm<CreateCaseFormData>({
+      defaultValues: {
+        crime_level: "",
+        crime_location: "",
+        detective_id: undefined,
+      },
+    });
 
   // Edit form
   const {
@@ -202,7 +197,7 @@ export const ComplaintDetailPage = () => {
       // Step 2: Create Case linked to Crime
       const caseData = {
         crime: crimeResponse.data.id,
-        detective: data.detective_id || null,
+        detective: data.detective_id ? Number(data.detective_id) : 0,
         is_from_crime_scene: false,
       };
 
@@ -252,8 +247,8 @@ export const ComplaintDetailPage = () => {
         // Then create the case with crime level
         createCrimeAndCaseMutation.mutate({
           crime_level: selectedCrimeLevel,
-          crime_location: registerCase("crime_location").value,
-          detective_id: registerCase("detective_id").value,
+          crime_location: getCaseValues("crime_location"),
+          detective_id: getCaseValues("detective_id"),
         });
       } else {
         // Officer rejecting - just submit the review

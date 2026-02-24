@@ -25,3 +25,7 @@ export const getPunishment = async (id: number): Promise<Punishment> => {
   const response = await http.get<Punishment>(`/suspect/punishments/${id}/`);
   return response.data;
 };
+
+export const deletePunishment = async (id: number): Promise<void> => {
+  await http.delete(`/suspect/punishments/${id}/`);
+};

@@ -42,8 +42,8 @@ export const deleteCrimeScene = async (id: number): Promise<void> => {
 };
 
 export const confirmCrimeScene = async (id: number): Promise<CrimeScene> => {
-  const response = await http.patch<CrimeScene>(`/crime/crime-scenes/${id}/`, {
-    is_confirmed: true,
-  });
+  const response = await http.post<CrimeScene>(
+    `/crime/crime-scenes/${id}/confirm/`,
+  );
   return response.data;
 };

@@ -17,7 +17,7 @@ export const register = async (userData: RegisterPayload) => {
 };
 
 export const getUserProfile = async () => {
-  const { data } = await http.get<User>("/users/me");
+  const { data } = await http.get<User>("/auth/profile/");
   return data;
 };
 

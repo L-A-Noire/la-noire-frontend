@@ -20,6 +20,11 @@ export const updateSuspectStatus = async (
   });
   return response.data;
 };
+
+export const deleteSuspectCrime = async (id: number): Promise<void> => {
+  await http.delete(`/suspect/suspect-crimes/${id}/`);
+};
+
 export const getWantedSuspects = async (): Promise<Suspect[]> => {
   const response = await http.get<Suspect[]>("/suspect/wanted/");
   return response.data;

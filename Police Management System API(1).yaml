@@ -1200,6 +1200,40 @@ paths:
       responses:
         "204":
           description: No response body
+  /api/crime/crime-scenes/{id}/confirm/:
+    post:
+      operationId: crime_crime_scenes_confirm_create
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this crime scene.
+          required: true
+      tags:
+        - crime
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CrimeLevelRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/CrimeLevelRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/CrimeLevelRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CrimeLevel"
+          description: ""
   /api/crime/crimes/:
     get:
       operationId: crime_crimes_list
@@ -2733,6 +2767,28 @@ paths:
       responses:
         "204":
           description: No response body
+  /api/witness/evidence/:
+    get:
+      operationId: witness_evidence_list
+      parameters:
+        - in: query
+          name: case
+          schema:
+            type: integer
+      tags:
+        - witness
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Evidence"
+          description: ""
   /api/witness/identification-evidence/:
     get:
       operationId: witness_identification_evidence_list
@@ -3321,6 +3377,40 @@ paths:
       responses:
         "204":
           description: No response body
+  /api/witness/testimonies/{id}/confirm/:
+    post:
+      operationId: witness_testimonies_confirm_create
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this testimony.
+          required: true
+      tags:
+        - witness
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CrimeLevelRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/CrimeLevelRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/CrimeLevelRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CrimeLevel"
+          description: ""
   /api/witness/vehicle-evidence/:
     get:
       operationId: witness_vehicle_evidence_list
@@ -3511,9 +3601,16 @@ components:
           maxLength: 50
         description:
           type: string
+        seen_at:
+          type: string
+          format: date-time
         created_at:
           type: string
           format: date-time
+          readOnly: true
+        location:
+          type: string
+          maxLength: 200
         result:
           type: string
           nullable: true
@@ -3531,6 +3628,8 @@ components:
         - description
         - id
         - images
+        - location
+        - seen_at
         - title
     BiologicalEvidenceRequest:
       type: object
@@ -3546,9 +3645,13 @@ components:
         description:
           type: string
           minLength: 1
-        created_at:
+        seen_at:
           type: string
           format: date-time
+        location:
+          type: string
+          minLength: 1
+          maxLength: 200
         result:
           type: string
           nullable: true
@@ -3561,10 +3664,11 @@ components:
           nullable: true
       required:
         - case
-        - created_at
         - created_by
         - description
         - images
+        - location
+        - seen_at
         - title
     Case:
       type: object
@@ -3983,23 +4087,8 @@ components:
         level_display:
           type: string
           readOnly: true
-        title:
-          type: string
-          nullable: true
-          maxLength: 200
-        description:
-          type: string
-          nullable: true
         level:
           $ref: "#/components/schemas/LevelEnum"
-        committed_at:
-          type: string
-          format: date-time
-          nullable: true
-        location:
-          type: string
-          nullable: true
-          maxLength: 500
         created_at:
           type: string
           format: date-time
@@ -4018,23 +4107,8 @@ components:
         level_display:
           type: string
           readOnly: true
-        title:
-          type: string
-          nullable: true
-          maxLength: 200
-        description:
-          type: string
-          nullable: true
         level:
           $ref: "#/components/schemas/LevelEnum"
-        committed_at:
-          type: string
-          format: date-time
-          nullable: true
-        location:
-          type: string
-          nullable: true
-          maxLength: 500
         created_at:
           type: string
           format: date-time
@@ -4044,29 +4118,25 @@ components:
         - id
         - level
         - level_display
+    CrimeLevel:
+      type: object
+      properties:
+        crime_level:
+          type: integer
+      required:
+        - crime_level
+    CrimeLevelRequest:
+      type: object
+      properties:
+        crime_level:
+          type: integer
+      required:
+        - crime_level
     CrimeRequest:
       type: object
       properties:
-        title:
-          type: string
-          nullable: true
-          minLength: 1
-          maxLength: 200
-        description:
-          type: string
-          nullable: true
-          minLength: 1
         level:
           $ref: "#/components/schemas/LevelEnum"
-        committed_at:
-          type: string
-          format: date-time
-          nullable: true
-        location:
-          type: string
-          nullable: true
-          minLength: 1
-          maxLength: 500
       required:
         - level
     CrimeScene:
@@ -4087,29 +4157,21 @@ components:
         description:
           type: string
           nullable: true
-        viewer:
-          type: integer
-        case_report:
+        crime:
           type: integer
           nullable: true
         examiner:
           type: integer
           nullable: true
-        witnesses:
-          type: array
-          items:
-            type: integer
+        witness:
+          type: integer
+          nullable: true
       required:
         - id
-        - is_confirmed
         - seen_at
-        - viewer
-        - witnesses
     CrimeSceneCreate:
       type: object
       properties:
-        viewer:
-          type: integer
         location:
           type: string
           nullable: true
@@ -4122,12 +4184,9 @@ components:
           format: date-time
       required:
         - seen_at
-        - viewer
     CrimeSceneCreateRequest:
       type: object
       properties:
-        viewer:
-          type: integer
         location:
           type: string
           nullable: true
@@ -4147,7 +4206,6 @@ components:
           writeOnly: true
       required:
         - seen_at
-        - viewer
     CrimeSceneDetail:
       type: object
       properties:
@@ -4179,26 +4237,20 @@ components:
         description:
           type: string
           nullable: true
-        viewer:
-          type: integer
-        case_report:
+        crime:
           type: integer
           nullable: true
         examiner:
           type: integer
           nullable: true
-        witnesses:
-          type: array
-          items:
-            type: integer
+        witness:
+          type: integer
+          nullable: true
       required:
         - examiner_details
         - id
-        - is_confirmed
         - seen_at
-        - viewer
         - viewer_details
-        - witnesses
         - witnesses_details
     CrimeSceneRequest:
       type: object
@@ -4217,23 +4269,51 @@ components:
           type: string
           nullable: true
           minLength: 1
-        viewer:
-          type: integer
-        case_report:
+        crime:
           type: integer
           nullable: true
         examiner:
           type: integer
           nullable: true
-        witnesses:
-          type: array
-          items:
-            type: integer
+        witness:
+          type: integer
+          nullable: true
       required:
-        - is_confirmed
         - seen_at
-        - viewer
-        - witnesses
+    Evidence:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 50
+        description:
+          type: string
+        seen_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        location:
+          type: string
+          maxLength: 200
+        case:
+          type: integer
+        created_by:
+          type: integer
+      required:
+        - case
+        - created_at
+        - created_by
+        - description
+        - id
+        - location
+        - seen_at
+        - title
     IdentificationEvidence:
       type: object
       properties:
@@ -4245,9 +4325,16 @@ components:
           maxLength: 50
         description:
           type: string
+        seen_at:
+          type: string
+          format: date-time
         created_at:
           type: string
           format: date-time
+          readOnly: true
+        location:
+          type: string
+          maxLength: 200
         owner_first_name:
           type: string
           maxLength: 100
@@ -4265,8 +4352,10 @@ components:
         - created_by
         - description
         - id
+        - location
         - owner_first_name
         - owner_last_name
+        - seen_at
         - title
     IdentificationEvidenceRequest:
       type: object
@@ -4278,9 +4367,13 @@ components:
         description:
           type: string
           minLength: 1
-        created_at:
+        seen_at:
           type: string
           format: date-time
+        location:
+          type: string
+          minLength: 1
+          maxLength: 200
         owner_first_name:
           type: string
           minLength: 1
@@ -4296,11 +4389,12 @@ components:
           type: integer
       required:
         - case
-        - created_at
         - created_by
         - description
+        - location
         - owner_first_name
         - owner_last_name
+        - seen_at
         - title
     Image:
       type: object
@@ -4598,9 +4692,16 @@ components:
           maxLength: 50
         description:
           type: string
+        seen_at:
+          type: string
+          format: date-time
         created_at:
           type: string
           format: date-time
+          readOnly: true
+        location:
+          type: string
+          maxLength: 200
         case:
           type: integer
         created_by:
@@ -4611,6 +4712,8 @@ components:
         - created_by
         - description
         - id
+        - location
+        - seen_at
         - title
     OtherEvidenceRequest:
       type: object
@@ -4622,18 +4725,23 @@ components:
         description:
           type: string
           minLength: 1
-        created_at:
+        seen_at:
           type: string
           format: date-time
+        location:
+          type: string
+          minLength: 1
+          maxLength: 200
         case:
           type: integer
         created_by:
           type: integer
       required:
         - case
-        - created_at
         - created_by
         - description
+        - location
+        - seen_at
         - title
     PatchedAttachmentRequest:
       type: object
@@ -4657,9 +4765,13 @@ components:
         description:
           type: string
           minLength: 1
-        created_at:
+        seen_at:
           type: string
           format: date-time
+        location:
+          type: string
+          minLength: 1
+          maxLength: 200
         result:
           type: string
           nullable: true
@@ -4746,26 +4858,8 @@ components:
     PatchedCrimeRequest:
       type: object
       properties:
-        title:
-          type: string
-          nullable: true
-          minLength: 1
-          maxLength: 200
-        description:
-          type: string
-          nullable: true
-          minLength: 1
         level:
           $ref: "#/components/schemas/LevelEnum"
-        committed_at:
-          type: string
-          format: date-time
-          nullable: true
-        location:
-          type: string
-          nullable: true
-          minLength: 1
-          maxLength: 500
     PatchedCrimeSceneRequest:
       type: object
       properties:
@@ -4783,18 +4877,15 @@ components:
           type: string
           nullable: true
           minLength: 1
-        viewer:
-          type: integer
-        case_report:
+        crime:
           type: integer
           nullable: true
         examiner:
           type: integer
           nullable: true
-        witnesses:
-          type: array
-          items:
-            type: integer
+        witness:
+          type: integer
+          nullable: true
     PatchedIdentificationEvidenceRequest:
       type: object
       properties:
@@ -4805,9 +4896,13 @@ components:
         description:
           type: string
           minLength: 1
-        created_at:
+        seen_at:
           type: string
           format: date-time
+        location:
+          type: string
+          minLength: 1
+          maxLength: 200
         owner_first_name:
           type: string
           minLength: 1
@@ -4882,9 +4977,13 @@ components:
         description:
           type: string
           minLength: 1
-        created_at:
+        seen_at:
           type: string
           format: date-time
+        location:
+          type: string
+          minLength: 1
+          maxLength: 200
         case:
           type: integer
         created_by:
@@ -5003,12 +5102,18 @@ components:
         description:
           type: string
           minLength: 1
-        created_at:
+        seen_at:
           type: string
           format: date-time
+        location:
+          type: string
+          minLength: 1
+          maxLength: 200
         transcription:
           type: string
           minLength: 1
+        is_confirmed:
+          type: boolean
         case:
           type: integer
         created_by:
@@ -5053,9 +5158,13 @@ components:
         description:
           type: string
           minLength: 1
-        created_at:
+        seen_at:
           type: string
           format: date-time
+        location:
+          type: string
+          minLength: 1
+          maxLength: 200
         vehicle_model:
           type: string
           minLength: 1
@@ -5965,11 +6074,20 @@ components:
           maxLength: 50
         description:
           type: string
+        seen_at:
+          type: string
+          format: date-time
         created_at:
           type: string
           format: date-time
+          readOnly: true
+        location:
+          type: string
+          maxLength: 200
         transcription:
           type: string
+        is_confirmed:
+          type: boolean
         case:
           type: integer
         created_by:
@@ -5981,6 +6099,8 @@ components:
         - created_by
         - description
         - id
+        - location
+        - seen_at
         - title
         - transcription
     TestimonyRequest:
@@ -5997,12 +6117,18 @@ components:
         description:
           type: string
           minLength: 1
-        created_at:
+        seen_at:
           type: string
           format: date-time
+        location:
+          type: string
+          minLength: 1
+          maxLength: 200
         transcription:
           type: string
           minLength: 1
+        is_confirmed:
+          type: boolean
         case:
           type: integer
         created_by:
@@ -6010,9 +6136,10 @@ components:
       required:
         - attachments
         - case
-        - created_at
         - created_by
         - description
+        - location
+        - seen_at
         - title
         - transcription
     User:
@@ -6098,9 +6225,16 @@ components:
           maxLength: 50
         description:
           type: string
+        seen_at:
+          type: string
+          format: date-time
         created_at:
           type: string
           format: date-time
+          readOnly: true
+        location:
+          type: string
+          maxLength: 200
         vehicle_model:
           type: string
           maxLength: 50
@@ -6126,6 +6260,8 @@ components:
         - created_by
         - description
         - id
+        - location
+        - seen_at
         - title
         - vehicle_model
     VehicleEvidenceRequest:
@@ -6138,9 +6274,13 @@ components:
         description:
           type: string
           minLength: 1
-        created_at:
+        seen_at:
           type: string
           format: date-time
+        location:
+          type: string
+          minLength: 1
+          maxLength: 200
         vehicle_model:
           type: string
           minLength: 1
@@ -6164,9 +6304,10 @@ components:
       required:
         - case
         - color
-        - created_at
         - created_by
         - description
+        - location
+        - seen_at
         - title
         - vehicle_model
     WantedSuspect:
