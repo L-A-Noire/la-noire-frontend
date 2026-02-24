@@ -32,8 +32,9 @@ export const CaseCard = ({ caseItem, onClose, isClosing }: CaseCardProps) => {
 
   return (
     <Card
-      className={`relative overflow-hidden transition-shadow ${isOpen ? "hover:shadow-md" : "opacity-80"
-        }`}
+      className={`relative overflow-hidden transition-shadow ${
+        isOpen ? "hover:shadow-md" : "opacity-80"
+      }`}
     >
       <div className="absolute top-4 right-4">
         <Badge
