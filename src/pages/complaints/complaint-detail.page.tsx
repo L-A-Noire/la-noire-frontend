@@ -67,7 +67,6 @@ export const ComplaintDetailPage = () => {
     formState: { errors, isSubmitting },
     watch,
     setValue,
-    reset,
   } = useForm<ReviewFormData>({
     defaultValues: {
       is_confirmed: false,
@@ -80,7 +79,6 @@ export const ComplaintDetailPage = () => {
     register: registerEdit,
     handleSubmit: handleSubmitEdit,
     formState: { errors: editErrors, isSubmitting: isEditSubmitting },
-    reset: resetEdit,
     setValue: setEditValue,
   } = useForm<EditFormData>({
     defaultValues: {

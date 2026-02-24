@@ -96,7 +96,7 @@ export const AddSuspectPage = () => {
 
       return suspectResponse.data;
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       toast.success("Suspect added to case successfully");
       navigate(`/cases/${id}`);
     },
