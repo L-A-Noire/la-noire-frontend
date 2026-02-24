@@ -20,3 +20,7 @@ export const updateSuspectStatus = async (
   });
   return response.data;
 };
+export const getWantedSuspects = async (): Promise<Suspect[]> => {
+  const response = await http.get<Suspect[]>("/suspect/wanted/");
+  return response.data;
+};
