@@ -153,6 +153,16 @@ export default function AdminSuspectsPage() {
         queryKey={["admin-suspects"]}
         fetchData={getSuspectCrimes}
         deleteData={deleteSuspectCrime}
+        searchFn={(item, search) => {
+          const s = search.toLowerCase();
+          return (
+            item.suspect_details.first_name.toLowerCase().includes(s) ||
+            item.suspect_details.last_name.toLowerCase().includes(s) ||
+            item.suspect_details.username.toLowerCase().includes(s) ||
+            item.status.toLowerCase().includes(s)
+          );
+        }}
+        searchPlaceholder="Search by name, username, or status..."
         columns={[
           { header: "ID", accessorKey: "id" },
           {

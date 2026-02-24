@@ -222,10 +222,10 @@ export const CrimeSceneDetailPage = () => {
                 <div className="flex-1 space-y-1">
                   <p className="text-sm font-medium">Scene Viewer</p>
                   <p className="text-sm text-muted-foreground">
-                    {scene.viewer_details.username}
+                    {scene.viewer_details?.username || "Unknown"}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {scene.viewer_details.role_title}
+                    {scene.viewer_details?.role_title || "N/A"}
                   </p>
                 </div>
               </div>

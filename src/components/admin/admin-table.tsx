@@ -32,6 +32,8 @@ interface AdminTableProps<T> {
   onEdit: (item: T) => void;
   onCreate: () => void;
   searchKey?: keyof T;
+  searchFn?: (item: T, search: string) => boolean;
+  searchPlaceholder?: string;
 }
 
 export function AdminTable<T extends { id: number }>({
@@ -43,6 +45,8 @@ export function AdminTable<T extends { id: number }>({
   onEdit,
   onCreate,
   searchKey,
+  searchFn,
+  searchPlaceholder,
 }: AdminTableProps<T>) {
   const [search, setSearch] = useState("");
   const queryClient = useQueryClient();
@@ -64,7 +68,9 @@ export function AdminTable<T extends { id: number }>({
   });
 
   const filteredData = data?.filter((item) => {
-    if (!search || !searchKey) return true;
+    if (!search) return true;
+    if (searchFn) return searchFn(item, search);
+    if (!searchKey) return true;
     const value = item[searchKey];
     return String(value).toLowerCase().includes(search.toLowerCase());
   });
@@ -80,14 +86,17 @@ export function AdminTable<T extends { id: number }>({
       </div>
 
       <div className="flex items-center space-x-2">
-        {searchKey && (
+        {(searchKey || searchFn) && (
           <div className="relative w-72">
             <HugeiconsIcon
               icon={Search01Icon}
               className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground"
             />
             <Input
-              placeholder={`Search by ${String(searchKey)}...`}
+              placeholder={
+                searchPlaceholder ||
+                (searchKey ? `Search by ${String(searchKey)}...` : "Search...")
+              }
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-8"

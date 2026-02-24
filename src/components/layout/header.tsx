@@ -104,9 +104,21 @@ export const Header = () => {
         </div>
         <div className="flex items-center gap-2">
           {session ? (
-            <div className="text-xs font-mono text-muted-foreground hidden md:block">
-              Logged in as:{" "}
-              <span className="text-primary">{session.user.username}</span>
+            <div className="flex items-center gap-4">
+              {isAdmin && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  asChild
+                  className="font-mono text-xs border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+                >
+                  <Link to="/admin">Admin Panel</Link>
+                </Button>
+              )}
+              <div className="text-xs font-mono text-muted-foreground hidden md:block">
+                Logged in as:{" "}
+                <span className="text-primary">{session.user.username}</span>
+              </div>
             </div>
           ) : (
             <div className="flex items-center gap-2">
