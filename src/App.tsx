@@ -21,6 +21,9 @@ import RecordEvidencePage from "@/pages/evidence/record-evidence.page";
 import { EvidenceDetailPage } from "@/pages/evidence/evidence-detail.page";
 import DetectiveBoardPage from "@/pages/detective-board/detective-board.page";
 import { AddSuspectPage } from "@/pages/cases/add-suspect.page";
+import { TestimoniesListPage } from "@/pages/testimonies/testimonies-list.page";
+import { TestimonyDetailPage } from "@/pages/testimonies/testimony-detail.page";
+import { TestimonyForm } from "@/components/evidence/testimony-form";
 import RoleGuard from "./guards/role.guard";
 import { ALLOWED_CASE_ROLES } from "./types/role.type";
 import AdminLayout from "@/components/layout/admin-layout";
@@ -78,6 +81,15 @@ export function App() {
           <Route path="crime-scenes" element={<CrimeScenesListPage />} />
           <Route path="crime-scenes/new" element={<ReportCrimeScenePage />} />
           <Route path="crime-scenes/:id" element={<CrimeSceneDetailPage />} />
+
+          <Route path="testimonies" element={<TestimoniesListPage />} />
+          <Route path="testimonies/new" element={
+            <div className="container mx-auto py-8 max-w-2xl">
+              <TestimonyForm onSuccess={() => navigate("/testimonies")} />
+            </div>
+          } />
+          <Route path="testimonies/:id" element={<TestimonyDetailPage />} />
+
 
           {/* Protected Routes for Administrators */}
           <Route element={<RoleGuard allowedRoles={["Administrator"]} />}>

@@ -63,8 +63,7 @@ export const ComplaintsListPage = () => {
         .length,
       rejected: complaints.filter(
         (c) =>
-          c.status === "rejected_by_cadet" ||
-          c.status === "rejected_by_officer",
+          c.status === "invalid",
       ).length,
       approved: complaints.filter((c) => c.status === "approved").length,
     };

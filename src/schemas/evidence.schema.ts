@@ -4,7 +4,9 @@ import { z } from "zod";
 const baseEvidenceSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters").max(200),
   description: z.string().min(10, "Description must be at least 10 characters"),
-  case: z.number().min(1, "Case ID is required"),
+  location: z.string().min(3, "Location is required"),
+  seen_at: z.string().min(1, "Date and time are required"),
+  case: z.number().nullable().optional(),
   created_at: z.string().optional(),
   created_by: z.number().optional(),
 });
@@ -19,6 +21,15 @@ export const testimonySchema = baseEvidenceSchema.extend({
 });
 
 export type TestimonyFormData = z.infer<typeof testimonySchema>;
+
+// Confirm testimony schema
+export const confirmTestimonySchema = z.object({
+  crime_level: z.enum(["1", "2", "3", "4"], {
+    required_error: "Crime level is required",
+  }),
+});
+
+export type ConfirmTestimonyFormData = z.infer<typeof confirmTestimonySchema>;
 
 // Biological Evidence schema
 export const biologicalEvidenceSchema = baseEvidenceSchema.extend({

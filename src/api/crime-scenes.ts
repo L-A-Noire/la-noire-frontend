@@ -47,3 +47,10 @@ export const confirmCrimeScene = async (id: number): Promise<CrimeScene> => {
   );
   return response.data;
 };
+
+export const confirmCrimeSceneAndCreateCase = async (
+  id: number,
+  data: { crime_level: number }
+): Promise<void> => {
+  await http.post(`/crime/crime-scenes/${id}/confirm/`, data);
+};

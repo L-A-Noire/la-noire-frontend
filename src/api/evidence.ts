@@ -46,9 +46,13 @@ export const deleteImage = async (id: number): Promise<void> => {
 };
 
 // ==================== Attachments ====================
-export const uploadAttachment = async (file: File): Promise<Attachment> => {
+export const uploadAttachment = async (data: {
+  file: File;
+  provided_by: number;
+}): Promise<Attachment> => {
   const formData = new FormData();
-  formData.append("file", file);
+  formData.append("file", data.file);
+  formData.append("provided_by", data.provided_by.toString());
 
   const response = await http.post<Attachment>(
     "/witness/attachments/",
@@ -289,4 +293,12 @@ export const updateOtherEvidence = async (
 
 export const deleteOtherEvidence = async (id: number): Promise<void> => {
   await http.delete(`/witness/other-evidence/${id}/`);
+};
+
+// ==================== Testimony Confirmation ====================
+export const confirmTestimony = async (
+  id: number,
+  data: { crime_level: number }
+): Promise<void> => {
+  await http.post(`/witness/testimonies/${id}/confirm/`, data);
 };

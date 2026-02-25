@@ -3,12 +3,25 @@ import {
   getCrimeSceneById,
   confirmCrimeScene,
   deleteCrimeScene,
+  confirmCrimeSceneAndCreateCase,
 } from "@/api/crime-scenes";
 import { useNavigate, useParams } from "react-router-dom";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,27 +44,81 @@ import {
   FileAttachmentIcon,
 } from "@hugeicons/core-free-icons";
 import { format } from "date-fns";
+import { toast } from "react-toastify";
+import { useAuthStore } from "@/stores/auth.store";
+
+// Crime level schema
+const crimeLevelSchema = z.object({
+  crime_level: z.enum(["1", "2", "3", "4"], {
+    required_error: "Crime level is required",
+  }),
+});
+
+type CrimeLevelFormData = z.infer<typeof crimeLevelSchema>;
 
 export const CrimeSceneDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { session } = useAuthStore();
+  const [showConfirmForm, setShowConfirmForm] = useState(false);
 
   const {
     data: scene,
     isLoading,
     isError,
+    refetch,
   } = useQuery({
     queryKey: ["crime-scene", id],
     queryFn: () => getCrimeSceneById(Number(id)),
     enabled: !!id,
   });
 
+  const canConfirmCrimeScene =
+    session?.user.role_title === "Chief" ||
+    session?.user.role_title === "Captain" ||
+    session?.user.role_title === "Sergent";
+
+  const {
+    register: registerCrimeLevel,
+    handleSubmit: handleSubmitCrimeLevel,
+    formState: { errors: crimeLevelErrors, isSubmitting: isCrimeLevelSubmitting },
+    setValue: setCrimeLevelValue,
+    watch: watchCrimeLevel,
+    reset: resetCrimeLevel,
+  } = useForm<CrimeLevelFormData>({
+    resolver: zodResolver(crimeLevelSchema),
+  });
+
+  const selectedCrimeLevel = watchCrimeLevel("crime_level");
+
   const confirmMutation = useMutation({
     mutationFn: () => confirmCrimeScene(Number(id)),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["crime-scene", id] });
       queryClient.invalidateQueries({ queryKey: ["crime-scenes"] });
+      toast.success("Crime scene confirmed");
+      refetch();
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.detail || "Failed to confirm crime scene");
+    },
+  });
+
+  const confirmCrimeSceneMutation = useMutation({
+    mutationFn: (data: CrimeLevelFormData) =>
+      confirmCrimeSceneAndCreateCase(Number(id), { crime_level: parseInt(data.crime_level) }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["crime-scene", id] });
+      queryClient.invalidateQueries({ queryKey: ["crime-scenes"] });
+      queryClient.invalidateQueries({ queryKey: ["cases"] });
+      toast.success("Crime scene confirmed and case created!");
+      setShowConfirmForm(false);
+      resetCrimeLevel();
+      refetch();
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.detail || "Failed to confirm crime scene");
     },
   });
 
@@ -59,23 +126,37 @@ export const CrimeSceneDetailPage = () => {
     mutationFn: () => deleteCrimeScene(Number(id)),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["crime-scenes"] });
+      toast.success("Crime scene deleted");
       navigate("/crime-scenes");
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.detail || "Failed to delete crime scene");
     },
   });
 
-  if (isLoading)
-    return (
-      <div className="p-8 text-center text-muted-foreground">
-        Loading crime scene details...
-      </div>
-    );
+  const onConfirmCrimeSceneSubmit = (data: CrimeLevelFormData) => {
+    confirmCrimeSceneMutation.mutate(data);
+  };
 
-  if (isError || !scene)
+  if (isLoading) {
     return (
-      <div className="p-8 text-center text-destructive">
-        Error loading crime scene
+      <div className="container mx-auto py-8">
+        <div className="flex justify-center items-center min-h-[400px]">
+          <div className="text-muted-foreground">Loading crime scene details...</div>
+        </div>
       </div>
     );
+  }
+
+  if (isError || !scene) {
+    return (
+      <div className="container mx-auto py-8">
+        <div className="flex justify-center items-center min-h-[400px]">
+          <div className="text-destructive">Error loading crime scene</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto py-8 space-y-6 max-w-4xl">
@@ -99,17 +180,32 @@ export const CrimeSceneDetailPage = () => {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {!scene.is_confirmed && (
-            <Button
-              onClick={() => confirmMutation.mutate()}
-              disabled={confirmMutation.isPending}
-            >
-              <HugeiconsIcon
-                icon={CheckmarkCircle01Icon}
-                className="mr-2 h-4 w-4"
-              />
-              Confirm Scene
-            </Button>
+          {!scene.is_confirmed && !showConfirmForm && (
+            <>
+              {canConfirmCrimeScene ? (
+                <Button
+                  onClick={() => setShowConfirmForm(true)}
+                  variant="default"
+                >
+                  <HugeiconsIcon
+                    icon={CheckmarkCircle01Icon}
+                    className="mr-2 h-4 w-4"
+                  />
+                  Review & Confirm
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => confirmMutation.mutate()}
+                  disabled={confirmMutation.isPending}
+                >
+                  <HugeiconsIcon
+                    icon={CheckmarkCircle01Icon}
+                    className="mr-2 h-4 w-4"
+                  />
+                  Confirm Scene
+                </Button>
+              )}
+            </>
           )}
           <AlertDialog>
             <AlertDialogTrigger asChild>
@@ -241,10 +337,10 @@ export const CrimeSceneDetailPage = () => {
                   <div className="flex-1 space-y-1">
                     <p className="text-sm font-medium">Examiner</p>
                     <p className="text-sm text-muted-foreground">
-                      {scene.examiner_details.username}
+                      {scene.examiner_details?.username || "Unknown"}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {scene.examiner_details.role_title}
+                      {scene.examiner_details?.role_title || "N/A"}
                     </p>
                   </div>
                 </div>
@@ -323,6 +419,60 @@ export const CrimeSceneDetailPage = () => {
               View Case #{scene.case_report}
             </Button>
           </CardContent>
+        </Card>
+      )}
+
+      {/* Confirm Crime Scene Form - For higher-ranked officers */}
+      {showConfirmForm && (
+        <Card className="border-green-200 dark:border-green-900 bg-green-50 dark:bg-green-950/20">
+          <CardHeader>
+            <CardTitle className="text-lg">Confirm Crime Scene & Create Case</CardTitle>
+            <CardDescription>
+              Select the crime level to create a case from this crime scene.
+            </CardDescription>
+          </CardHeader>
+
+          <form onSubmit={handleSubmitCrimeLevel(onConfirmCrimeSceneSubmit)}>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="crime_level">Crime Level *</Label>
+                <Select
+                  onValueChange={(value) => setCrimeLevelValue("crime_level", value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select crime level" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">Level 3 (Low)</SelectItem>
+                    <SelectItem value="2">Level 2 (Medium)</SelectItem>
+                    <SelectItem value="3">Level 1 (High)</SelectItem>
+                    <SelectItem value="4">Critical</SelectItem>
+                  </SelectContent>
+                </Select>
+                {crimeLevelErrors.crime_level && (
+                  <p className="text-sm text-destructive">
+                    {crimeLevelErrors.crime_level.message}
+                  </p>
+                )}
+              </div>
+            </CardContent>
+
+            <div className="border-t p-6 flex justify-end gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowConfirmForm(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={isCrimeLevelSubmitting || confirmCrimeSceneMutation.isPending || !selectedCrimeLevel}
+              >
+                {confirmCrimeSceneMutation.isPending ? "Creating..." : "Confirm & Create Case"}
+              </Button>
+            </div>
+          </form>
         </Card>
       )}
     </div>

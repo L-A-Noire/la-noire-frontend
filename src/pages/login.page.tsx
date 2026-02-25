@@ -60,7 +60,7 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="identifier">Username or Email</Label>
+              <Label htmlFor="identifier">Username or Email or National ID or Phone Number</Label>
               <Input id="identifier" type="text" {...register("identifier")} />
               {errors.identifier && (
                 <p className="text-sm text-red-500">

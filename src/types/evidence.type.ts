@@ -24,20 +24,24 @@ export interface AttachmentRequest {
   provided_by: number;
 }
 
-// Testimony Evidence
+// Base Evidence type
 export interface BaseEvidence {
   id: number;
   title: string;
   description: string;
+  seen_at: string;
   created_at: string;
   created_by: number;
   created_by_name?: string;
-  case: number;
+  case: number | null;
+  location: string;
 }
 
+// Testimony Evidence
 export interface Testimony extends BaseEvidence {
   transcription: string;
   attachments: number[];
+  is_confirmed: boolean;
 }
 
 export interface TestimonyDetail extends Testimony {
@@ -49,9 +53,14 @@ export interface CreateTestimonyRequest {
   description: string;
   transcription: string;
   attachments: number[];
-  created_at: string;
+  seen_at: string;
   created_by: number;
-  case: number;
+  case: number | null;
+  location: string;
+}
+
+export interface ConfirmTestimonyRequest {
+  crime_level: number;
 }
 
 // Biological Evidence
@@ -71,9 +80,10 @@ export interface CreateBiologicalEvidenceRequest {
   images: number[];
   result?: string | null;
   coronary?: number | null;
-  created_at: string;
+  seen_at: string;
   created_by: number;
   case: number;
+  location: string;
 }
 
 // Vehicle Evidence
@@ -93,9 +103,10 @@ export interface CreateVehicleEvidenceRequest {
   color: string;
   registration_plate_number?: string | null;
   serial_number?: string | null;
-  created_at: string;
+  seen_at: string;
   created_by: number;
   case: number;
+  location: string;
 }
 
 // Identification Evidence
@@ -113,9 +124,10 @@ export interface CreateIdentificationEvidenceRequest {
   owner_first_name: string;
   owner_last_name: string;
   information?: Record<string, any>;
-  created_at: string;
+  seen_at: string;
   created_by: number;
   case: number;
+  location: string;
 }
 
 // Other Evidence
@@ -126,9 +138,10 @@ export interface OtherEvidenceDetail extends OtherEvidence {}
 export interface CreateOtherEvidenceRequest {
   title: string;
   description: string;
-  created_at: string;
+  seen_at: string;
   created_by: number;
   case: number;
+  location: string;
 }
 
 // Union types for all evidence
