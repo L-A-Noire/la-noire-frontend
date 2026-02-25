@@ -1,8 +1,9 @@
-// header.tsx
+// src/components/layout/header.tsx (updated)
 import { Link, useLocation } from "react-router-dom";
 import { useAuthStore } from "@/stores/auth.store";
 import { Button } from "@/components/ui/button";
 import { ALLOWED_CASE_ROLES } from "@/types/role.type";
+import { RewardMenu } from "@/components/rewards/reward-menu";
 
 export const Header = () => {
   const session = useAuthStore((s) => s.session);
@@ -21,6 +22,16 @@ export const Header = () => {
     "Sergent",
     "Captain",
     "Chief"
+  ].includes(session.user.role_title);
+
+  // Police roles that can access rewards
+  const canAccessRewards = session && [
+    "Police/Patrol Officer",
+    "Detective",
+    "Sergent",
+    "Captain",
+    "Chief",
+    "Administrator"
   ].includes(session.user.role_title);
 
   const canAccessCases =
@@ -131,6 +142,9 @@ export const Header = () => {
         <div className="flex items-center gap-2">
           {session ? (
             <div className="flex items-center gap-4">
+              {/* Reward Menu - visible to police roles */}
+              {canAccessRewards && <RewardMenu />}
+
               {isAdmin && (
                 <Button
                   variant="outline"
@@ -167,6 +181,6 @@ export const Header = () => {
           )}
         </div>
       </div>
-    </header >
+    </header>
   );
 };
