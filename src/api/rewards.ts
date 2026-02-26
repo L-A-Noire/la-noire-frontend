@@ -16,10 +16,10 @@ import type {
  */
 export const verifyReward = async (
   uniqueCode: string,
-  nationalId: string
+  nationalId: string,
 ): Promise<RewardVerificationResponse> => {
   const response = await http.get<RewardVerificationResponse>(
-    `/reward/rewards/verify/?unique_code=${uniqueCode}&national_id=${nationalId}`
+    `/reward/rewards/verify/?unique_code=${uniqueCode}&national_id=${nationalId}`,
   );
   return response.data;
 };
@@ -37,7 +37,9 @@ export const getRewardById = async (id: number): Promise<RewardDetail> => {
  * Claim a reward (process payment)
  * POST /api/reward/claim/
  */
-export const claimReward = async (data: PaymentRequest): Promise<PaymentResponse> => {
+export const claimReward = async (
+  data: PaymentRequest,
+): Promise<PaymentResponse> => {
   const response = await http.post<PaymentResponse>("/reward/claim/", data);
   return response.data;
 };

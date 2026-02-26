@@ -26,15 +26,21 @@ interface OtherEvidenceFormProps {
   initialCaseId?: number | null;
 }
 
-export function OtherEvidenceForm({ onSuccess, initialCaseId }: OtherEvidenceFormProps) {
+export function OtherEvidenceForm({
+  onSuccess,
+  initialCaseId,
+}: OtherEvidenceFormProps) {
   const navigate = useNavigate();
   const { caseId: urlCaseId } = useParams<{ caseId: string }>();
   const { session } = useAuthStore();
 
   // Determine the case ID - from props (if provided) or from URL params
-  const effectiveCaseId = initialCaseId !== undefined
-    ? initialCaseId
-    : (urlCaseId ? parseInt(urlCaseId) : null);
+  const effectiveCaseId =
+    initialCaseId !== undefined
+      ? initialCaseId
+      : urlCaseId
+        ? parseInt(urlCaseId)
+        : null;
 
   const {
     register,
@@ -107,14 +113,19 @@ export function OtherEvidenceForm({ onSuccess, initialCaseId }: OtherEvidenceFor
           {effectiveCaseId ? (
             <>Record other evidence and add it to Case #{effectiveCaseId}</>
           ) : (
-            <>Record any other type of evidence that doesn't fit into the other categories</>
+            <>
+              Record any other type of evidence that doesn't fit into the other
+              categories
+            </>
           )}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="title">Title <span className="text-red-500">*</span></Label>
+            <Label htmlFor="title">
+              Title <span className="text-red-500">*</span>
+            </Label>
             <Input
               id="title"
               placeholder="Brief description of the evidence"
@@ -127,7 +138,9 @@ export function OtherEvidenceForm({ onSuccess, initialCaseId }: OtherEvidenceFor
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="location">Location <span className="text-red-500">*</span></Label>
+            <Label htmlFor="location">
+              Location <span className="text-red-500">*</span>
+            </Label>
             <Input
               id="location"
               placeholder="Where was this evidence found?"
@@ -140,7 +153,9 @@ export function OtherEvidenceForm({ onSuccess, initialCaseId }: OtherEvidenceFor
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="seen_at">Date & Time of Discovery <span className="text-red-500">*</span></Label>
+            <Label htmlFor="seen_at">
+              Date & Time of Discovery <span className="text-red-500">*</span>
+            </Label>
             <Input
               id="seen_at"
               type="datetime-local"
@@ -153,7 +168,9 @@ export function OtherEvidenceForm({ onSuccess, initialCaseId }: OtherEvidenceFor
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description <span className="text-red-500">*</span></Label>
+            <Label htmlFor="description">
+              Description <span className="text-red-500">*</span>
+            </Label>
             <Textarea
               id="description"
               placeholder="Detailed description of the evidence, including where and how it was found, its condition, and any relevant observations"

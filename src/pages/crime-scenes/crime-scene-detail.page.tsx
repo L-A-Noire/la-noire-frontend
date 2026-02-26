@@ -11,7 +11,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
@@ -82,7 +88,10 @@ export const CrimeSceneDetailPage = () => {
   const {
     register: registerCrimeLevel,
     handleSubmit: handleSubmitCrimeLevel,
-    formState: { errors: crimeLevelErrors, isSubmitting: isCrimeLevelSubmitting },
+    formState: {
+      errors: crimeLevelErrors,
+      isSubmitting: isCrimeLevelSubmitting,
+    },
     setValue: setCrimeLevelValue,
     watch: watchCrimeLevel,
     reset: resetCrimeLevel,
@@ -101,13 +110,17 @@ export const CrimeSceneDetailPage = () => {
       refetch();
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.detail || "Failed to confirm crime scene");
+      toast.error(
+        error.response?.data?.detail || "Failed to confirm crime scene",
+      );
     },
   });
 
   const confirmCrimeSceneMutation = useMutation({
     mutationFn: (data: CrimeLevelFormData) =>
-      confirmCrimeSceneAndCreateCase(Number(id), { crime_level: parseInt(data.crime_level) }),
+      confirmCrimeSceneAndCreateCase(Number(id), {
+        crime_level: parseInt(data.crime_level),
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["crime-scene", id] });
       queryClient.invalidateQueries({ queryKey: ["crime-scenes"] });
@@ -118,7 +131,9 @@ export const CrimeSceneDetailPage = () => {
       refetch();
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.detail || "Failed to confirm crime scene");
+      toast.error(
+        error.response?.data?.detail || "Failed to confirm crime scene",
+      );
     },
   });
 
@@ -130,7 +145,9 @@ export const CrimeSceneDetailPage = () => {
       navigate("/crime-scenes");
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.detail || "Failed to delete crime scene");
+      toast.error(
+        error.response?.data?.detail || "Failed to delete crime scene",
+      );
     },
   });
 
@@ -142,7 +159,9 @@ export const CrimeSceneDetailPage = () => {
     return (
       <div className="container mx-auto py-8">
         <div className="flex justify-center items-center min-h-[400px]">
-          <div className="text-muted-foreground">Loading crime scene details...</div>
+          <div className="text-muted-foreground">
+            Loading crime scene details...
+          </div>
         </div>
       </div>
     );
@@ -426,7 +445,9 @@ export const CrimeSceneDetailPage = () => {
       {showConfirmForm && (
         <Card className="border-green-200 dark:border-green-900 bg-green-50 dark:bg-green-950/20">
           <CardHeader>
-            <CardTitle className="text-lg">Confirm Crime Scene & Create Case</CardTitle>
+            <CardTitle className="text-lg">
+              Confirm Crime Scene & Create Case
+            </CardTitle>
             <CardDescription>
               Select the crime level to create a case from this crime scene.
             </CardDescription>
@@ -437,7 +458,9 @@ export const CrimeSceneDetailPage = () => {
               <div className="space-y-2">
                 <Label htmlFor="crime_level">Crime Level *</Label>
                 <Select
-                  onValueChange={(value) => setCrimeLevelValue("crime_level", value)}
+                  onValueChange={(value) =>
+                    setCrimeLevelValue("crime_level", value)
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select crime level" />
@@ -467,9 +490,15 @@ export const CrimeSceneDetailPage = () => {
               </Button>
               <Button
                 type="submit"
-                disabled={isCrimeLevelSubmitting || confirmCrimeSceneMutation.isPending || !selectedCrimeLevel}
+                disabled={
+                  isCrimeLevelSubmitting ||
+                  confirmCrimeSceneMutation.isPending ||
+                  !selectedCrimeLevel
+                }
               >
-                {confirmCrimeSceneMutation.isPending ? "Creating..." : "Confirm & Create Case"}
+                {confirmCrimeSceneMutation.isPending
+                  ? "Creating..."
+                  : "Confirm & Create Case"}
               </Button>
             </div>
           </form>

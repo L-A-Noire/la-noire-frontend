@@ -102,15 +102,9 @@ export default function RegisterPage() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="phone">Phone Number</Label>
-              <Input
-                id="phone"
-                type="text"
-                {...register("phone")}
-              />
+              <Input id="phone" type="text" {...register("phone")} />
               {errors.phone && (
-                <p className="text-sm text-red-500">
-                  {errors.phone.message}
-                </p>
+                <p className="text-sm text-red-500">{errors.phone.message}</p>
               )}
             </div>
             <div className="space-y-2">

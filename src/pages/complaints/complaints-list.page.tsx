@@ -61,10 +61,7 @@ export const ComplaintsListPage = () => {
         .length,
       pending_officer: complaints.filter((c) => c.status === "pending_officer")
         .length,
-      rejected: complaints.filter(
-        (c) =>
-          c.status === "invalid",
-      ).length,
+      rejected: complaints.filter((c) => c.status === "invalid").length,
       approved: complaints.filter((c) => c.status === "approved").length,
     };
   }, [complaints]);

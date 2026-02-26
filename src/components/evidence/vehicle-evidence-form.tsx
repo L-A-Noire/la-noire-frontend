@@ -27,7 +27,10 @@ interface VehicleEvidenceFormProps {
   initialCaseId?: number | null;
 }
 
-export function VehicleEvidenceForm({ onSuccess, initialCaseId }: VehicleEvidenceFormProps) {
+export function VehicleEvidenceForm({
+  onSuccess,
+  initialCaseId,
+}: VehicleEvidenceFormProps) {
   const navigate = useNavigate();
   const { caseId: urlCaseId } = useParams<{ caseId: string }>();
   const { session } = useAuthStore();
@@ -36,9 +39,12 @@ export function VehicleEvidenceForm({ onSuccess, initialCaseId }: VehicleEvidenc
   >("plate");
 
   // Determine the case ID - from props (if provided) or from URL params
-  const effectiveCaseId = initialCaseId !== undefined
-    ? initialCaseId
-    : (urlCaseId ? parseInt(urlCaseId) : null);
+  const effectiveCaseId =
+    initialCaseId !== undefined
+      ? initialCaseId
+      : urlCaseId
+        ? parseInt(urlCaseId)
+        : null;
 
   const {
     register,
@@ -101,15 +107,24 @@ export function VehicleEvidenceForm({ onSuccess, initialCaseId }: VehicleEvidenc
     }
 
     // Validate required fields
-    if (!data.title || !data.description || !data.location || !data.seen_at ||
-      !data.vehicle_model || !data.color) {
+    if (
+      !data.title ||
+      !data.description ||
+      !data.location ||
+      !data.seen_at ||
+      !data.vehicle_model ||
+      !data.color
+    ) {
       toast.error("Please fill in all required fields");
       return;
     }
 
     // Validate that either plate or serial is provided
-    const hasPlate = data.registration_plate_number && data.registration_plate_number.trim().length > 0;
-    const hasSerial = data.serial_number && data.serial_number.trim().length > 0;
+    const hasPlate =
+      data.registration_plate_number &&
+      data.registration_plate_number.trim().length > 0;
+    const hasSerial =
+      data.serial_number && data.serial_number.trim().length > 0;
 
     if (!hasPlate && !hasSerial) {
       toast.error("Either plate number or serial number must be provided");
@@ -133,20 +148,27 @@ export function VehicleEvidenceForm({ onSuccess, initialCaseId }: VehicleEvidenc
     <Card>
       <CardHeader>
         <CardTitle>
-          {effectiveCaseId ? "Add Vehicle Evidence to Case" : "Vehicle Evidence"}
+          {effectiveCaseId
+            ? "Add Vehicle Evidence to Case"
+            : "Vehicle Evidence"}
         </CardTitle>
         <CardDescription>
           {effectiveCaseId ? (
             <>Record vehicle evidence and add it to Case #{effectiveCaseId}</>
           ) : (
-            <>Record information about vehicles found at or related to the crime scene</>
+            <>
+              Record information about vehicles found at or related to the crime
+              scene
+            </>
           )}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="title">Title <span className="text-red-500">*</span></Label>
+            <Label htmlFor="title">
+              Title <span className="text-red-500">*</span>
+            </Label>
             <Input
               id="title"
               placeholder="e.g., Suspect's vehicle"
@@ -159,7 +181,9 @@ export function VehicleEvidenceForm({ onSuccess, initialCaseId }: VehicleEvidenc
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="location">Location <span className="text-red-500">*</span></Label>
+            <Label htmlFor="location">
+              Location <span className="text-red-500">*</span>
+            </Label>
             <Input
               id="location"
               placeholder="Where was this vehicle found?"
@@ -172,7 +196,9 @@ export function VehicleEvidenceForm({ onSuccess, initialCaseId }: VehicleEvidenc
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="seen_at">Date & Time of Discovery <span className="text-red-500">*</span></Label>
+            <Label htmlFor="seen_at">
+              Date & Time of Discovery <span className="text-red-500">*</span>
+            </Label>
             <Input
               id="seen_at"
               type="datetime-local"
@@ -185,7 +211,9 @@ export function VehicleEvidenceForm({ onSuccess, initialCaseId }: VehicleEvidenc
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description <span className="text-red-500">*</span></Label>
+            <Label htmlFor="description">
+              Description <span className="text-red-500">*</span>
+            </Label>
             <Textarea
               id="description"
               placeholder="Detailed description and circumstances of discovery"
@@ -202,7 +230,9 @@ export function VehicleEvidenceForm({ onSuccess, initialCaseId }: VehicleEvidenc
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="vehicle_model">Vehicle Model <span className="text-red-500">*</span></Label>
+              <Label htmlFor="vehicle_model">
+                Vehicle Model <span className="text-red-500">*</span>
+              </Label>
               <Input
                 id="vehicle_model"
                 placeholder="e.g., Toyota Camry 2020"
@@ -217,7 +247,9 @@ export function VehicleEvidenceForm({ onSuccess, initialCaseId }: VehicleEvidenc
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="color">Color <span className="text-red-500">*</span></Label>
+              <Label htmlFor="color">
+                Color <span className="text-red-500">*</span>
+              </Label>
               <Input
                 id="color"
                 placeholder="e.g., Black, Silver"
@@ -231,7 +263,9 @@ export function VehicleEvidenceForm({ onSuccess, initialCaseId }: VehicleEvidenc
           </div>
 
           <div className="space-y-4">
-            <Label>Vehicle Identification <span className="text-red-500">*</span></Label>
+            <Label>
+              Vehicle Identification <span className="text-red-500">*</span>
+            </Label>
             <div className="flex gap-4">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
@@ -262,7 +296,9 @@ export function VehicleEvidenceForm({ onSuccess, initialCaseId }: VehicleEvidenc
                   id="registration_plate_number"
                   placeholder="e.g., ABC-1234"
                   {...register("registration_plate_number")}
-                  className={errors.registration_plate_number ? "border-red-500" : ""}
+                  className={
+                    errors.registration_plate_number ? "border-red-500" : ""
+                  }
                 />
                 {errors.registration_plate_number && (
                   <p className="text-sm text-red-500">

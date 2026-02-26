@@ -16,23 +16,27 @@ export const Header = () => {
   const isBaseUser = session?.user.role_title === "Base User";
 
   // Police roles (excluding cadet) can access testimonies for review
-  const canReviewTestimonies = session && [
-    "Police/Patrol Officer",
-    "Detective",
-    "Sergent",
-    "Captain",
-    "Chief"
-  ].includes(session.user.role_title);
+  const canReviewTestimonies =
+    session &&
+    [
+      "Police/Patrol Officer",
+      "Detective",
+      "Sergent",
+      "Captain",
+      "Chief",
+    ].includes(session.user.role_title);
 
   // Police roles that can access rewards
-  const canAccessRewards = session && [
-    "Police/Patrol Officer",
-    "Detective",
-    "Sergent",
-    "Captain",
-    "Chief",
-    "Administrator"
-  ].includes(session.user.role_title);
+  const canAccessRewards =
+    session &&
+    [
+      "Police/Patrol Officer",
+      "Detective",
+      "Sergent",
+      "Captain",
+      "Chief",
+      "Administrator",
+    ].includes(session.user.role_title);
 
   const canAccessCases =
     session && ALLOWED_CASE_ROLES.includes(session.user.role_title);
@@ -56,10 +60,11 @@ export const Header = () => {
               {(isBaseUser || canReviewTestimonies) && (
                 <Link
                   to="/testimonies"
-                  className={`transition-colors font-mono ${isActive("/testimonies")
-                    ? "text-primary font-semibold"
-                    : "text-foreground/60 hover:text-foreground/80"
-                    }`}
+                  className={`transition-colors font-mono ${
+                    isActive("/testimonies")
+                      ? "text-primary font-semibold"
+                      : "text-foreground/60 hover:text-foreground/80"
+                  }`}
                 >
                   Testimonies
                 </Link>
@@ -70,20 +75,22 @@ export const Header = () => {
                 <>
                   <Link
                     to="/cases"
-                    className={`transition-colors font-mono ${isActive("/cases")
-                      ? "text-primary font-semibold"
-                      : "text-foreground/60 hover:text-foreground/80"
-                      }`}
+                    className={`transition-colors font-mono ${
+                      isActive("/cases")
+                        ? "text-primary font-semibold"
+                        : "text-foreground/60 hover:text-foreground/80"
+                    }`}
                   >
                     Cases
                   </Link>
                   {isDetective && (
                     <Link
                       to="/detective-board"
-                      className={`transition-colors font-mono ${isActive("/detective-board")
-                        ? "text-primary font-semibold"
-                        : "text-foreground/60 hover:text-foreground/80"
-                        }`}
+                      className={`transition-colors font-mono ${
+                        isActive("/detective-board")
+                          ? "text-primary font-semibold"
+                          : "text-foreground/60 hover:text-foreground/80"
+                      }`}
                     >
                       Board
                     </Link>
@@ -93,10 +100,11 @@ export const Header = () => {
 
               <Link
                 to="/complaints"
-                className={`transition-colors font-mono ${isActive("/complaints")
-                  ? "text-primary font-semibold"
-                  : "text-foreground/60 hover:text-foreground/80"
-                  }`}
+                className={`transition-colors font-mono ${
+                  isActive("/complaints")
+                    ? "text-primary font-semibold"
+                    : "text-foreground/60 hover:text-foreground/80"
+                }`}
               >
                 Complaints
               </Link>
@@ -105,10 +113,11 @@ export const Header = () => {
               {canReviewTestimonies && (
                 <Link
                   to="/crime-scenes"
-                  className={`transition-colors font-mono ${isActive("/crime-scenes")
-                    ? "text-primary font-semibold"
-                    : "text-foreground/60 hover:text-foreground/80"
-                    }`}
+                  className={`transition-colors font-mono ${
+                    isActive("/crime-scenes")
+                      ? "text-primary font-semibold"
+                      : "text-foreground/60 hover:text-foreground/80"
+                  }`}
                 >
                   Scenes
                 </Link>
@@ -117,10 +126,11 @@ export const Header = () => {
               {isJudge && (
                 <Link
                   to="/court"
-                  className={`transition-colors font-mono ${isActive("/court")
-                    ? "text-primary font-semibold"
-                    : "text-foreground/60 hover:text-foreground/80"
-                    }`}
+                  className={`transition-colors font-mono ${
+                    isActive("/court")
+                      ? "text-primary font-semibold"
+                      : "text-foreground/60 hover:text-foreground/80"
+                  }`}
                 >
                   Court
                 </Link>
@@ -128,10 +138,11 @@ export const Header = () => {
               {isAdmin && (
                 <Link
                   to="/roles"
-                  className={`transition-colors font-mono ${isActive("/roles")
-                    ? "text-primary font-semibold"
-                    : "text-foreground/60 hover:text-foreground/80"
-                    }`}
+                  className={`transition-colors font-mono ${
+                    isActive("/roles")
+                      ? "text-primary font-semibold"
+                      : "text-foreground/60 hover:text-foreground/80"
+                  }`}
                 >
                   Roles
                 </Link>

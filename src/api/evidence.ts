@@ -298,7 +298,7 @@ export const deleteOtherEvidence = async (id: number): Promise<void> => {
 // ==================== Testimony Confirmation ====================
 export const confirmTestimony = async (
   id: number,
-  data: { crime_level: number }
+  data: { crime_level: number },
 ): Promise<void> => {
   await http.post(`/witness/testimonies/${id}/confirm/`, data);
 };

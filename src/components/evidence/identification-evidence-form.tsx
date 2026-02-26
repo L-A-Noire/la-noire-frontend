@@ -41,9 +41,12 @@ export function IdentificationEvidenceForm({
   const [newFieldValue, setNewFieldValue] = useState("");
 
   // Determine the case ID - from props (if provided) or from URL params
-  const effectiveCaseId = initialCaseId !== undefined
-    ? initialCaseId
-    : (urlCaseId ? parseInt(urlCaseId) : null);
+  const effectiveCaseId =
+    initialCaseId !== undefined
+      ? initialCaseId
+      : urlCaseId
+        ? parseInt(urlCaseId)
+        : null;
 
   const {
     register,
@@ -82,7 +85,7 @@ export function IdentificationEvidenceForm({
       console.error("Create error:", error);
       toast.error(
         error.response?.data?.message ||
-        "Failed to record identification evidence",
+          "Failed to record identification evidence",
       );
     },
   });
@@ -116,8 +119,14 @@ export function IdentificationEvidenceForm({
     }
 
     // Validate required fields
-    if (!data.title || !data.description || !data.location || !data.seen_at ||
-      !data.owner_first_name || !data.owner_last_name) {
+    if (
+      !data.title ||
+      !data.description ||
+      !data.location ||
+      !data.seen_at ||
+      !data.owner_first_name ||
+      !data.owner_last_name
+    ) {
       toast.error("Please fill in all required fields");
       return;
     }
@@ -136,20 +145,30 @@ export function IdentificationEvidenceForm({
     <Card>
       <CardHeader>
         <CardTitle>
-          {effectiveCaseId ? "Add Identification to Case" : "Identification Documents"}
+          {effectiveCaseId
+            ? "Add Identification to Case"
+            : "Identification Documents"}
         </CardTitle>
         <CardDescription>
           {effectiveCaseId ? (
-            <>Record identification evidence and add it to Case #{effectiveCaseId}</>
+            <>
+              Record identification evidence and add it to Case #
+              {effectiveCaseId}
+            </>
           ) : (
-            <>Record identification documents or personal items found at the crime scene</>
+            <>
+              Record identification documents or personal items found at the
+              crime scene
+            </>
           )}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="title">Title <span className="text-red-500">*</span></Label>
+            <Label htmlFor="title">
+              Title <span className="text-red-500">*</span>
+            </Label>
             <Input
               id="title"
               placeholder="e.g., Driver's license, ID card"
@@ -162,7 +181,9 @@ export function IdentificationEvidenceForm({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="location">Location <span className="text-red-500">*</span></Label>
+            <Label htmlFor="location">
+              Location <span className="text-red-500">*</span>
+            </Label>
             <Input
               id="location"
               placeholder="Where was this document found?"
@@ -175,7 +196,9 @@ export function IdentificationEvidenceForm({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="seen_at">Date & Time of Discovery <span className="text-red-500">*</span></Label>
+            <Label htmlFor="seen_at">
+              Date & Time of Discovery <span className="text-red-500">*</span>
+            </Label>
             <Input
               id="seen_at"
               type="datetime-local"
@@ -188,7 +211,9 @@ export function IdentificationEvidenceForm({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description <span className="text-red-500">*</span></Label>
+            <Label htmlFor="description">
+              Description <span className="text-red-500">*</span>
+            </Label>
             <Textarea
               id="description"
               placeholder="Details about where and how the document was found"
@@ -205,7 +230,9 @@ export function IdentificationEvidenceForm({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="owner_first_name">Owner's First Name <span className="text-red-500">*</span></Label>
+              <Label htmlFor="owner_first_name">
+                Owner's First Name <span className="text-red-500">*</span>
+              </Label>
               <Input
                 id="owner_first_name"
                 placeholder="First name from document"
@@ -220,7 +247,9 @@ export function IdentificationEvidenceForm({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="owner_last_name">Owner's Last Name <span className="text-red-500">*</span></Label>
+              <Label htmlFor="owner_last_name">
+                Owner's Last Name <span className="text-red-500">*</span>
+              </Label>
               <Input
                 id="owner_last_name"
                 placeholder="Last name from document"

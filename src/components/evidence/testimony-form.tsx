@@ -28,7 +28,10 @@ interface TestimonyFormProps {
   initialCaseId?: number | null; // Allow passing case ID as prop
 }
 
-export function TestimonyForm({ onSuccess, initialCaseId }: TestimonyFormProps) {
+export function TestimonyForm({
+  onSuccess,
+  initialCaseId,
+}: TestimonyFormProps) {
   const navigate = useNavigate();
   const { caseId: urlCaseId } = useParams<{ caseId: string }>();
   const { session } = useAuthStore();
@@ -36,12 +39,17 @@ export function TestimonyForm({ onSuccess, initialCaseId }: TestimonyFormProps) 
     [],
   );
   const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState<{ [key: string]: boolean }>({});
+  const [uploadProgress, setUploadProgress] = useState<{
+    [key: string]: boolean;
+  }>({});
 
   // Determine the case ID - from props (if provided) or from URL params
-  const effectiveCaseId = initialCaseId !== undefined
-    ? initialCaseId
-    : (urlCaseId ? parseInt(urlCaseId) : null);
+  const effectiveCaseId =
+    initialCaseId !== undefined
+      ? initialCaseId
+      : urlCaseId
+        ? parseInt(urlCaseId)
+        : null;
 
   const {
     register,
@@ -83,8 +91,8 @@ export function TestimonyForm({ onSuccess, initialCaseId }: TestimonyFormProps) 
       console.error("Create testimony error:", error);
       toast.error(
         error.response?.data?.message ||
-        error.response?.data?.detail ||
-        "Failed to submit testimony"
+          error.response?.data?.detail ||
+          "Failed to submit testimony",
       );
     },
   });
@@ -102,17 +110,17 @@ export function TestimonyForm({ onSuccess, initialCaseId }: TestimonyFormProps) 
 
     try {
       const uploadPromises = files.map(async (file) => {
-        setUploadProgress(prev => ({ ...prev, [file.name]: true }));
+        setUploadProgress((prev) => ({ ...prev, [file.name]: true }));
 
         try {
           const uploaded = await uploadAttachment({
             file: file,
             provided_by: session.user.id,
           });
-          setUploadProgress(prev => ({ ...prev, [file.name]: false }));
+          setUploadProgress((prev) => ({ ...prev, [file.name]: false }));
           return uploaded;
         } catch (error) {
-          setUploadProgress(prev => ({ ...prev, [file.name]: false }));
+          setUploadProgress((prev) => ({ ...prev, [file.name]: false }));
           throw error;
         }
       });
@@ -123,16 +131,18 @@ export function TestimonyForm({ onSuccess, initialCaseId }: TestimonyFormProps) 
       setUploadedAttachments((prev) => [...prev, ...successfulUploads]);
       setValue(
         "attachments",
-        [...uploadedAttachments, ...successfulUploads].map((a) => a.id)
+        [...uploadedAttachments, ...successfulUploads].map((a) => a.id),
       );
 
-      toast.success(`${successfulUploads.length} file(s) uploaded successfully`);
+      toast.success(
+        `${successfulUploads.length} file(s) uploaded successfully`,
+      );
     } catch (error: any) {
       console.error("Upload error:", error);
       toast.error(
         error.response?.data?.message ||
-        error.response?.data?.detail ||
-        "Failed to upload files"
+          error.response?.data?.detail ||
+          "Failed to upload files",
       );
     } finally {
       setIsUploading(false);
@@ -145,7 +155,7 @@ export function TestimonyForm({ onSuccess, initialCaseId }: TestimonyFormProps) 
     setUploadedAttachments(newAttachments);
     setValue(
       "attachments",
-      newAttachments.map((a) => a.id)
+      newAttachments.map((a) => a.id),
     );
   };
 
@@ -156,7 +166,13 @@ export function TestimonyForm({ onSuccess, initialCaseId }: TestimonyFormProps) 
     }
 
     // Validate required fields
-    if (!data.title || !data.description || !data.transcription || !data.location || !data.seen_at) {
+    if (
+      !data.title ||
+      !data.description ||
+      !data.transcription ||
+      !data.location ||
+      !data.seen_at
+    ) {
       toast.error("Please fill in all required fields");
       return;
     }
@@ -180,14 +196,21 @@ export function TestimonyForm({ onSuccess, initialCaseId }: TestimonyFormProps) 
     <Card>
       <CardHeader>
         <CardTitle>
-          {effectiveCaseId ? "Add Testimony to Case" : "Submit Witness Testimony"}
+          {effectiveCaseId
+            ? "Add Testimony to Case"
+            : "Submit Witness Testimony"}
         </CardTitle>
         <CardDescription>
           {effectiveCaseId ? (
-            <>Record a witness testimony and add it to Case #{effectiveCaseId}</>
+            <>
+              Record a witness testimony and add it to Case #{effectiveCaseId}
+            </>
           ) : (
-            <>Anyone can submit a witness testimony about a crime. After submission,
-              police officers will review and may create a crime scene.</>
+            <>
+              Anyone can submit a witness testimony about a crime. After
+              submission, police officers will review and may create a crime
+              scene.
+            </>
           )}
         </CardDescription>
       </CardHeader>
@@ -275,7 +298,9 @@ export function TestimonyForm({ onSuccess, initialCaseId }: TestimonyFormProps) 
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="attachments">Attachments (Images, Videos, Audio)</Label>
+            <Label htmlFor="attachments">
+              Attachments (Images, Videos, Audio)
+            </Label>
             <Input
               id="attachments"
               type="file"
@@ -287,10 +312,8 @@ export function TestimonyForm({ onSuccess, initialCaseId }: TestimonyFormProps) 
             />
 
             {/* Upload Progress */}
-            {Object.keys(uploadProgress).some(key => uploadProgress[key]) && (
-              <div className="text-sm text-blue-600">
-                Uploading files...
-              </div>
+            {Object.keys(uploadProgress).some((key) => uploadProgress[key]) && (
+              <div className="text-sm text-blue-600">Uploading files...</div>
             )}
 
             {/* Uploaded Files List */}
@@ -332,13 +355,13 @@ export function TestimonyForm({ onSuccess, initialCaseId }: TestimonyFormProps) 
             className="w-full"
             disabled={createMutation.isPending || isUploading}
           >
-            {createMutation.isPending ? (
-              "Submitting..."
-            ) : isUploading ? (
-              "Uploading files..."
-            ) : (
-              effectiveCaseId ? "Add Testimony to Case" : "Submit Testimony"
-            )}
+            {createMutation.isPending
+              ? "Submitting..."
+              : isUploading
+                ? "Uploading files..."
+                : effectiveCaseId
+                  ? "Add Testimony to Case"
+                  : "Submit Testimony"}
           </Button>
 
           {/* Error Display */}
