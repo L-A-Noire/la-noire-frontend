@@ -101,7 +101,21 @@ export function App() {
           <Route path="crime-scenes/:id" element={<CrimeSceneDetailPage />} />
 
           <Route path="reports" element={<MyReportsPage />} />
-          <Route path="reward/reports" element={<RewardReportsPage />} />
+          <Route
+            element={
+              <RoleGuard
+                allowedRoles={[
+                  "Police/Patrol Officer",
+                  "Detective",
+                  "Sergent",
+                  "Captain",
+                  "Chief",
+                ]}
+              />
+            }
+          >
+            <Route path="reward/reports" element={<RewardReportsPage />} />
+          </Route>
           <Route path="testimonies" element={<TestimoniesListPage />} />
           <Route
             path="testimonies/new"

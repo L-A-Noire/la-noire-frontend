@@ -34,7 +34,7 @@ export const Header = () => {
       "Chief",
     ].includes(session.user.role_title);
 
-  // Police roles that can access rewards
+  // Police roles that can access rewards (verify/claim)
   const canAccessRewards =
     session &&
     [
@@ -44,6 +44,17 @@ export const Header = () => {
       "Captain",
       "Chief",
       "Administrator",
+    ].includes(session.user.role_title);
+
+  // Police roles only - can review reward tips (Officer → Detective flow)
+  const canReviewTips =
+    session &&
+    [
+      "Police/Patrol Officer",
+      "Detective",
+      "Sergent",
+      "Captain",
+      "Chief",
     ].includes(session.user.role_title);
 
   const canAccessCases =
@@ -117,18 +128,20 @@ export const Header = () => {
                 Complaints
               </Link>
 
-              <Link
-                to="/reports"
-                className={`transition-colors font-mono ${
-                  isActive("/reports")
-                    ? "text-primary font-semibold"
-                    : "text-foreground/60 hover:text-foreground/80"
-                }`}
-              >
-                My Reports
-              </Link>
+              {isBaseUser && (
+                <Link
+                  to="/reports"
+                  className={`transition-colors font-mono ${
+                    isActive("/reports")
+                      ? "text-primary font-semibold"
+                      : "text-foreground/60 hover:text-foreground/80"
+                  }`}
+                >
+                  My Reports
+                </Link>
+              )}
 
-              {canAccessRewards && (
+              {canReviewTips && (
                 <Link
                   to="/reward/reports"
                   className={`transition-colors font-mono ${

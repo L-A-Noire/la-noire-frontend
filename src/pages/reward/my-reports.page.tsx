@@ -1,3 +1,4 @@
+import { Navigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useAuthStore } from "@/stores/auth.store";
 import { getReports } from "@/api/reward-reports";
@@ -56,18 +57,11 @@ export default function MyReportsPage() {
   );
 
   if (!session) {
-    return (
-      <div className="container mx-auto py-8">
-        <Card className="border-destructive/50">
-          <CardHeader>
-            <CardTitle className="text-destructive">Login Required</CardTitle>
-            <CardDescription>
-              Please log in to view your tip reports.
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      </div>
-    );
+    return <Navigate to="/login" replace />;
+  }
+
+  if (session.user.role_title !== "Base User") {
+    return <Navigate to="/" replace />;
   }
 
   return (
