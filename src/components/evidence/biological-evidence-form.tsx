@@ -21,19 +21,27 @@ import {
 import { createBiologicalEvidence, uploadImage } from "@/api/evidence";
 import type { Image } from "@/types/evidence.type";
 import { useAuthStore } from "@/stores/auth.store";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 interface BiologicalEvidenceFormProps {
   onSuccess?: () => void;
+  initialCaseId?: number | null;
 }
 
 export function BiologicalEvidenceForm({
   onSuccess,
+  initialCaseId,
 }: BiologicalEvidenceFormProps) {
-  const { caseId } = useParams<{ caseId: string }>();
+  const navigate = useNavigate();
+  const { caseId: urlCaseId } = useParams<{ caseId: string }>();
   const { session } = useAuthStore();
   const [uploadedImages, setUploadedImages] = useState<Image[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+
+  // Determine the case ID - from props (if provided) or from URL params
+  const effectiveCaseId = initialCaseId !== undefined
+    ? initialCaseId
+    : (urlCaseId ? parseInt(urlCaseId) : null);
 
   const {
     register,
@@ -44,19 +52,31 @@ export function BiologicalEvidenceForm({
   } = useForm<BiologicalEvidenceFormData>({
     resolver: zodResolver(biologicalEvidenceSchema),
     defaultValues: {
-      case: caseId ? parseInt(caseId) : 0,
+      case: effectiveCaseId,
     },
   });
 
   const createMutation = useMutation({
     mutationFn: createBiologicalEvidence,
-    onSuccess: () => {
-      toast.success("Biological evidence recorded successfully");
+    onSuccess: (data) => {
+      const message = data.case
+        ? "Biological evidence added to case successfully."
+        : "Biological evidence recorded successfully.";
+
+      toast.success(message);
       reset();
       setUploadedImages([]);
-      onSuccess?.();
+
+      if (onSuccess) {
+        onSuccess();
+      } else if (effectiveCaseId) {
+        navigate(`/cases/${effectiveCaseId}/evidence`);
+      } else {
+        navigate(-1);
+      }
     },
     onError: (error: any) => {
+      console.error("Create error:", error);
       toast.error(error.response?.data?.message || "Failed to record evidence");
     },
   });
@@ -109,7 +129,7 @@ export function BiologicalEvidenceForm({
       return;
     }
 
-    if (!caseId) {
+    if (!effectiveCaseId) {
       toast.error("Case ID is missing");
       return;
     }
@@ -119,11 +139,17 @@ export function BiologicalEvidenceForm({
       return;
     }
 
+    // Validate required fields
+    if (!data.title || !data.description || !data.location || !data.seen_at) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
     createMutation.mutate({
       ...data,
-      case: parseInt(caseId),
+      case: effectiveCaseId,
       images: uploadedImages.map((img) => img.id),
-      created_at: new Date().toISOString(),
+      seen_at: new Date(data.seen_at).toISOString(),
       created_by: session.user.id,
     });
   };
@@ -131,20 +157,26 @@ export function BiologicalEvidenceForm({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Biological & Medical Evidence</CardTitle>
+        <CardTitle>
+          {effectiveCaseId ? "Add Biological Evidence to Case" : "Biological & Medical Evidence"}
+        </CardTitle>
         <CardDescription>
-          Record biological samples (blood, hair, fingerprints) requiring
-          forensic analysis
+          {effectiveCaseId ? (
+            <>Record biological evidence and add it to Case #{effectiveCaseId}</>
+          ) : (
+            <>Record biological samples (blood, hair, fingerprints) requiring forensic analysis</>
+          )}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="title">Title</Label>
+            <Label htmlFor="title">Title <span className="text-red-500">*</span></Label>
             <Input
               id="title"
               placeholder="e.g., Blood sample from crime scene"
               {...register("title")}
+              className={errors.title ? "border-red-500" : ""}
             />
             {errors.title && (
               <p className="text-sm text-red-500">{errors.title.message}</p>
@@ -152,12 +184,39 @@ export function BiologicalEvidenceForm({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="location">Location <span className="text-red-500">*</span></Label>
+            <Input
+              id="location"
+              placeholder="Where was this evidence found?"
+              {...register("location")}
+              className={errors.location ? "border-red-500" : ""}
+            />
+            {errors.location && (
+              <p className="text-sm text-red-500">{errors.location.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="seen_at">Date & Time of Collection <span className="text-red-500">*</span></Label>
+            <Input
+              id="seen_at"
+              type="datetime-local"
+              {...register("seen_at")}
+              className={errors.seen_at ? "border-red-500" : ""}
+            />
+            {errors.seen_at && (
+              <p className="text-sm text-red-500">{errors.seen_at.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="description">Description <span className="text-red-500">*</span></Label>
             <Textarea
               id="description"
               placeholder="Detailed description of the evidence and where it was found"
               rows={4}
               {...register("description")}
+              className={errors.description ? "border-red-500" : ""}
             />
             {errors.description && (
               <p className="text-sm text-red-500">
@@ -167,7 +226,7 @@ export function BiologicalEvidenceForm({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="images">Evidence Images (Required)</Label>
+            <Label htmlFor="images">Evidence Images <span className="text-red-500">*</span></Label>
             <Input
               id="images"
               type="file"
@@ -221,7 +280,7 @@ export function BiologicalEvidenceForm({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="coronary">Coronary (Optional)</Label>
+              <Label htmlFor="coronary">Coronary <span className="text-red-500">*</span></Label>
               <Input
                 id="coronary"
                 type="number"
@@ -245,7 +304,11 @@ export function BiologicalEvidenceForm({
           >
             {createMutation.isPending
               ? "Recording..."
-              : "Record Biological Evidence"}
+              : isUploading
+                ? "Uploading images..."
+                : effectiveCaseId
+                  ? "Add to Case"
+                  : "Record Biological Evidence"}
           </Button>
         </form>
       </CardContent>
