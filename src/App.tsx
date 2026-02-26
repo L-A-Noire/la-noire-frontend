@@ -39,6 +39,8 @@ import { ReviewSuspectsPage } from "@/pages/cases/review-suspects.page";
 import PaymentPage from "@/pages/payment.page";
 import SuccessPaymentPage from "@/pages/success-payment.page";
 import FailedPaymentPage from "@/pages/failed-payment.page";
+import RewardReportsPage from "@/pages/reward/reward-reports.page";
+import MyReportsPage from "@/pages/reward/my-reports.page";
 
 export function App() {
   return (
@@ -98,6 +100,8 @@ export function App() {
           <Route path="crime-scenes/new" element={<ReportCrimeScenePage />} />
           <Route path="crime-scenes/:id" element={<CrimeSceneDetailPage />} />
 
+          <Route path="reports" element={<MyReportsPage />} />
+          <Route path="reward/reports" element={<RewardReportsPage />} />
           <Route path="testimonies" element={<TestimoniesListPage />} />
           <Route
             path="testimonies/new"

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
@@ -14,7 +15,8 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import type { Suspect } from "@/types/suspect.type";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Alert02Icon } from "@hugeicons/core-free-icons";
+import { Alert02Icon, FileEditIcon } from "@hugeicons/core-free-icons";
+import { ReportTipDialog } from "@/components/wanted-suspects/report-tip-dialog";
 
 export default function WantedSuspects() {
   const {
@@ -99,6 +101,7 @@ export default function WantedSuspects() {
 }
 
 function WantedSuspectItem({ suspect }: { suspect: Suspect }) {
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const getInitials = (name?: string, nickname?: string) => {
     if (name) {
       const parts = name.trim().split(/\s+/);
@@ -191,14 +194,23 @@ function WantedSuspectItem({ suspect }: { suspect: Suspect }) {
         )}
       </div>
 
-      <Button
-        size="sm"
-        variant="ghost"
-        className="w-full text-xs h-7 mt-1 hover:bg-destructive hover:text-destructive-foreground"
-        asChild
-      >
-        <Link to="/cases">View Cases</Link>
-      </Button>
+      <div className="flex gap-2 mt-1">
+        <Button
+          size="sm"
+       variant="outline"
+          className="flex-1 text-xs h-7 hover:bg-destructive hover:text-destructive-foreground hover:cursor-pointer"
+          onClick={() => setReportDialogOpen(true)}
+        >
+          <HugeiconsIcon icon={FileEditIcon} className="mr-1.5 h-3.5 w-3.5" />
+          Report Tip
+        </Button>
+      </div>
+
+      <ReportTipDialog
+        open={reportDialogOpen}
+        onOpenChange={setReportDialogOpen}
+        suspect={suspect}
+      />
     </div>
   );
 }

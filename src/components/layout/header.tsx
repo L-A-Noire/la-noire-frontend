@@ -1,15 +1,21 @@
 // src/components/layout/header.tsx (updated)
+import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuthStore } from "@/stores/auth.store";
 import { Button } from "@/components/ui/button";
 import { ALLOWED_CASE_ROLES } from "@/types/role.type";
 import { RewardMenu } from "@/components/rewards/reward-menu";
+import { ClaimRewardDialog } from "@/components/rewards/claim-reward-dialog";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { MoneyReceiveSquareIcon } from "@hugeicons/core-free-icons";
+import {
+  MoneyReceiveSquareIcon,
+  GiftIcon,
+} from "@hugeicons/core-free-icons";
 
 export const Header = () => {
   const session = useAuthStore((s) => s.session);
   const { pathname } = useLocation();
+  const [claimDialogOpen, setClaimDialogOpen] = useState(false);
   const isAdmin = session?.user.role_title === "Administrator";
   const isDetective = session?.user.role_title === "Detective";
   const isJudge = session?.user.role_title === "Judge";
@@ -111,6 +117,30 @@ export const Header = () => {
                 Complaints
               </Link>
 
+              <Link
+                to="/reports"
+                className={`transition-colors font-mono ${
+                  isActive("/reports")
+                    ? "text-primary font-semibold"
+                    : "text-foreground/60 hover:text-foreground/80"
+                }`}
+              >
+                My Reports
+              </Link>
+
+              {canAccessRewards && (
+                <Link
+                  to="/reward/reports"
+                  className={`transition-colors font-mono ${
+                    isActive("/reward/reports")
+                      ? "text-primary font-semibold"
+                      : "text-foreground/60 hover:text-foreground/80"
+                  }`}
+                >
+                  Review Tips
+                </Link>
+              )}
+
               {/* Crime Scenes - for police roles */}
               {canReviewTestimonies && (
                 <Link
@@ -162,6 +192,17 @@ export const Header = () => {
               <span className="hidden md:inline">Coupon</span>
             </Link>
           </Button>
+          {session && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="relative gap-2"
+              onClick={() => setClaimDialogOpen(true)}
+            >
+              <HugeiconsIcon icon={GiftIcon} className="h-4 w-4" />
+              <span className="hidden md:inline">Claim Reward</span>
+            </Button>
+          )}
           {session ? (
             <div className="flex items-center gap-4">
               {canAccessRewards && <RewardMenu />}
@@ -202,6 +243,11 @@ export const Header = () => {
           )}
         </div>
       </div>
+
+      <ClaimRewardDialog
+        open={claimDialogOpen}
+        onOpenChange={setClaimDialogOpen}
+      />
     </header>
   );
 };
