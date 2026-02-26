@@ -38,7 +38,9 @@ describe("ComplaintStatusBadge", () => {
   });
 
   it("falls back gracefully for unknown status", () => {
-    render(<ComplaintStatusBadge status={"unknown_status" as ComplaintStatus} />);
+    render(
+      <ComplaintStatusBadge status={"unknown_status" as ComplaintStatus} />,
+    );
     expect(screen.getByText("unknown_status")).toBeInTheDocument();
   });
 });
