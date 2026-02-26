@@ -45,12 +45,8 @@ export const FileComplaintPage = () => {
       toast.success("Complaint filed successfully. Await cadet review.");
       navigate("/complaints");
     },
-    onError: (error: any) => {
-      console.error(error);
-      toast.error(
-        error.response?.data?.detail ||
-          "Failed to file complaint. Please try again.",
-      );
+    onError: () => {
+      toast.error("Failed to file complaint. Please try again.");
     },
   });
 

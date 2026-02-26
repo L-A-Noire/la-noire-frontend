@@ -184,7 +184,7 @@ export function DetectiveBoardPage() {
         console.error(err);
         toast.error("Failed to save image");
       });
-  }, [selectedCaseId]);
+  }, [selectedCaseId, nodes]);
 
   return (
     <div className="h-[calc(100vh-100px)] flex flex-col gap-4">

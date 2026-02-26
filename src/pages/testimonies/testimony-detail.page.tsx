@@ -95,10 +95,8 @@ export const TestimonyDetailPage = () => {
       resetConfirm();
       refetch();
     },
-    onError: (error: any) => {
-      toast.error(
-        error.response?.data?.detail || "Failed to confirm testimony",
-      );
+    onError: () => {
+      toast.error("Failed to confirm testimony");
     },
   });
 
@@ -109,8 +107,8 @@ export const TestimonyDetailPage = () => {
       toast.success("Testimony deleted");
       navigate("/testimonies");
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.detail || "Failed to delete testimony");
+    onError: () => {
+      toast.error("Failed to delete testimony");
     },
   });
 

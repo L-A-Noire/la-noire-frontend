@@ -70,7 +70,7 @@ describe("vehicleEvidenceSchema", () => {
   });
 
   it("should reject missing vehicle_model", () => {
-    const { vehicle_model, ...rest } = validWithPlate;
+    const { vehicle_model: _, ...rest } = validWithPlate;
     const result = vehicleEvidenceSchema.safeParse(rest);
     expect(result.success).toBe(false);
   });

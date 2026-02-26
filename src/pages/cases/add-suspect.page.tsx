@@ -100,37 +100,8 @@ export const AddSuspectPage = () => {
       toast.success("Suspect added to case successfully");
       navigate(`/cases/${id}`);
     },
-    onError: (error: any) => {
-      console.error("Error adding suspect:", error);
-      console.error("Error response data:", error.response?.data);
-      console.error("Error status:", error.response?.status);
-      console.error("Error headers:", error.response?.headers);
-
-      if (error.response?.data) {
-        const errorData = error.response.data;
-
-        if (errorData.added_by) {
-          toast.error(`Added by error: ${JSON.stringify(errorData.added_by)}`);
-        } else if (errorData.suspect) {
-          toast.error(
-            `Suspect error: ${errorData.suspect[0] || errorData.suspect}`,
-          );
-        } else if (errorData.phone) {
-          toast.error(`Phone error: ${errorData.phone[0]}`);
-        } else if (errorData.national_id) {
-          toast.error(`National ID error: ${errorData.national_id[0]}`);
-        } else if (errorData.username) {
-          toast.error(`Username error: ${errorData.username[0]}`);
-        } else if (errorData.email) {
-          toast.error(`Email error: ${errorData.email[0]}`);
-        } else if (errorData.message) {
-          toast.error(errorData.message);
-        } else {
-          toast.error("Failed to add suspect");
-        }
-      } else {
-        toast.error("Failed to add suspect");
-      }
+    onError: (error: Error) => {
+      console.error("Error adding suspect:", error.message);
     },
   });
 

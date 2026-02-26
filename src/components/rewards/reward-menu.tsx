@@ -28,6 +28,7 @@ import {
   LicenseIcon,
 } from "@hugeicons/core-free-icons";
 import { verifyReward, claimReward } from "@/api/rewards";
+import type { RewardDetail } from "@/types/reward.type";
 import { toast } from "react-toastify";
 import { format } from "date-fns";
 
@@ -50,7 +51,7 @@ export function RewardMenu() {
   const [fullName, setFullName] = useState("");
   const [verificationResult, setVerificationResult] = useState<{
     isValid: boolean;
-    reward?: any;
+    reward?: RewardDetail;
     error?: string;
   } | null>(null);
   const [isVerifying, setIsVerifying] = useState(false);
@@ -78,10 +79,10 @@ export function RewardMenu() {
       }
       setIsVerifying(false);
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       setVerificationResult({
         isValid: false,
-        error: error.response?.data?.message || "Failed to verify reward",
+        error: error.message || "Failed to verify reward",
       });
       toast.error("Verification failed");
       setIsVerifying(false);
@@ -98,8 +99,8 @@ export function RewardMenu() {
       setFullName("");
       setVerificationResult(null);
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Failed to claim reward");
+    onError: () => {
+      toast.error("Failed to claim reward");
     },
   });
 

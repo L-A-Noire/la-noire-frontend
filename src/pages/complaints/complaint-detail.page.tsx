@@ -159,9 +159,8 @@ export const ComplaintDetailPage = () => {
         refetch();
       }, 100);
     },
-    onError: (error: any) => {
-      console.error("Update error:", error);
-      toast.error(error.response?.data?.detail || "Failed to update complaint");
+    onError: () => {
+      toast.error("Failed to update complaint");
     },
   });
 
@@ -175,8 +174,8 @@ export const ComplaintDetailPage = () => {
       toast.success("Complaint reviewed successfully");
       refetch();
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.detail || "Failed to review complaint");
+    onError: () => {
+      toast.error("Failed to review complaint");
     },
   });
 
@@ -217,9 +216,8 @@ export const ComplaintDetailPage = () => {
       toast.success("Case created successfully from complaint");
       navigate("/cases");
     },
-    onError: (error: any) => {
-      console.error("Error creating case:", error);
-      toast.error(error.response?.data?.detail || "Failed to create case");
+    onError: () => {
+      toast.error("Failed to create case");
     },
   });
 
@@ -272,8 +270,8 @@ export const ComplaintDetailPage = () => {
         refetch();
       }
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.detail || "Failed to review complaint");
+    onError: () => {
+      toast.error("Failed to review complaint");
     },
   });
 

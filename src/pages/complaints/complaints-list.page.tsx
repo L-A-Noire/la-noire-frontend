@@ -182,7 +182,9 @@ export const ComplaintsListPage = () => {
                 <Label htmlFor="status">Status</Label>
                 <Select
                   value={statusFilter}
-                  onValueChange={(value: any) => setStatusFilter(value)}
+                  onValueChange={(value) =>
+                    setStatusFilter(value as ComplaintStatus | "all")
+                  }
                 >
                   <SelectTrigger className="w-[200px]">
                     <SelectValue />

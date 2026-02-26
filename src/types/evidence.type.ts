@@ -94,7 +94,7 @@ export interface VehicleEvidence extends BaseEvidence {
   serial_number?: string | null;
 }
 
-export interface VehicleEvidenceDetail extends VehicleEvidence {}
+export type VehicleEvidenceDetail = VehicleEvidence;
 
 export interface CreateVehicleEvidenceRequest {
   title: string;
@@ -113,17 +113,17 @@ export interface CreateVehicleEvidenceRequest {
 export interface IdentificationEvidence extends BaseEvidence {
   owner_first_name: string;
   owner_last_name: string;
-  information?: Record<string, any>;
+  information?: Record<string, unknown>;
 }
 
-export interface IdentificationEvidenceDetail extends IdentificationEvidence {}
+export type IdentificationEvidenceDetail = IdentificationEvidence;
 
 export interface CreateIdentificationEvidenceRequest {
   title: string;
   description: string;
   owner_first_name: string;
   owner_last_name: string;
-  information?: Record<string, any>;
+  information?: Record<string, unknown>;
   seen_at: string;
   created_by: number;
   case: number;
@@ -131,9 +131,9 @@ export interface CreateIdentificationEvidenceRequest {
 }
 
 // Other Evidence
-export interface OtherEvidence extends BaseEvidence {}
+export type OtherEvidence = BaseEvidence;
 
-export interface OtherEvidenceDetail extends OtherEvidence {}
+export type OtherEvidenceDetail = OtherEvidence;
 
 export interface CreateOtherEvidenceRequest {
   title: string;

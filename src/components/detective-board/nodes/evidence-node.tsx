@@ -19,14 +19,15 @@ import {
 
 import { HugeiconsIcon } from "@hugeicons/react";
 
-const getIcon = (evidence: any) => {
-  if (evidence.transcription)
+const getIcon = (evidence: BaseEvidence) => {
+  const e = evidence as unknown as Record<string, unknown>;
+  if (e.transcription)
     return <HugeiconsIcon icon={ArchiveIcon} className="size-4" />;
-  if (evidence.vehicle_model)
+  if (e.vehicle_model)
     return <HugeiconsIcon icon={Car01Icon} className="size-4" />;
-  if (evidence.images)
+  if (e.images)
     return <HugeiconsIcon icon={InjectionIcon} className="size-4" />;
-  if (evidence.owner_first_name)
+  if (e.owner_first_name)
     return <HugeiconsIcon icon={FingerPrintIcon} className="size-4" />;
 
   return <HugeiconsIcon icon={ArchiveIcon} className="size-4" />;

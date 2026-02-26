@@ -108,10 +108,8 @@ export const CrimeSceneDetailPage = () => {
       toast.success("Crime scene confirmed");
       refetch();
     },
-    onError: (error: any) => {
-      toast.error(
-        error.response?.data?.detail || "Failed to confirm crime scene",
-      );
+    onError: () => {
+      toast.error("Failed to confirm crime scene");
     },
   });
 
@@ -129,10 +127,8 @@ export const CrimeSceneDetailPage = () => {
       resetCrimeLevel();
       refetch();
     },
-    onError: (error: any) => {
-      toast.error(
-        error.response?.data?.detail || "Failed to confirm crime scene",
-      );
+    onError: () => {
+      toast.error("Failed to confirm crime scene");
     },
   });
 
@@ -143,10 +139,8 @@ export const CrimeSceneDetailPage = () => {
       toast.success("Crime scene deleted");
       navigate("/crime-scenes");
     },
-    onError: (error: any) => {
-      toast.error(
-        error.response?.data?.detail || "Failed to delete crime scene",
-      );
+    onError: () => {
+      toast.error("Failed to delete crime scene");
     },
   });
 

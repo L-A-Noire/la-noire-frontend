@@ -11,6 +11,7 @@ interface ApiError {
 export function useApiError() {
   const [errors, setErrors] = useState<ApiError | null>(null);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleError = (error: any) => {
     const message = extractErrorMessage(error);
     const status = error.response?.status;

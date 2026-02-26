@@ -52,11 +52,8 @@ export const ReportCrimeScenePage = () => {
       toast.success("Crime scene reported successfully");
       navigate("/crime-scenes");
     },
-    onError: (error: any) => {
-      console.error(error);
-      toast.error(
-        error.response?.data?.detail || "Failed to report crime scene",
-      );
+    onError: () => {
+      toast.error("Failed to report crime scene");
     },
   });
 

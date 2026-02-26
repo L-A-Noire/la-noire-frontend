@@ -1,18 +1,19 @@
 import { Handle, Position, useReactFlow } from "@xyflow/react";
 import type { NodeProps } from "@xyflow/react";
 import { Textarea } from "@/components/ui/textarea";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Cancel01Icon } from "@hugeicons/core-free-icons";
 
 export function NoteNode({ data, id }: NodeProps) {
   const { deleteElements } = useReactFlow();
+  const [label, setLabel] = useState(data.label as string);
 
   const onChange = useCallback(
     (evt: React.ChangeEvent<HTMLTextAreaElement>) => {
-      data.label = evt.target.value;
+      setLabel(evt.target.value);
     },
-    [data],
+    [],
   );
 
   const onDelete = useCallback(() => {
@@ -34,7 +35,7 @@ export function NoteNode({ data, id }: NodeProps) {
       <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-primary shadow-sm border border-primary z-10" />
 
       <Textarea
-        defaultValue={data.label as string}
+        defaultValue={label}
         onChange={onChange}
         className="nodrag w-full h-full bg-transparent border-none resize-none text-stone-900 font-handwriting text-lg focus-visible:ring-0 p-0 placeholder:text-stone-500/50"
         placeholder="Type a note..."

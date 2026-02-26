@@ -34,9 +34,9 @@ export function IdentificationEvidenceForm({
   const navigate = useNavigate();
   const { caseId: urlCaseId } = useParams<{ caseId: string }>();
   const { session } = useAuthStore();
-  const [additionalFields, setAdditionalFields] = useState<Record<string, any>>(
-    {},
-  );
+  const [additionalFields, setAdditionalFields] = useState<
+    Record<string, string>
+  >({});
   const [newFieldKey, setNewFieldKey] = useState("");
   const [newFieldValue, setNewFieldValue] = useState("");
 
@@ -81,12 +81,8 @@ export function IdentificationEvidenceForm({
         navigate(-1);
       }
     },
-    onError: (error: any) => {
-      console.error("Create error:", error);
-      toast.error(
-        error.response?.data?.message ||
-          "Failed to record identification evidence",
-      );
+    onError: () => {
+      toast.error("Failed to record identification evidence");
     },
   });
 

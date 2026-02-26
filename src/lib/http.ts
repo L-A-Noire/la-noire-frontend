@@ -59,6 +59,7 @@ http.interceptors.request.use(
   },
 );
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const extractErrorMessage = (error: any): string => {
   if (error.response?.data) {
     const data = error.response.data;

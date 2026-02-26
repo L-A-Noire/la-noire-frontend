@@ -87,13 +87,8 @@ export function TestimonyForm({
         navigate("/testimonies");
       }
     },
-    onError: (error: any) => {
-      console.error("Create testimony error:", error);
-      toast.error(
-        error.response?.data?.message ||
-          error.response?.data?.detail ||
-          "Failed to submit testimony",
-      );
+    onError: () => {
+      toast.error("Failed to create testimony");
     },
   });
 
@@ -137,13 +132,11 @@ export function TestimonyForm({
       toast.success(
         `${successfulUploads.length} file(s) uploaded successfully`,
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Upload error:", error);
-      toast.error(
-        error.response?.data?.message ||
-          error.response?.data?.detail ||
-          "Failed to upload files",
-      );
+      const msg =
+        error instanceof Error ? error.message : "Failed to upload files";
+      toast.error(msg);
     } finally {
       setIsUploading(false);
       setUploadProgress({});

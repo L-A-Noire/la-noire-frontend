@@ -78,9 +78,8 @@ export function BiologicalEvidenceForm({
         navigate(-1);
       }
     },
-    onError: (error: any) => {
-      console.error("Create error:", error);
-      toast.error(error.response?.data?.message || "Failed to record evidence");
+    onError: () => {
+      toast.error("Failed to record evidence");
     },
   });
 
@@ -109,9 +108,11 @@ export function BiologicalEvidenceForm({
         newImages.map((img) => img.id),
       );
       toast.success(`${files.length} image(s) uploaded successfully`);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Upload error:", error);
-      toast.error(error.response?.data?.message || "Failed to upload images");
+      const msg =
+        error instanceof Error ? error.message : "Failed to upload images";
+      toast.error(msg);
     } finally {
       setIsUploading(false);
     }

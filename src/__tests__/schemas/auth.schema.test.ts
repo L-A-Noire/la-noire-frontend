@@ -55,7 +55,7 @@ describe("RegisterSchema", () => {
   });
 
   it("should allow optional first_name and last_name", () => {
-    const { first_name, last_name, ...required } = validPayload;
+    const { first_name: _, last_name: __, ...required } = validPayload;
     const result = RegisterSchema.safeParse(required);
     expect(result.success).toBe(true);
   });
@@ -99,7 +99,7 @@ describe("RegisterSchema", () => {
   });
 
   it("should require national_id and phone", () => {
-    const { national_id, phone, ...rest } = validPayload;
+    const { national_id: _nid, phone: _ph, ...rest } = validPayload;
     const result = RegisterSchema.safeParse(rest);
     expect(result.success).toBe(false);
   });

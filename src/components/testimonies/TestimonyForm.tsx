@@ -57,10 +57,8 @@ export function TestimonyForm({ onSuccess }: TestimonyFormProps) {
       onSuccess?.();
       navigate("/testimonies");
     },
-    onError: (error: any) => {
-      toast.error(
-        error.response?.data?.message || "Failed to submit testimony",
-      );
+    onError: () => {
+      toast.error("Failed to submit testimony");
     },
   });
 
@@ -76,7 +74,7 @@ export function TestimonyForm({ onSuccess }: TestimonyFormProps) {
       const uploaded = await Promise.all(uploadPromises);
       setUploadedAttachments((prev) => [...prev, ...uploaded]);
       toast.success(`${files.length} file(s) uploaded successfully`);
-    } catch (error) {
+    } catch {
       toast.error("Failed to upload files");
     } finally {
       setIsUploading(false);

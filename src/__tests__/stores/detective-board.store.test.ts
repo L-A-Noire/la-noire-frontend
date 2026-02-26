@@ -1,11 +1,14 @@
 import { useDetectiveBoardStore } from "@/stores/detective-board.store";
+import type { Node, Edge } from "@xyflow/react";
 
-const mockNodes = [
+const mockNodes: Node[] = [
   { id: "node-1", position: { x: 0, y: 0 }, data: { label: "Suspect A" } },
   { id: "node-2", position: { x: 200, y: 100 }, data: { label: "Evidence B" } },
 ];
 
-const mockEdges = [{ id: "edge-1", source: "node-1", target: "node-2" }];
+const mockEdges: Edge[] = [
+  { id: "edge-1", source: "node-1", target: "node-2" },
+];
 
 describe("useDetectiveBoardStore", () => {
   beforeEach(() => {
@@ -25,7 +28,7 @@ describe("useDetectiveBoardStore", () => {
   it("should save a board for a case", () => {
     useDetectiveBoardStore
       .getState()
-      .updateBoard("case-1", mockNodes as any, mockEdges as any);
+      .updateBoard("case-1", mockNodes, mockEdges);
 
     const board = useDetectiveBoardStore.getState().getBoard("case-1");
     expect(board).toBeDefined();
@@ -36,15 +39,13 @@ describe("useDetectiveBoardStore", () => {
 
   it("should update an existing board without affecting others", () => {
     const store = useDetectiveBoardStore.getState();
-    store.updateBoard("case-1", mockNodes as any, mockEdges as any);
-    store.updateBoard("case-2", [] as any, [] as any);
+    store.updateBoard("case-1", mockNodes, mockEdges);
+    store.updateBoard("case-2", [], []);
 
-    const updatedNodes = [
+    const updatedNodes: Node[] = [
       { id: "node-3", position: { x: 50, y: 50 }, data: { label: "New Lead" } },
     ];
-    useDetectiveBoardStore
-      .getState()
-      .updateBoard("case-1", updatedNodes as any, []);
+    useDetectiveBoardStore.getState().updateBoard("case-1", updatedNodes, []);
 
     const board1 = useDetectiveBoardStore.getState().getBoard("case-1");
     const board2 = useDetectiveBoardStore.getState().getBoard("case-2");
@@ -57,8 +58,8 @@ describe("useDetectiveBoardStore", () => {
   it("should manage multiple case boards independently", () => {
     const store = useDetectiveBoardStore.getState();
 
-    store.updateBoard("homicide-42", mockNodes as any, mockEdges as any);
-    store.updateBoard("robbery-7", [mockNodes[0]] as any, []);
+    store.updateBoard("homicide-42", mockNodes, mockEdges);
+    store.updateBoard("robbery-7", [mockNodes[0]], []);
 
     const homicide = useDetectiveBoardStore.getState().getBoard("homicide-42");
     const robbery = useDetectiveBoardStore.getState().getBoard("robbery-7");

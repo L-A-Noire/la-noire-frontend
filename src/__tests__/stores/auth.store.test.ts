@@ -1,6 +1,7 @@
 import { useAuthStore } from "@/stores/auth.store";
+import type { SessionData } from "@/types/auth.type";
 
-const mockSession = {
+const mockSession: SessionData = {
   access: "eyJhbGciOiJIUzI1NiJ9.mock-access-token",
   refresh: "eyJhbGciOiJIUzI1NiJ9.mock-refresh-token",
   user: {
@@ -27,14 +28,14 @@ describe("useAuthStore", () => {
   });
 
   it("should set session correctly", () => {
-    useAuthStore.getState().setSession(mockSession as any);
+    useAuthStore.getState().setSession(mockSession);
 
     const { session } = useAuthStore.getState();
     expect(session).toEqual(mockSession);
   });
 
   it("should return access token from session", () => {
-    useAuthStore.getState().setSession(mockSession as any);
+    useAuthStore.getState().setSession(mockSession);
 
     const token = useAuthStore.getState().accessToken();
     expect(token).toBe(mockSession.access);
@@ -46,7 +47,7 @@ describe("useAuthStore", () => {
   });
 
   it("should clear session correctly", () => {
-    useAuthStore.getState().setSession(mockSession as any);
+    useAuthStore.getState().setSession(mockSession);
     expect(useAuthStore.getState().session).not.toBeNull();
 
     useAuthStore.getState().clearSession();
@@ -54,7 +55,7 @@ describe("useAuthStore", () => {
   });
 
   it("should return undefined access token after clearing session", () => {
-    useAuthStore.getState().setSession(mockSession as any);
+    useAuthStore.getState().setSession(mockSession);
     useAuthStore.getState().clearSession();
 
     const token = useAuthStore.getState().accessToken();

@@ -4,10 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 // The old EvidenceDetail type has been removed
 
 interface EvidenceCardProps {
-  evidence: any; // TODO: Define proper type based on new evidence structure
+  evidence: unknown;
 }
 
-export const EvidenceCard = (_props: EvidenceCardProps) => {
+export const EvidenceCard = (props: EvidenceCardProps) => {
+  void props;
   return (
     <Card>
       <CardHeader>

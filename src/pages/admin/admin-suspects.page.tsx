@@ -108,7 +108,7 @@ export default function AdminSuspectsPage() {
       });
       toast.success("Suspect created successfully");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error("Error creating suspect:", error);
       toast.error("Failed to create suspect");
     },

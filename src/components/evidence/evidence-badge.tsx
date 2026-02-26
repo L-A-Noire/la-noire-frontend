@@ -23,7 +23,7 @@ interface EvidenceBadgeProps {
 
 const evidenceConfig: Record<
   EvidenceType,
-  { label: string; color: string; icon: any }
+  { label: string; color: string; icon: typeof User02Icon }
 > = {
   witness_testimony: {
     label: "Witness Testimony",

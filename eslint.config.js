@@ -20,4 +20,30 @@ export default defineConfig([
       globals: globals.browser,
     },
   },
+  {
+    files: ["**/*.{ts,tsx}"],
+    rules: {
+      "react-hooks/incompatible-library": "off",
+    },
+  },
+  {
+    files: ["src/components/ui/**/*.{ts,tsx}"],
+    rules: {
+      "react-refresh/only-export-components": "off",
+    },
+  },
+  {
+    files: ["src/__tests__/**/*.{ts,tsx}"],
+    rules: {
+      "@typescript-eslint/no-non-null-assertion": "off",
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          destructuredArrayIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+        },
+      ],
+    },
+  },
 ]);

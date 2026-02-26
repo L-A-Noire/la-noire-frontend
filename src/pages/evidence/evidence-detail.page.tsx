@@ -102,8 +102,8 @@ export const EvidenceDetailPage = () => {
       toast.success("Evidence deleted successfully");
       navigate(`/cases/${caseId}`);
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Failed to delete evidence");
+    onError: () => {
+      toast.error("Failed to delete evidence");
     },
   });
 

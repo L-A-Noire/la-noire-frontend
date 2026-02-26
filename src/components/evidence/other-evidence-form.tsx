@@ -72,9 +72,8 @@ export function OtherEvidenceForm({
         navigate(-1);
       }
     },
-    onError: (error: any) => {
-      console.error("Create error:", error);
-      toast.error(error.response?.data?.message || "Failed to record evidence");
+    onError: () => {
+      toast.error("Failed to record evidence");
     },
   });
 
