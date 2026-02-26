@@ -87,13 +87,20 @@ const STATUS_VARIANTS: Record<
 export default function RewardReportsPage() {
   const { session } = useAuthStore();
   const queryClient = useQueryClient();
-  const [statusFilter, setStatusFilter] = useState<ReportStatus | "all">("all");
-  const [selectedReportId, setSelectedReportId] = useState<number | null>(null);
-  const [rejectionReason, setRejectionReason] = useState("");
-
   const isOfficer = session && OFFICER_ROLES.includes(session.user.role_title);
   const isDetective =
     session && DETECTIVE_ROLES.includes(session.user.role_title);
+
+  // Detective sees reports police approved; Officer sees new reports
+  const myPendingStatus: ReportStatus | null = isDetective
+    ? "pending_detective"
+    : isOfficer
+      ? "pending_officer"
+      : null;
+
+  const [statusFilter, setStatusFilter] = useState<ReportStatus | "all">("all");
+  const [selectedReportId, setSelectedReportId] = useState<number | null>(null);
+  const [rejectionReason, setRejectionReason] = useState("");
 
   const { data: reports = [], isLoading } = useQuery({
     queryKey: ["reward-reports"],
@@ -209,36 +216,66 @@ export default function RewardReportsPage() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Reward Reports</h1>
         <p className="text-muted-foreground mt-1">
-          Review citizen tips on wanted suspects. Officer approval first, then
-          Detective. Approved reports receive a reward coupon.
+          {isDetective
+            ? "Review tips approved by police. Approve to issue reward coupon to the informant."
+            : "Review citizen tips first. Approved reports go to Detective for final approval and coupon issuance."}
         </p>
       </div>
 
-      <div className="flex flex-wrap gap-4 items-center">
-        <div className="space-y-2">
-          <Label>Status</Label>
-          <Select
-            value={statusFilter}
-            onValueChange={(v) => setStatusFilter(v as ReportStatus | "all")}
-          >
-            <SelectTrigger className="w-[200px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All</SelectItem>
-              <SelectItem value="pending_officer">Pending Officer</SelectItem>
-              <SelectItem value="pending_detective">
-                Pending Detective
-              </SelectItem>
-              <SelectItem value="approved">Approved</SelectItem>
-              <SelectItem value="rejected_by_officer">
-                Rejected (Officer)
-              </SelectItem>
-              <SelectItem value="rejected_by_detective">
-                Rejected (Detective)
-              </SelectItem>
-            </SelectContent>
-          </Select>
+      <div className="flex flex-wrap gap-4 items-center justify-between">
+        <div className="flex flex-wrap gap-3 items-center">
+          {myPendingStatus && (
+            <Button
+              variant={
+                statusFilter === myPendingStatus ? "default" : "outline"
+              }
+              size="sm"
+              onClick={() => setStatusFilter(myPendingStatus)}
+            >
+              Awaiting My Review
+              {reports.filter((r: Report) => r.status === myPendingStatus)
+                .length > 0 && (
+                <Badge
+                  variant={statusFilter === myPendingStatus ? "secondary" : "default"}
+                  className="ml-2"
+                >
+                  {
+                    reports.filter((r: Report) => r.status === myPendingStatus)
+                      .length
+                  }
+                </Badge>
+              )}
+            </Button>
+          )}
+          <div className="space-y-2">
+            <Label className="sr-only">Status</Label>
+            <Select
+              value={statusFilter}
+              onValueChange={(v) =>
+                setStatusFilter(v as ReportStatus | "all")
+              }
+            >
+              <SelectTrigger className="w-[200px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="pending_officer">
+                  Pending Officer (new)
+                </SelectItem>
+                <SelectItem value="pending_detective">
+                  Pending Detective (police approved)
+                </SelectItem>
+                <SelectItem value="approved">Approved</SelectItem>
+                <SelectItem value="rejected_by_officer">
+                  Rejected (Officer)
+                </SelectItem>
+                <SelectItem value="rejected_by_detective">
+                  Rejected (Detective)
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
 
@@ -422,11 +459,39 @@ function ReportReviewDialog({
                 <Label className="text-xs text-muted-foreground">
                   Linked Suspect
                 </Label>
-                <p className="mt-1 text-sm">
-                  {report.suspect_details.suspect_details?.first_name}{" "}
-                  {report.suspect_details.suspect_details?.last_name || "N/A"} —{" "}
-                  {report.suspect_details.crime_details?.title || "N/A"}
-                </p>
+                <div className="mt-1 space-y-1 text-sm">
+                  <p className="font-medium">
+                    {report.suspect_details.name ||
+                      (report.suspect_details.suspect_details
+                        ? `${report.suspect_details.suspect_details.first_name ?? ""} ${report.suspect_details.suspect_details.last_name ?? ""}`.trim()
+                        : "") ||
+                      "N/A"}
+                  </p>
+                  {report.suspect_details.nickname && (
+                    <p className="text-muted-foreground">
+                      AKA: {report.suspect_details.nickname}
+                    </p>
+                  )}
+                  {report.suspect_details.description && (
+                    <p className="text-muted-foreground line-clamp-2">
+                      Description: {report.suspect_details.description}
+                    </p>
+                  )}
+                  {(report.suspect_details.status ||
+                    report.suspect_details.status_display) && (
+                    <p className="text-xs">
+                      Status:{" "}
+                      {report.suspect_details.status_display ??
+                        report.suspect_details.status ??
+                        ""}
+                    </p>
+                  )}
+                  {report.suspect_details.crime_details?.title && (
+                    <p className="text-xs text-muted-foreground">
+                      Crime: {report.suspect_details.crime_details.title}
+                    </p>
+                  )}
+                </div>
               </div>
             )}
 

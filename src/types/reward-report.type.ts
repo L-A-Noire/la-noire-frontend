@@ -47,9 +47,18 @@ export interface ReportDetail extends Report {
     title: string;
     description?: string;
   } | null;
+  /** API returns Suspect object when suspect is linked */
   suspect_details: {
     id: number;
-    suspect: number;
+    name?: string;
+    nickname?: string;
+    description?: string;
+    status?: string;
+    national_id?: number | null;
+    wanted_since?: string | null;
+    reward_amount?: number;
+    /** Legacy SuspectCrime format */
+    suspect?: number;
     suspect_details?: {
       first_name?: string;
       last_name?: string;
