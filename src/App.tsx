@@ -36,6 +36,7 @@ import AdminSuspectsPage from "@/pages/admin/admin-suspects.page";
 import AdminPunishmentsPage from "@/pages/admin/admin-punishments.page";
 import { ManageSuspectsPage } from "@/pages/cases/manage-suspects.page";
 import { ReviewSuspectsPage } from "@/pages/cases/review-suspects.page";
+import PaymentPage from "@/pages/payment.page";
 
 export function App() {
   return (
@@ -45,6 +46,7 @@ export function App() {
           <Route index element={<HomePage />} />
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
+          <Route path="payment" element={<PaymentPage />} />
 
           <Route element={<RoleGuard allowedRoles={ALLOWED_CASE_ROLES} />}>
             <Route path="cases" element={<CasesListPage />} />

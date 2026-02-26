@@ -4,6 +4,8 @@ import { useAuthStore } from "@/stores/auth.store";
 import { Button } from "@/components/ui/button";
 import { ALLOWED_CASE_ROLES } from "@/types/role.type";
 import { RewardMenu } from "@/components/rewards/reward-menu";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { MoneyReceiveSquareIcon } from "@hugeicons/core-free-icons";
 
 export const Header = () => {
   const session = useAuthStore((s) => s.session);
@@ -47,7 +49,7 @@ export const Header = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center justify-between px-4">
+      <div className="flex h-14 w-full items-center justify-between px-16">
         <div className="flex items-center gap-6">
           <Link to="/" className="flex items-center space-x-2">
             <span className="text-xl font-bold tracking-tighter text-primary">
@@ -150,10 +152,15 @@ export const Header = () => {
             </nav>
           )}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="sm" asChild className="relative gap-2">
+            <Link to="/payment">
+              <HugeiconsIcon icon={MoneyReceiveSquareIcon} className="h-4 w-4" />
+              <span className="hidden md:inline">Coupon</span>
+            </Link>
+          </Button>
           {session ? (
             <div className="flex items-center gap-4">
-              {/* Reward Menu - visible to police roles */}
               {canAccessRewards && <RewardMenu />}
 
               {isAdmin && (
