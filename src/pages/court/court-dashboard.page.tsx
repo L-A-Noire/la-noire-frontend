@@ -67,19 +67,19 @@ export const CourtDashboardPage = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {eligibleSuspects.map((suspect) => (
-                  <TableRow key={suspect.id}>
+                {eligibleSuspects.map((sc) => (
+                  <TableRow key={sc.id}>
                     <TableCell className="font-medium">
-                      {suspect.suspect_details?.first_name}{" "}
-                      {suspect.suspect_details?.last_name}
+                      {sc.suspect_details?.first_name}{" "}
+                      {sc.suspect_details?.last_name}
                     </TableCell>
                     <TableCell>
-                      {suspect.case_details ? (
+                      {sc.case_details ? (
                         <Link
-                          to={`/cases/${suspect.case}`}
+                          to={`/cases/${sc.case_details.id}`}
                           className="hover:underline text-primary"
                         >
-                          Case #{suspect.case}
+                          Case #{sc.case_details.id}
                         </Link>
                       ) : (
                         <span className="text-muted-foreground">
@@ -92,11 +92,11 @@ export const CourtDashboardPage = () => {
                         variant="outline"
                         className="bg-orange-100 text-orange-800 border-orange-200"
                       >
-                        {suspect.status}
+                        {sc.status}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Link to={`/court/trial/${suspect.id}`}>
+                      <Link to={`/court/trial/${sc.id}`}>
                         <Button size="sm" className="gap-2">
                           <HugeiconsIcon icon={Legal01Icon} size={16} />
                           Start Trial

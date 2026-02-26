@@ -10,7 +10,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import type { Suspect } from "@/types/suspect.type";
+import type { SuspectCrime } from "@/types/suspect.type";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Alert02Icon } from "@hugeicons/core-free-icons";
 
@@ -96,17 +96,9 @@ export default function WantedSuspects() {
   );
 }
 
-function WantedSuspectItem({ suspect }: { suspect: Suspect }) {
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
-
-  const getInitials = (first: string, last: string) => {
-    return `${first.charAt(0)}${last.charAt(0)}`.toUpperCase();
+function WantedSuspectItem({ suspect }: { suspect: SuspectCrime }) {
+  const getInitials = (first?: string, last?: string) => {
+    return `${(first || "?").charAt(0)}${(last || "?").charAt(0)}`.toUpperCase();
   };
 
   return (
@@ -115,8 +107,8 @@ function WantedSuspectItem({ suspect }: { suspect: Suspect }) {
         <div className="shrink-0 relative">
           <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center border-2 border-destructive/20 text-destructive font-mono font-bold text-lg">
             {getInitials(
-              suspect.suspect_details.first_name,
-              suspect.suspect_details.last_name,
+              suspect.suspect_details?.first_name,
+              suspect.suspect_details?.last_name,
             )}
           </div>
           <div className="absolute -bottom-1 -right-1 bg-background rounded-full p-0.5 border border-border">
@@ -126,21 +118,21 @@ function WantedSuspectItem({ suspect }: { suspect: Suspect }) {
         <div className="flex-1 min-w-0 space-y-1">
           <div className="flex items-center justify-between gap-2">
             <h4 className="font-semibold text-sm truncate leading-none">
-              {suspect.suspect_details.first_name}{" "}
-              {suspect.suspect_details.last_name}
+              {suspect.suspect_details?.first_name}{" "}
+              {suspect.suspect_details?.last_name}
             </h4>
             <Badge
               variant="outline"
               className="text-[10px] h-5 px-1.5 border-destructive/30 text-destructive uppercase tracking-wider"
             >
-              {suspect.crime_level}
+              {suspect.crime_details?.level || suspect.status}
             </Badge>
           </div>
           <p className="text-xs text-muted-foreground truncate font-mono">
-            {suspect.suspect_details.national_id}
+            {suspect.suspect_details?.national_id}
           </p>
           <p className="text-xs font-medium text-foreground truncate">
-            {suspect.crime_title}
+            {suspect.crime_details?.title || "N/A"}
           </p>
         </div>
       </div>
@@ -148,18 +140,10 @@ function WantedSuspectItem({ suspect }: { suspect: Suspect }) {
       <div className="flex items-center justify-between text-xs mt-1 pt-2 border-t border-border/30 border-dashed">
         <div className="flex flex-col">
           <span className="text-[10px] text-muted-foreground uppercase tracking-widest">
-            Reward
-          </span>
-          <span className="font-mono font-bold text-green-500">
-            {formatCurrency(suspect.reward_amount)}
-          </span>
-        </div>
-        <div className="flex flex-col items-end">
-          <span className="text-[10px] text-muted-foreground uppercase tracking-widest">
-            Priority
+            Status
           </span>
           <span className="font-mono font-bold text-orange-500">
-            {suspect.priority_score.toLocaleString()} BP
+            {suspect.status_display || suspect.status}
           </span>
         </div>
       </div>

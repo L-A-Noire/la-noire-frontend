@@ -44,6 +44,35 @@ paths:
               schema:
                 $ref: "#/components/schemas/Login"
           description: ""
+  /api/auth/login/refresh/:
+    post:
+      operationId: auth_login_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+        - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TokenRefreshRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/TokenRefreshRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/TokenRefreshRequest"
+        required: true
+      security:
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenRefresh"
+          description: ""
   /api/auth/profile/:
     get:
       operationId: auth_profile_retrieve
@@ -1381,6 +1410,44 @@ paths:
       responses:
         "204":
           description: No response body
+  /api/payment/initiate/:
+    post:
+      operationId: payment_initiate_create
+      description:
+        Creates a transaction and returns the BitPay gateway URL to redirect
+        the user for payment.
+      summary: Initiate a payment
+      tags:
+        - Payment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransactionCreateRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/TransactionCreateRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/TransactionCreateRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+        - {}
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InitiatePaymentResponse"
+          description: Gateway URL to redirect user to
+        "502":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentError"
+          description: Payment gateway error
   /api/reward/reports/:
     get:
       operationId: reward_reports_list
@@ -2389,40 +2456,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/SuspectCrime"
           description: ""
-  /api/suspect/suspect-crimes/{id}/mark_wanted/:
-    post:
-      operationId: suspect_suspect_crimes_mark_wanted_create
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: A unique integer value identifying this suspect crime.
-          required: true
-      tags:
-        - suspect
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/SuspectCrimeRequest"
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: "#/components/schemas/SuspectCrimeRequest"
-          multipart/form-data:
-            schema:
-              $ref: "#/components/schemas/SuspectCrimeRequest"
-        required: true
-      security:
-        - jwtAuth: []
-        - Bearer: []
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuspectCrime"
-          description: ""
   /api/suspect/suspect-crimes/{suspect_crime_id}/issue-punishment/:
     post:
       operationId: suspect_suspect_crimes_issue_punishment_create
@@ -2456,9 +2489,41 @@ paths:
               schema:
                 $ref: "#/components/schemas/PunishmentCreate"
           description: ""
-  /api/suspect/wanted/:
+  /api/suspect/suspects/:
     get:
-      operationId: suspect_wanted_list
+      operationId: suspect_suspects_list
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum:
+              - arrested
+              - convicted
+              - innocent
+              - most_wanted
+              - suspected
+              - wanted
+          description: |-
+            * `suspected` - Suspected
+            * `wanted` - Wanted
+            * `most_wanted` - Most Wanted
+            * `arrested` - Arrested
+            * `convicted` - Convicted
+            * `innocent` - Innocent
+        - in: query
+          name: status__in
+          schema:
+            type: array
+            items:
+              type: string
+          description: Multiple values may be separated by commas.
+          explode: false
+          style: form
+        - in: query
+          name: suspected_crimes__crime__case__id
+          schema:
+            type: integer
       tags:
         - suspect
       security:
@@ -2471,7 +2536,171 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/WantedSuspect"
+                  $ref: "#/components/schemas/Suspect"
+          description: ""
+    post:
+      operationId: suspect_suspects_create
+      tags:
+        - suspect
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SuspectRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/SuspectRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/SuspectRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Suspect"
+          description: ""
+  /api/suspect/suspects/{id}/:
+    get:
+      operationId: suspect_suspects_retrieve
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this suspect.
+          required: true
+      tags:
+        - suspect
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Suspect"
+          description: ""
+    put:
+      operationId: suspect_suspects_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this suspect.
+          required: true
+      tags:
+        - suspect
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SuspectRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/SuspectRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/SuspectRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Suspect"
+          description: ""
+    patch:
+      operationId: suspect_suspects_partial_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this suspect.
+          required: true
+      tags:
+        - suspect
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedSuspectRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedSuspectRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedSuspectRequest"
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Suspect"
+          description: ""
+    delete:
+      operationId: suspect_suspects_destroy
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this suspect.
+          required: true
+      tags:
+        - suspect
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "204":
+          description: No response body
+  /api/suspect/suspects/{id}/mark_as_wanted/:
+    post:
+      operationId: suspect_suspects_mark_as_wanted_create
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this suspect.
+          required: true
+      tags:
+        - suspect
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SuspectRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/SuspectRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/SuspectRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Suspect"
           description: ""
   /api/witness/attachments/:
     get:
@@ -3616,13 +3845,13 @@ components:
           nullable: true
         case:
           type: integer
+          nullable: true
         created_by:
           type: integer
         coronary:
           type: integer
           nullable: true
       required:
-        - case
         - created_at
         - created_by
         - description
@@ -3657,19 +3886,22 @@ components:
           nullable: true
         case:
           type: integer
+          nullable: true
         created_by:
           type: integer
         coronary:
           type: integer
           nullable: true
       required:
-        - case
         - created_by
         - description
         - images
         - location
         - seen_at
         - title
+    BlankEnum:
+      enum:
+        - ""
     Case:
       type: object
       properties:
@@ -4088,7 +4320,10 @@ components:
           type: string
           readOnly: true
         level:
-          $ref: "#/components/schemas/LevelEnum"
+          allOf:
+            - $ref: "#/components/schemas/LevelEnum"
+          minimum: -9223372036854775808
+          maximum: 9223372036854775807
         created_at:
           type: string
           format: date-time
@@ -4108,7 +4343,10 @@ components:
           type: string
           readOnly: true
         level:
-          $ref: "#/components/schemas/LevelEnum"
+          allOf:
+            - $ref: "#/components/schemas/LevelEnum"
+          minimum: -9223372036854775808
+          maximum: 9223372036854775807
         created_at:
           type: string
           format: date-time
@@ -4136,7 +4374,10 @@ components:
       type: object
       properties:
         level:
-          $ref: "#/components/schemas/LevelEnum"
+          allOf:
+            - $ref: "#/components/schemas/LevelEnum"
+          minimum: -9223372036854775808
+          maximum: 9223372036854775807
       required:
         - level
     CrimeScene:
@@ -4161,6 +4402,9 @@ components:
           type: integer
           nullable: true
         examiner:
+          type: integer
+          nullable: true
+        testimony:
           type: integer
           nullable: true
         witness:
@@ -4243,6 +4487,9 @@ components:
         examiner:
           type: integer
           nullable: true
+        testimony:
+          type: integer
+          nullable: true
         witness:
           type: integer
           nullable: true
@@ -4275,6 +4522,9 @@ components:
         examiner:
           type: integer
           nullable: true
+        testimony:
+          type: integer
+          nullable: true
         witness:
           type: integer
           nullable: true
@@ -4303,10 +4553,10 @@ components:
           maxLength: 200
         case:
           type: integer
+          nullable: true
         created_by:
           type: integer
       required:
-        - case
         - created_at
         - created_by
         - description
@@ -4314,6 +4564,14 @@ components:
         - location
         - seen_at
         - title
+    GenderEnum:
+      enum:
+        - m
+        - f
+      type: string
+      description: |-
+        * `m` - Male
+        * `f` - Female
     IdentificationEvidence:
       type: object
       properties:
@@ -4344,10 +4602,10 @@ components:
         information: {}
         case:
           type: integer
+          nullable: true
         created_by:
           type: integer
       required:
-        - case
         - created_at
         - created_by
         - description
@@ -4385,10 +4643,10 @@ components:
         information: {}
         case:
           type: integer
+          nullable: true
         created_by:
           type: integer
       required:
-        - case
         - created_by
         - description
         - location
@@ -4422,6 +4680,14 @@ components:
       required:
         - image
         - uploaded_by
+    InitiatePaymentResponse:
+      type: object
+      properties:
+        gateway_url:
+          type: string
+          format: uri
+      required:
+        - gateway_url
     Interrogation:
       type: object
       properties:
@@ -4651,11 +4917,11 @@ components:
         - suspect_crime
     LevelEnum:
       enum:
-        - "1"
-        - "2"
-        - "3"
-        - "4"
-      type: string
+        - 1
+        - 2
+        - 3
+        - 4
+      type: integer
       description: |-
         * `1` - level_3
         * `2` - level_2
@@ -4681,6 +4947,9 @@ components:
       required:
         - identifier
         - password
+    NullEnum:
+      enum:
+        - null
     OtherEvidence:
       type: object
       properties:
@@ -4704,10 +4973,10 @@ components:
           maxLength: 200
         case:
           type: integer
+          nullable: true
         created_by:
           type: integer
       required:
-        - case
         - created_at
         - created_by
         - description
@@ -4734,10 +5003,10 @@ components:
           maxLength: 200
         case:
           type: integer
+          nullable: true
         created_by:
           type: integer
       required:
-        - case
         - created_by
         - description
         - location
@@ -4777,6 +5046,7 @@ components:
           nullable: true
         case:
           type: integer
+          nullable: true
         created_by:
           type: integer
         coronary:
@@ -4859,7 +5129,10 @@ components:
       type: object
       properties:
         level:
-          $ref: "#/components/schemas/LevelEnum"
+          allOf:
+            - $ref: "#/components/schemas/LevelEnum"
+          minimum: -9223372036854775808
+          maximum: 9223372036854775807
     PatchedCrimeSceneRequest:
       type: object
       properties:
@@ -4881,6 +5154,9 @@ components:
           type: integer
           nullable: true
         examiner:
+          type: integer
+          nullable: true
+        testimony:
           type: integer
           nullable: true
         witness:
@@ -4914,6 +5190,7 @@ components:
         information: {}
         case:
           type: integer
+          nullable: true
         created_by:
           type: integer
     PatchedImageRequest:
@@ -4986,6 +5263,7 @@ components:
           maxLength: 200
         case:
           type: integer
+          nullable: true
         created_by:
           type: integer
     PatchedPunishmentRequest:
@@ -5071,23 +5349,48 @@ components:
     PatchedSuspectCrimeRequest:
       type: object
       properties:
-        status:
-          $ref: "#/components/schemas/StatusD95Enum"
-        wanted_since:
-          type: string
-          format: date-time
-          nullable: true
-        wanted_until:
-          type: string
-          format: date-time
-          nullable: true
         suspect:
           type: integer
-        case:
+        crime:
           type: integer
           nullable: true
         added_by:
           type: integer
+    PatchedSuspectRequest:
+      type: object
+      properties:
+        description:
+          type: string
+          minLength: 1
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        nickname:
+          type: string
+          minLength: 1
+          maxLength: 100
+        gender:
+          nullable: true
+          oneOf:
+            - $ref: "#/components/schemas/GenderEnum"
+            - $ref: "#/components/schemas/BlankEnum"
+            - $ref: "#/components/schemas/NullEnum"
+        picture:
+          type: string
+          format: binary
+          nullable: true
+        national_id:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+        status:
+          $ref: "#/components/schemas/SuspectStatusEnum"
+        user:
+          type: integer
+          nullable: true
     PatchedTestimonyRequest:
       type: object
       properties:
@@ -5116,6 +5419,7 @@ components:
           type: boolean
         case:
           type: integer
+          nullable: true
         created_by:
           type: integer
     PatchedUserRequest:
@@ -5183,6 +5487,7 @@ components:
           maxLength: 50
         case:
           type: integer
+          nullable: true
         created_by:
           type: integer
     PaymentCreate:
@@ -5219,6 +5524,13 @@ components:
         - full_name
         - national_id
         - unique_code
+    PaymentError:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
     Punishment:
       type: object
       properties:
@@ -5895,22 +6207,65 @@ components:
         * `pending` - pending state
         * `approved` - aproved state
         * `rejected` - rejected state
-    StatusD95Enum:
-      enum:
-        - suspect
-        - wanted
-        - most_wanted
-        - arrested
-        - convicted
-        - innocent
-      type: string
-      description: |-
-        * `suspect` - Suspect
-        * `wanted` - Wanted
-        * `most_wanted` - Most Wanted
-        * `arrested` - Arrested
-        * `convicted` - Convicted
-        * `innocent` - Innocent
+    Suspect:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        description:
+          type: string
+        name:
+          type: string
+          maxLength: 100
+        nickname:
+          type: string
+          maxLength: 100
+        gender:
+          nullable: true
+          oneOf:
+            - $ref: "#/components/schemas/GenderEnum"
+            - $ref: "#/components/schemas/BlankEnum"
+            - $ref: "#/components/schemas/NullEnum"
+        picture:
+          type: string
+          format: uri
+          nullable: true
+        national_id:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        status:
+          $ref: "#/components/schemas/SuspectStatusEnum"
+        wanted_since:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        priority_score:
+          type: integer
+          readOnly: true
+        reward_amount:
+          type: integer
+          readOnly: true
+        user:
+          type: integer
+          nullable: true
+      required:
+        - created_at
+        - description
+        - id
+        - name
+        - nickname
+        - priority_score
+        - reward_amount
+        - wanted_since
     SuspectCrime:
       type: object
       properties:
@@ -5921,25 +6276,9 @@ components:
           type: string
           format: date-time
           readOnly: true
-        status:
-          $ref: "#/components/schemas/StatusD95Enum"
-        wanted_since:
-          type: string
-          format: date-time
-          nullable: true
-        wanted_until:
-          type: string
-          format: date-time
-          nullable: true
-        priority_score:
-          type: integer
-          readOnly: true
-        reward_amount:
-          type: integer
-          readOnly: true
         suspect:
           type: integer
-        case:
+        crime:
           type: integer
           nullable: true
         added_by:
@@ -5948,19 +6287,15 @@ components:
         - added_at
         - added_by
         - id
-        - priority_score
-        - reward_amount
         - suspect
     SuspectCrimeCreate:
       type: object
       properties:
         suspect:
           type: integer
-        case:
+        crime:
           type: integer
           nullable: true
-        status:
-          $ref: "#/components/schemas/StatusD95Enum"
       required:
         - suspect
     SuspectCrimeCreateRequest:
@@ -5968,11 +6303,9 @@ components:
       properties:
         suspect:
           type: integer
-        case:
+        crime:
           type: integer
           nullable: true
-        status:
-          $ref: "#/components/schemas/StatusD95Enum"
       required:
         - suspect
     SuspectCrimeDetail:
@@ -6000,29 +6333,9 @@ components:
           type: string
           format: date-time
           readOnly: true
-        status:
-          $ref: "#/components/schemas/StatusD95Enum"
-        wanted_since:
-          type: string
-          format: date-time
-          nullable: true
-        wanted_until:
-          type: string
-          format: date-time
-          nullable: true
-        priority_score:
-          type: integer
-          maximum: 9223372036854775807
-          minimum: -9223372036854775808
-          format: int64
-        reward_amount:
-          type: integer
-          maximum: 9223372036854775807
-          minimum: -9223372036854775808
-          format: int64
         suspect:
           type: integer
-        case:
+        crime:
           type: integer
           nullable: true
         added_by:
@@ -6039,19 +6352,9 @@ components:
     SuspectCrimeRequest:
       type: object
       properties:
-        status:
-          $ref: "#/components/schemas/StatusD95Enum"
-        wanted_since:
-          type: string
-          format: date-time
-          nullable: true
-        wanted_until:
-          type: string
-          format: date-time
-          nullable: true
         suspect:
           type: integer
-        case:
+        crime:
           type: integer
           nullable: true
         added_by:
@@ -6059,6 +6362,61 @@ components:
       required:
         - added_by
         - suspect
+    SuspectRequest:
+      type: object
+      properties:
+        description:
+          type: string
+          minLength: 1
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        nickname:
+          type: string
+          minLength: 1
+          maxLength: 100
+        gender:
+          nullable: true
+          oneOf:
+            - $ref: "#/components/schemas/GenderEnum"
+            - $ref: "#/components/schemas/BlankEnum"
+            - $ref: "#/components/schemas/NullEnum"
+        picture:
+          type: string
+          format: binary
+          nullable: true
+        national_id:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+        status:
+          $ref: "#/components/schemas/SuspectStatusEnum"
+        user:
+          type: integer
+          nullable: true
+      required:
+        - description
+        - name
+        - nickname
+    SuspectStatusEnum:
+      enum:
+        - suspected
+        - wanted
+        - most_wanted
+        - arrested
+        - convicted
+        - innocent
+      type: string
+      description: |-
+        * `suspected` - Suspected
+        * `wanted` - Wanted
+        * `most_wanted` - Most Wanted
+        * `arrested` - Arrested
+        * `convicted` - Convicted
+        * `innocent` - Innocent
     Testimony:
       type: object
       properties:
@@ -6090,11 +6448,11 @@ components:
           type: boolean
         case:
           type: integer
+          nullable: true
         created_by:
           type: integer
       required:
         - attachments
-        - case
         - created_at
         - created_by
         - description
@@ -6131,17 +6489,47 @@ components:
           type: boolean
         case:
           type: integer
+          nullable: true
         created_by:
           type: integer
       required:
         - attachments
-        - case
         - created_by
         - description
         - location
         - seen_at
         - title
         - transcription
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+      required:
+        - access
+    TokenRefreshRequest:
+      type: object
+      properties:
+        refresh:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+        - refresh
+    TransactionCreateRequest:
+      type: object
+      properties:
+        amount:
+          type: integer
+          minimum: 1000
+        mobile_num:
+          type: string
+          minLength: 1
+          default: ""
+          maxLength: 15
+      required:
+        - amount
     User:
       type: object
       properties:
@@ -6251,10 +6639,10 @@ components:
           maxLength: 50
         case:
           type: integer
+          nullable: true
         created_by:
           type: integer
       required:
-        - case
         - color
         - created_at
         - created_by
@@ -6299,10 +6687,10 @@ components:
           maxLength: 50
         case:
           type: integer
+          nullable: true
         created_by:
           type: integer
       required:
-        - case
         - color
         - created_by
         - description
@@ -6310,51 +6698,6 @@ components:
         - seen_at
         - title
         - vehicle_model
-    WantedSuspect:
-      type: object
-      properties:
-        id:
-          type: integer
-          readOnly: true
-        suspect_details:
-          allOf:
-            - $ref: "#/components/schemas/User"
-          readOnly: true
-        crime_title:
-          type: string
-          readOnly: true
-        crime_level:
-          type: string
-          readOnly: true
-        crime_level_display:
-          type: string
-          readOnly: true
-        status:
-          $ref: "#/components/schemas/StatusD95Enum"
-        wanted_since:
-          type: string
-          format: date-time
-          nullable: true
-        days_wanted:
-          type: string
-          readOnly: true
-        priority_score:
-          type: integer
-          maximum: 9223372036854775807
-          minimum: -9223372036854775808
-          format: int64
-        reward_amount:
-          type: integer
-          maximum: 9223372036854775807
-          minimum: -9223372036854775808
-          format: int64
-      required:
-        - crime_level
-        - crime_level_display
-        - crime_title
-        - days_wanted
-        - id
-        - suspect_details
   securitySchemes:
     jwtAuth:
       type: http

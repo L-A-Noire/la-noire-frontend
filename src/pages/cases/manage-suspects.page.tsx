@@ -44,6 +44,7 @@ import {
   createSuspect,
   deleteSuspectFromCase,
 } from "@/api/suspect";
+import type { AxiosError } from "axios";
 
 export const ManageSuspectsPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -145,7 +146,7 @@ export const ManageSuspectsPage = () => {
     mutationFn: () => {
       const payload = {
         suspect: parseInt(selectedSuspectId),
-        crime: caseId,
+        case: caseId,
       };
       console.log("Adding suspect to case with payload:", payload);
       return addSuspectToCase(payload);
@@ -160,7 +161,7 @@ export const ManageSuspectsPage = () => {
       setSelectedSuspectId("");
       setSearchTerm("");
     },
-    onError: (error) => {
+    onError: (error: AxiosError<{ message?: string }>) => {
       console.error("Error adding suspect:", error);
       console.error("Error response:", error.response?.data);
       toast.error(error.response?.data?.message || "Failed to add suspect");
@@ -186,7 +187,7 @@ export const ManageSuspectsPage = () => {
 
       const payload = {
         suspect: newSuspect.id,
-        crime: caseId,
+        case: caseId,
       };
       console.log("Adding new suspect to case with payload:", payload);
 
@@ -208,7 +209,7 @@ export const ManageSuspectsPage = () => {
         national_id: "",
       });
     },
-    onError: (error) => {
+    onError: (error: AxiosError<{ message?: string }>) => {
       console.error("Error creating suspect:", error);
       console.error("Error response:", error.response?.data);
       toast.error(error.response?.data?.message || "Failed to create suspect");
@@ -515,8 +516,8 @@ export const ManageSuspectsPage = () => {
           ) : (
             <div className="space-y-4">
               {caseSuspectCrimes.map((suspectCrime) => {
-                const suspect = suspectCrime.suspect_details;
-                if (!suspect) return null;
+                const details = suspectCrime.suspect_details;
+                if (!details) return null;
 
                 return (
                   <div
@@ -529,20 +530,17 @@ export const ManageSuspectsPage = () => {
                         className="h-5 w-5 text-muted-foreground mt-1"
                       />
                       <div>
-                        <h3 className="font-semibold">{suspect.name}</h3>
+                        <h3 className="font-semibold">
+                          {details.first_name} {details.last_name}
+                        </h3>
                         <div className="flex items-center gap-2 mt-1">
                           <Badge variant="outline" className="text-xs">
-                            {suspect.status}
+                            {suspectCrime.status}
                           </Badge>
-                          {suspect.nickname && (
-                            <span className="text-xs text-muted-foreground">
-                              AKA: {suspect.nickname}
-                            </span>
-                          )}
                         </div>
-                        {suspect.national_id && (
+                        {details.national_id && (
                           <p className="text-xs text-muted-foreground mt-1">
-                            ID: {suspect.national_id}
+                            ID: {details.national_id}
                           </p>
                         )}
                         <p className="text-xs text-muted-foreground mt-2">

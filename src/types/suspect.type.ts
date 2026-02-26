@@ -33,8 +33,17 @@ export interface Suspect {
 export interface SuspectCrime {
   id: number;
   suspect: number;
-  suspect_details?: Suspect;
-  crime: number;
+  suspect_details?: {
+    id: number;
+    username: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    phone: string;
+    national_id: string;
+    role_title: string;
+  };
+  crime: number | null;
   crime_details?: {
     id: number;
     title: string;
@@ -42,6 +51,13 @@ export interface SuspectCrime {
     description?: string;
     location?: string;
     committed_at?: string;
+  };
+  case?: number | null;
+  case_details?: {
+    id: number;
+    title: string;
+    description?: string;
+    status?: string;
   };
   added_at: string;
   added_by: number;
@@ -52,5 +68,6 @@ export interface SuspectCrime {
     last_name: string;
     role_title: string;
   };
-  status?: string; // This might be inherited from suspect or have its own status
+  status: string;
+  status_display?: string;
 }

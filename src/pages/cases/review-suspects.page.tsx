@@ -146,8 +146,7 @@ export const ReviewSuspectsPage = () => {
                           {suspect.suspect_details?.last_name}
                         </h3>
                         <p className="text-sm text-muted-foreground">
-                          Added:{" "}
-                          {format(new Date(suspect.added_at || ""), "PPP")}
+                          Added: {format(new Date(suspect.added_at), "PPP")}
                         </p>
                       </div>
                     </div>
@@ -178,7 +177,7 @@ export const ReviewSuspectsPage = () => {
                       </SelectContent>
                     </Select>
 
-                    {suspect.status === "suspect" && (
+                    {suspect.status === "suspected" && (
                       <Button
                         variant="outline"
                         size="sm"

@@ -6,7 +6,7 @@ import {
   updateSuspectStatus,
   deleteSuspectCrime,
 } from "@/api/suspect";
-import type { Suspect } from "@/types/suspect.type";
+import type { SuspectCrime } from "@/types/suspect.type";
 import {
   Dialog,
   DialogContent,
@@ -29,7 +29,9 @@ import http from "@/lib/http";
 export default function AdminSuspectsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [editingSuspect, setEditingSuspect] = useState<Suspect | null>(null);
+  const [editingSuspect, setEditingSuspect] = useState<SuspectCrime | null>(
+    null,
+  );
   const queryClient = useQueryClient();
 
   const [status, setStatus] = useState<string>("");
@@ -130,7 +132,7 @@ export default function AdminSuspectsPage() {
     createMutation.mutate(createData);
   };
 
-  const handleEdit = (item: Suspect) => {
+  const handleEdit = (item: SuspectCrime) => {
     setEditingSuspect(item);
     setStatus(item.status);
     setIsDialogOpen(true);
@@ -148,7 +150,7 @@ export default function AdminSuspectsPage() {
 
   return (
     <>
-      <AdminTable<Suspect>
+      <AdminTable<SuspectCrime>
         title="Suspects"
         queryKey={["admin-suspects"]}
         fetchData={getSuspectCrimes}
@@ -156,10 +158,12 @@ export default function AdminSuspectsPage() {
         searchFn={(item, search) => {
           const s = search.toLowerCase();
           return (
-            item.suspect_details.first_name.toLowerCase().includes(s) ||
-            item.suspect_details.last_name.toLowerCase().includes(s) ||
-            item.suspect_details.username.toLowerCase().includes(s) ||
-            item.status.toLowerCase().includes(s)
+            (item.suspect_details?.first_name || "")
+              .toLowerCase()
+              .includes(s) ||
+            (item.suspect_details?.last_name || "").toLowerCase().includes(s) ||
+            (item.suspect_details?.username || "").toLowerCase().includes(s) ||
+            (item.status || "").toLowerCase().includes(s)
           );
         }}
         searchPlaceholder="Search by name, username, or status..."
@@ -167,17 +171,21 @@ export default function AdminSuspectsPage() {
           { header: "ID", accessorKey: "id" },
           {
             header: "Name",
-            accessorKey: "suspect_details",
+            accessorKey: "suspect",
             cell: (item) =>
-              `${item.suspect_details.first_name} ${item.suspect_details.last_name}`,
+              `${item.suspect_details?.first_name || ""} ${item.suspect_details?.last_name || ""}`,
           },
           {
             header: "Username",
-            accessorKey: "suspect_details",
-            cell: (item) => item.suspect_details.username,
+            accessorKey: "added_by",
+            cell: (item) => item.suspect_details?.username || "N/A",
           },
           { header: "Status", accessorKey: "status" },
-          { header: "Crime Level", accessorKey: "crime_level" },
+          {
+            header: "Crime Level",
+            accessorKey: "crime",
+            cell: (item) => item.crime_details?.level || "N/A",
+          },
         ]}
         onEdit={handleEdit}
         onCreate={handleCreate}

@@ -99,9 +99,9 @@ export function CreateInterrogationDialog({
                 ) : (
                   suspects?.map((suspect) => (
                     <SelectItem key={suspect.id} value={String(suspect.id)}>
-                      {suspect.suspect_details.first_name}{" "}
-                      {suspect.suspect_details.last_name} (
-                      {suspect.suspect_details.national_id})
+                      {suspect.suspect_details?.first_name}{" "}
+                      {suspect.suspect_details?.last_name} (
+                      {suspect.suspect_details?.national_id})
                     </SelectItem>
                   ))
                 )}

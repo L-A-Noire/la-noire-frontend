@@ -68,7 +68,7 @@ export const TrialPage = () => {
   });
 
   // 2. Fetch Case Timeline (once we have case ID)
-  const caseId = suspectCrime?.case;
+  const caseId = suspectCrime?.case ?? suspectCrime?.case_details?.id;
   const { data: timelineData, isLoading: isLoadingTimeline } = useQuery({
     queryKey: ["case-timeline", caseId],
     queryFn: () => getCaseTimeline(caseId!),
