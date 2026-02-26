@@ -221,7 +221,7 @@ export default function HomePage() {
                     <div className="h-8 w-16 bg-muted animate-pulse rounded" />
                   ) : (
                     <p className="text-3xl font-bold text-foreground font-mono">
-                      {employeeData?.count?.toLocaleString() || "0"}
+                      {employeeData?.totalEmployees?.toLocaleString() || "0"}
                     </p>
                   )}
                   <p className="text-xs text-muted-foreground">
@@ -342,7 +342,7 @@ export default function HomePage() {
           </div>
 
           <div className="lg:col-span-1 min-h-full">
-            <WantedSuspects />
+            {/* <WantedSuspects /> */}
           </div>
         </div>
       ) : (

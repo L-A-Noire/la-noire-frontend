@@ -1,36 +1,50 @@
-export interface SuspectDetails {
-  id: number;
-  username: string;
-  email: string;
-  phone: string;
-  first_name: string;
-  last_name: string;
-  national_id: string;
-  role: number;
-  role_title: string;
-}
-
 export interface Suspect {
   id: number;
-  suspect_details: SuspectDetails;
-  crime_title?: string;
-  crime_level?: string;
-  status:
-    | "suspect"
-    | "wanted"
-    | "most_wanted"
-    | "arrested"
-    | "convicted"
-    | "innocent";
-  case_details?: {
-    id: number;
-    crime_details: string;
-  };
-  case?: number;
-  suspect?: number;
-  added_by?: number;
-  added_at?: string;
-  wanted_since: string;
+  name: string;
+  nickname: string;
+  description: string;
+  gender: 'm' | 'f' | null;
+  picture: string | null;
+  national_id: number | null;
+  created_at: string;
+  status: 'suspected' | 'wanted' | 'most_wanted' | 'arrested' | 'convicted' | 'innocent';
+  wanted_since: string | null;
   priority_score: number;
   reward_amount: number;
+  user?: number;
+  user_details?: {
+    id: number;
+    username: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    phone: string;
+    national_id: string;
+    role_title: string;
+  };
+}
+
+export interface SuspectCrime {
+  id: number;
+  suspect: number;
+  suspect_details?: Suspect;
+  crime: number;
+  crime_details?: {
+    id: number;
+    title: string;
+    level: string;
+    description?: string;
+    location?: string;
+    committed_at?: string;
+  };
+  added_at: string;
+  added_by: number;
+  added_by_details?: {
+    id: number;
+    username: string;
+    first_name: string;
+    last_name: string;
+    role_title: string;
+  };
+  status?: string; // This might be inherited from suspect or have its own status
 }

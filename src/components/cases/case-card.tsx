@@ -15,6 +15,7 @@ import {
   Delete02Icon,
   Document,
   UserAddIcon,
+  PoliceBadgeIcon,
 } from "@hugeicons/core-free-icons";
 import type { CaseList } from "@/types/case.type";
 import { useAuthStore } from "@/stores/auth.store";
@@ -28,13 +29,15 @@ interface CaseCardProps {
 export const CaseCard = ({ caseItem, onClose, isClosing }: CaseCardProps) => {
   const { session } = useAuthStore();
   const isOpen = !caseItem.is_closed;
-  const isDetective = session?.user.role_title === "Detective";
+  const role = session?.user.role_title;
+
+  const isDetective = role === "Detective";
+  const isSergeant = role === "Sergent";
 
   return (
     <Card
-      className={`relative overflow-hidden transition-shadow ${
-        isOpen ? "hover:shadow-md" : "opacity-80"
-      }`}
+      className={`relative overflow-hidden transition-shadow ${isOpen ? "hover:shadow-md" : "opacity-80"
+        }`}
     >
       <div className="absolute top-4 right-4">
         <Badge
@@ -99,14 +102,27 @@ export const CaseCard = ({ caseItem, onClose, isClosing }: CaseCardProps) => {
               </Link>
             </Button>
 
-            {/* Add Suspect button - only for detectives */}
-            {isOpen && isDetective && (
-              <Button variant="outline" size="sm" asChild>
-                <Link to={`/cases/${caseItem.id}/suspects/add`}>
-                  <HugeiconsIcon icon={UserAddIcon} className="mr-2 h-4 w-4" />
-                  Add Suspect
-                </Link>
-              </Button>
+            {/* Suspect buttons based on role */}
+            {isOpen && (
+              <>
+                {isDetective && (
+                  <Button variant="outline" size="sm" asChild>
+                    <Link to={`/cases/${caseItem.id}/suspects/manage`}>
+                      <HugeiconsIcon icon={UserAddIcon} className="mr-2 h-4 w-4" />
+                      Manage Suspects
+                    </Link>
+                  </Button>
+                )}
+
+                {isSergeant && (
+                  <Button variant="outline" size="sm" asChild>
+                    <Link to={`/cases/${caseItem.id}/suspects/review`}>
+                      <HugeiconsIcon icon={PoliceBadgeIcon} className="mr-2 h-4 w-4" />
+                      Review Suspects
+                    </Link>
+                  </Button>
+                )}
+              </>
             )}
 
             {isOpen && onClose && (

@@ -34,6 +34,8 @@ import AdminComplaintsPage from "@/pages/admin/admin-complaints.page";
 import AdminCrimeScenesPage from "@/pages/admin/admin-crime-scenes.page";
 import AdminSuspectsPage from "@/pages/admin/admin-suspects.page";
 import AdminPunishmentsPage from "@/pages/admin/admin-punishments.page";
+import { ManageSuspectsPage } from "@/pages/cases/manage-suspects.page";
+import { ReviewSuspectsPage } from "@/pages/cases/review-suspects.page";
 
 export function App() {
   return (
@@ -62,6 +64,8 @@ export function App() {
               element={<EvidenceDetailPage />}
             />
             <Route path="cases/:id/suspects/add" element={<AddSuspectPage />} />
+            <Route path="cases/:id/suspects/manage" element={<ManageSuspectsPage />} />
+            <Route path="cases/:id/suspects/review" element={<ReviewSuspectsPage />} />
           </Route>
 
           <Route element={<RoleGuard allowedRoles={["Detective"]} />}>
