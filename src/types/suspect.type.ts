@@ -3,11 +3,17 @@ export interface Suspect {
   name: string;
   nickname: string;
   description: string;
-  gender: 'm' | 'f' | null;
+  gender: "m" | "f" | null;
   picture: string | null;
   national_id: number | null;
   created_at: string;
-  status: 'suspected' | 'wanted' | 'most_wanted' | 'arrested' | 'convicted' | 'innocent';
+  status:
+    | "suspected"
+    | "wanted"
+    | "most_wanted"
+    | "arrested"
+    | "convicted"
+    | "innocent";
   wanted_since: string | null;
   priority_score: number;
   reward_amount: number;

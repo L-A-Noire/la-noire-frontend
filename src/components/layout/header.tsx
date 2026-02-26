@@ -155,7 +155,10 @@ export const Header = () => {
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="sm" asChild className="relative gap-2">
             <Link to="/payment">
-              <HugeiconsIcon icon={MoneyReceiveSquareIcon} className="h-4 w-4" />
+              <HugeiconsIcon
+                icon={MoneyReceiveSquareIcon}
+                className="h-4 w-4"
+              />
               <span className="hidden md:inline">Coupon</span>
             </Link>
           </Button>

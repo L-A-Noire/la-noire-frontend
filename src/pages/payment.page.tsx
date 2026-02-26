@@ -15,7 +15,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { initiatePayment } from "@/api/payment";
-import { PaymentSchema, type PaymentFormValues } from "@/schemas/payment.schema";
+import {
+  PaymentSchema,
+  type PaymentFormValues,
+} from "@/schemas/payment.schema";
 
 export default function PaymentPage() {
   const [redirecting, setRedirecting] = useState(false);
