@@ -7,10 +7,7 @@ import { ALLOWED_CASE_ROLES } from "@/types/role.type";
 import { RewardMenu } from "@/components/rewards/reward-menu";
 import { ClaimRewardDialog } from "@/components/rewards/claim-reward-dialog";
 import { HugeiconsIcon } from "@hugeicons/react";
-import {
-  MoneyReceiveSquareIcon,
-  GiftIcon,
-} from "@hugeicons/core-free-icons";
+import { MoneyReceiveSquareIcon, GiftIcon } from "@hugeicons/core-free-icons";
 
 export const Header = () => {
   const session = useAuthStore((s) => s.session);
@@ -231,12 +228,14 @@ export const Header = () => {
                 </Button>
               )}
 
-              <div className="text-xs font-mono text-muted-foreground hidden md:block">
-                Logged in as:{" "}
-                <span className="text-primary">{session.user.username}</span>
-                <span className="ml-2 text-xs">
-                  ({session.user.role_title})
-                </span>
+              <div className="text-xs flex flex-col font-mono text-muted-foreground hidden md:block justify-start items-start">
+                <div>
+                  Logged in as:{" "}
+                  <span className="text-primary">{session.user.username}</span>
+                </div>
+                <div>
+                  <span className="text-xs">({session.user.role_title})</span>
+                </div>
               </div>
             </div>
           ) : (

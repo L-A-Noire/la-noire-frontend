@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
+import { useAuthStore } from "@/stores/auth.store";
 import { getWantedSuspects } from "@/api/suspect";
 import {
   Card,
@@ -101,6 +102,8 @@ export default function WantedSuspects() {
 
 function WantedSuspectItem({ suspect }: { suspect: Suspect }) {
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
+  const session = useAuthStore((s) => s.session);
+  const isBaseUser = session?.user.role_title === "Base User";
   const getInitials = (name?: string, nickname?: string) => {
     if (name) {
       const parts = name.trim().split(/\s+/);
@@ -193,23 +196,30 @@ function WantedSuspectItem({ suspect }: { suspect: Suspect }) {
         )}
       </div>
 
-      <div className="flex gap-2 mt-1">
-        <Button
-          size="sm"
-       variant="outline"
-          className="flex-1 text-xs h-7 hover:bg-destructive hover:text-destructive-foreground hover:cursor-pointer"
-          onClick={() => setReportDialogOpen(true)}
-        >
-          <HugeiconsIcon icon={FileEditIcon} className="mr-1.5 h-3.5 w-3.5" />
-          Report Tip
-        </Button>
-      </div>
+      {isBaseUser && (
+        <>
+          <div className="flex gap-2 mt-1">
+            <Button
+              size="sm"
+              variant="outline"
+              className="flex-1 text-xs h-7 hover:bg-destructive hover:text-destructive-foreground hover:cursor-pointer"
+              onClick={() => setReportDialogOpen(true)}
+            >
+              <HugeiconsIcon
+                icon={FileEditIcon}
+                className="mr-1.5 h-3.5 w-3.5"
+              />
+              Report Tip
+            </Button>
+          </div>
 
-      <ReportTipDialog
-        open={reportDialogOpen}
-        onOpenChange={setReportDialogOpen}
-        suspect={suspect}
-      />
+          <ReportTipDialog
+            open={reportDialogOpen}
+            onOpenChange={setReportDialogOpen}
+            suspect={suspect}
+          />
+        </>
+      )}
     </div>
   );
 }

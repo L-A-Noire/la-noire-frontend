@@ -38,7 +38,9 @@ export function ReportTipDialog({
         description: description.trim(),
       }),
     onSuccess: () => {
-      toast.success("Tip submitted successfully. Police will review your report.");
+      toast.success(
+        "Tip submitted successfully. Police will review your report.",
+      );
       setDescription("");
       onOpenChange(false);
       queryClient.invalidateQueries({ queryKey: ["wanted-suspects"] });

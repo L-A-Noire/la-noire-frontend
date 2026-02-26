@@ -44,10 +44,26 @@ import {
 } from "@hugeicons/core-free-icons";
 import { format } from "date-fns";
 import { toast } from "react-toastify";
-import type { Report, ReportDetail, ReportStatus } from "@/types/reward-report.type";
+import type {
+  Report,
+  ReportDetail,
+  ReportStatus,
+} from "@/types/reward-report.type";
 
-const OFFICER_ROLES = ["Police/Patrol Officer", "Sergent", "Captain", "Chief", "Administrator"];
-const DETECTIVE_ROLES = ["Detective", "Sergent", "Captain", "Chief", "Administrator"];
+const OFFICER_ROLES = [
+  "Police/Patrol Officer",
+  "Sergent",
+  "Captain",
+  "Chief",
+  "Administrator",
+];
+const DETECTIVE_ROLES = [
+  "Detective",
+  "Sergent",
+  "Captain",
+  "Chief",
+  "Administrator",
+];
 
 const STATUS_LABELS: Record<ReportStatus, string> = {
   pending_officer: "Pending Officer",
@@ -57,7 +73,10 @@ const STATUS_LABELS: Record<ReportStatus, string> = {
   approved: "Approved",
 };
 
-const STATUS_VARIANTS: Record<ReportStatus, "default" | "secondary" | "destructive" | "outline"> = {
+const STATUS_VARIANTS: Record<
+  ReportStatus,
+  "default" | "secondary" | "destructive" | "outline"
+> = {
   pending_officer: "default",
   rejected_by_officer: "destructive",
   pending_detective: "secondary",
@@ -73,7 +92,8 @@ export default function RewardReportsPage() {
   const [rejectionReason, setRejectionReason] = useState("");
 
   const isOfficer = session && OFFICER_ROLES.includes(session.user.role_title);
-  const isDetective = session && DETECTIVE_ROLES.includes(session.user.role_title);
+  const isDetective =
+    session && DETECTIVE_ROLES.includes(session.user.role_title);
 
   const { data: reports = [], isLoading } = useQuery({
     queryKey: ["reward-reports"],
@@ -125,7 +145,9 @@ export default function RewardReportsPage() {
         rejection_reason: rejectionReason,
       }),
     onSuccess: (_, { isApproved }) => {
-      toast.success(isApproved ? "Report approved — reward issued" : "Report rejected");
+      toast.success(
+        isApproved ? "Report approved — reward issued" : "Report rejected",
+      );
       setSelectedReportId(null);
       setRejectionReason("");
       queryClient.invalidateQueries({ queryKey: ["reward-reports"] });
@@ -205,10 +227,16 @@ export default function RewardReportsPage() {
             <SelectContent>
               <SelectItem value="all">All</SelectItem>
               <SelectItem value="pending_officer">Pending Officer</SelectItem>
-              <SelectItem value="pending_detective">Pending Detective</SelectItem>
+              <SelectItem value="pending_detective">
+                Pending Detective
+              </SelectItem>
               <SelectItem value="approved">Approved</SelectItem>
-              <SelectItem value="rejected_by_officer">Rejected (Officer)</SelectItem>
-              <SelectItem value="rejected_by_detective">Rejected (Detective)</SelectItem>
+              <SelectItem value="rejected_by_officer">
+                Rejected (Officer)
+              </SelectItem>
+              <SelectItem value="rejected_by_detective">
+                Rejected (Detective)
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -223,7 +251,10 @@ export default function RewardReportsPage() {
       ) : filteredReports.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center text-muted-foreground">
-            <HugeiconsIcon icon={FileEditIcon} className="mx-auto h-12 w-12 mb-4 opacity-50" />
+            <HugeiconsIcon
+              icon={FileEditIcon}
+              className="mx-auto h-12 w-12 mb-4 opacity-50"
+            />
             <p>No reward reports found.</p>
           </CardContent>
         </Card>
@@ -249,12 +280,18 @@ export default function RewardReportsPage() {
         isLoading={isLoadingDetail}
         rejectionReason={rejectionReason}
         onRejectionReasonChange={setRejectionReason}
-        onApprove={selectedReport ? () => handleApprove(selectedReport) : undefined}
-        onReject={selectedReport ? () => handleReject(selectedReport) : undefined}
+        onApprove={
+          selectedReport ? () => handleApprove(selectedReport) : undefined
+        }
+        onReject={
+          selectedReport ? () => handleReject(selectedReport) : undefined
+        }
         canReview={
           selectedReport
-            ? !!(canReviewAsOfficer(selectedReport) ||
-              canReviewAsDetective(selectedReport))
+            ? !!(
+                canReviewAsOfficer(selectedReport) ||
+                canReviewAsDetective(selectedReport)
+              )
             : false
         }
         isPending={
@@ -372,7 +409,9 @@ function ReportReviewDialog({
             <Separator />
 
             <div>
-              <Label className="text-xs text-muted-foreground">Tip Description</Label>
+              <Label className="text-xs text-muted-foreground">
+                Tip Description
+              </Label>
               <p className="mt-1 p-3 rounded-lg bg-muted/50 text-sm">
                 {report.description}
               </p>
@@ -380,7 +419,9 @@ function ReportReviewDialog({
 
             {report.suspect_details && (
               <div>
-                <Label className="text-xs text-muted-foreground">Linked Suspect</Label>
+                <Label className="text-xs text-muted-foreground">
+                  Linked Suspect
+                </Label>
                 <p className="mt-1 text-sm">
                   {report.suspect_details.suspect_details?.first_name}{" "}
                   {report.suspect_details.suspect_details?.last_name || "N/A"} —{" "}
@@ -411,13 +452,13 @@ function ReportReviewDialog({
                     onClick={() => onReject?.()}
                     disabled={isPending}
                   >
-                    <HugeiconsIcon icon={Cancel01Icon} className="mr-2 h-4 w-4" />
+                    <HugeiconsIcon
+                      icon={Cancel01Icon}
+                      className="mr-2 h-4 w-4"
+                    />
                     Reject
                   </Button>
-                  <Button
-                    onClick={() => onApprove?.()}
-                    disabled={isPending}
-                  >
+                  <Button onClick={() => onApprove?.()} disabled={isPending}>
                     <HugeiconsIcon
                       icon={CheckmarkCircle01Icon}
                       className="mr-2 h-4 w-4"

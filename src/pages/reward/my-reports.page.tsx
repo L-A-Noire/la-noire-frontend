@@ -44,7 +44,9 @@ const STATUS_ICONS: Record<ReportStatus, typeof FileEditIcon> = {
 export default function MyReportsPage() {
   const { session } = useAuthStore();
   const [claimDialogOpen, setClaimDialogOpen] = useState(false);
-  const [selectedRewardCode, setSelectedRewardCode] = useState<string | null>(null);
+  const [selectedRewardCode, setSelectedRewardCode] = useState<string | null>(
+    null,
+  );
 
   const { data: reports = [], isLoading } = useQuery({
     queryKey: ["reward-reports"],
@@ -52,9 +54,7 @@ export default function MyReportsPage() {
     enabled: !!session,
   });
 
-  const myReports = reports.filter(
-    (r) => r.reporter === session?.user.id
-  );
+  const myReports = reports.filter((r) => r.reporter === session?.user.id);
 
   if (!session) {
     return <Navigate to="/login" replace />;
@@ -83,7 +83,10 @@ export default function MyReportsPage() {
       ) : myReports.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center text-muted-foreground">
-            <HugeiconsIcon icon={FileEditIcon} className="mx-auto h-12 w-12 mb-4 opacity-50" />
+            <HugeiconsIcon
+              icon={FileEditIcon}
+              className="mx-auto h-12 w-12 mb-4 opacity-50"
+            />
             <p>You have not submitted any tips yet.</p>
             <p className="text-sm mt-2">
               Report a tip from the Most Wanted list on the home page.
@@ -194,7 +197,9 @@ function ApprovedRewardSection({
         <span className="font-semibold">Reward Coupon Issued</span>
       </div>
       <div className="space-y-1">
-        <p className="text-xs text-muted-foreground">Your unique reward code:</p>
+        <p className="text-xs text-muted-foreground">
+          Your unique reward code:
+        </p>
         <code className="block font-mono text-sm bg-muted px-3 py-2 rounded break-all">
           {reward.unique_code}
         </code>
