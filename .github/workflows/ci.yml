@@ -10,6 +10,32 @@ env:
   IMAGE_NAME: ghcr.io/l-a-noire/la-noire-frontend
 
 jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Cache node_modules
+        id: cache-deps
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - name: Install dependencies
+        if: steps.cache-deps.outputs.cache-hit != 'true'
+        run: pnpm install --frozen-lockfile
+
+      - run: pnpm lint
+
   test:
     name: Test
     runs-on: ubuntu-latest
@@ -22,15 +48,30 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: pnpm
 
-      - run: pnpm install --frozen-lockfile
+      - name: Cache node_modules
+        id: cache-deps
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - name: Install dependencies
+        if: steps.cache-deps.outputs.cache-hit != 'true'
+        run: pnpm install --frozen-lockfile
+
+      - name: Cache Jest transforms
+        uses: actions/cache@v4
+        with:
+          path: /tmp/jest_*
+          key: jest-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.sha }}
+          restore-keys: jest-${{ hashFiles('pnpm-lock.yaml') }}-
 
       - run: pnpm test
 
   build-and-push:
     name: Build & Push Image
-    needs: test
+    needs: [lint, test]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
 
