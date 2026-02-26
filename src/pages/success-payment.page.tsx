@@ -85,7 +85,7 @@ export default function SuccessPaymentPage() {
               </CardTitle>
               <Badge
                 variant="outline"
-                className="border-green-500/50 text-green-500 font-mono px-3 py-1"
+                className="border-green-500/50 text-green-500 font-mono px-3 py-1 animate-pulse"
               >
                 PAID
               </Badge>
