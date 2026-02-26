@@ -21,8 +21,7 @@ import {
   GiftIcon,
   Search01Icon,
   CheckmarkCircle01Icon,
-  AlertCircleIcon,
-  UserIcon,
+  Alert02Icon,
   Cash01Icon,
   Cancel01Icon,
   IdIcon,
@@ -91,7 +90,7 @@ export function RewardMenu() {
 
   const claimMutation = useMutation({
     mutationFn: claimReward,
-    onSuccess: (data) => {
+    onSuccess: () => {
       toast.success("Reward claimed successfully!");
       // Reset the form
       setUniqueCode("");
@@ -375,7 +374,10 @@ export function RewardMenu() {
                       ) : (
                         <div className="bg-amber-50 dark:bg-amber-950/20 p-3 rounded border border-amber-200 dark:border-amber-900">
                           <p className="text-sm text-amber-800 dark:text-amber-200 flex items-center gap-2">
-                            <AlertCircleIcon className="h-4 w-4" />
+                            <HugeiconsIcon
+                              icon={Alert02Icon}
+                              className="h-4 w-4"
+                            />
                             This reward has already been claimed on{" "}
                             {verificationResult.reward.claimed_at
                               ? format(
@@ -395,7 +397,7 @@ export function RewardMenu() {
                 <>
                   <div className="bg-red-50 dark:bg-red-950/20 p-4 rounded-lg border border-red-200 dark:border-red-900 flex items-start gap-3">
                     <HugeiconsIcon
-                      icon={AlertCircleIcon}
+                      icon={Alert02Icon}
                       className="h-5 w-5 text-red-600 mt-0.5"
                     />
                     <div>

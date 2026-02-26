@@ -25,7 +25,7 @@ export type TestimonyFormData = z.infer<typeof testimonySchema>;
 // Confirm testimony schema
 export const confirmTestimonySchema = z.object({
   crime_level: z.enum(["1", "2", "3", "4"], {
-    required_error: "Crime level is required",
+    message: "Crime level is required",
   }),
 });
 

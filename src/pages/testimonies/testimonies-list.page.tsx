@@ -193,7 +193,7 @@ export const TestimoniesListPage = () => {
             <TestimonyCard
               key={testimony.id}
               testimony={testimony}
-              canReview={canReview}
+              canReview={canReview ?? undefined}
             />
           ))}
         </div>

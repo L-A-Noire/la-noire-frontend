@@ -56,7 +56,7 @@ import { useAuthStore } from "@/stores/auth.store";
 // Crime level schema
 const crimeLevelSchema = z.object({
   crime_level: z.enum(["1", "2", "3", "4"], {
-    required_error: "Crime level is required",
+    message: "Crime level is required",
   }),
 });
 
@@ -86,7 +86,6 @@ export const CrimeSceneDetailPage = () => {
     session?.user.role_title === "Sergent";
 
   const {
-    register: registerCrimeLevel,
     handleSubmit: handleSubmitCrimeLevel,
     formState: {
       errors: crimeLevelErrors,
@@ -459,7 +458,10 @@ export const CrimeSceneDetailPage = () => {
                 <Label htmlFor="crime_level">Crime Level *</Label>
                 <Select
                   onValueChange={(value) =>
-                    setCrimeLevelValue("crime_level", value)
+                    setCrimeLevelValue(
+                      "crime_level",
+                      value as "1" | "2" | "3" | "4",
+                    )
                   }
                 >
                   <SelectTrigger>

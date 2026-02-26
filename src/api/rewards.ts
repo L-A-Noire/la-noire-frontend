@@ -2,10 +2,8 @@ import http from "@/lib/http";
 import type {
   Reward,
   RewardDetail,
-  Payment,
   PaymentRequest,
   PaymentResponse,
-  RewardVerificationRequest,
   RewardVerificationResponse,
 } from "@/types/reward.type";
 

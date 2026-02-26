@@ -70,7 +70,9 @@ export function TestimonyForm({ onSuccess }: TestimonyFormProps) {
 
     setIsUploading(true);
     try {
-      const uploadPromises = files.map((file) => uploadAttachment(file));
+      const uploadPromises = files.map((file) =>
+        uploadAttachment({ file, provided_by: session?.user.id ?? 0 }),
+      );
       const uploaded = await Promise.all(uploadPromises);
       setUploadedAttachments((prev) => [...prev, ...uploaded]);
       toast.success(`${files.length} file(s) uploaded successfully`);
@@ -95,7 +97,6 @@ export function TestimonyForm({ onSuccess }: TestimonyFormProps) {
       ...data,
       case: 0, // Testimonies don't have a case initially
       attachments: uploadedAttachments.map((a) => a.id),
-      created_at: new Date().toISOString(),
       created_by: session.user.id,
     });
   };

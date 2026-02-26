@@ -25,8 +25,6 @@ import {
   ArrowLeft01Icon,
   MapPinIcon,
   ClockIcon,
-  UserIcon,
-  CheckmarkCircle01Icon,
   Delete02Icon,
 } from "@hugeicons/core-free-icons";
 import { format } from "date-fns";
@@ -73,7 +71,6 @@ export const TestimonyDetailPage = () => {
   });
 
   const {
-    register: registerConfirm,
     handleSubmit: handleSubmitConfirm,
     formState: { errors: confirmErrors, isSubmitting: isConfirmSubmitting },
     setValue: setConfirmValue,
@@ -279,7 +276,10 @@ export const TestimonyDetailPage = () => {
                 <Label htmlFor="crime_level">Crime Level *</Label>
                 <Select
                   onValueChange={(value) =>
-                    setConfirmValue("crime_level", value)
+                    setConfirmValue(
+                      "crime_level",
+                      value as "1" | "2" | "3" | "4",
+                    )
                   }
                 >
                   <SelectTrigger>

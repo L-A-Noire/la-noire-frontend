@@ -40,7 +40,7 @@ interface UnifiedEvidence {
   description: string;
   created_at: string;
   created_by: number;
-  case: number;
+  case: number | null;
 }
 
 export const CaseEvidencePage = () => {
