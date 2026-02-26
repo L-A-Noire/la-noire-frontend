@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -12,10 +12,17 @@ import { OtherEvidenceForm } from "@/components/evidence/other-evidence-form";
 
 export default function RecordEvidencePage() {
   const navigate = useNavigate();
+  const { caseId } = useParams<{ caseId: string }>();
+  const parsedCaseId = caseId ? parseInt(caseId) : undefined;
 
   const handleSuccess = () => {
-    // Optionally navigate back after successful submission
-    // navigate(-1);
+    if (caseId) {
+      // If we were in a case context, go back to case evidence page
+      navigate(`/cases/${caseId}/evidence`);
+    } else {
+      // Otherwise go back to previous page
+      navigate(-1);
+    }
   };
 
   return (
@@ -34,10 +41,12 @@ export default function RecordEvidencePage() {
 
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle className="text-3xl">Record Evidence</CardTitle>
+          <CardTitle className="text-3xl">
+            {caseId ? `Record Evidence for Case #${caseId}` : "Record Evidence"}
+          </CardTitle>
           <p className="text-gray-600 mt-2">
             Evidence is divided into five categories. All evidence requires a
-            title, description, registration date, and registrar.
+            title, description, location, and date/time of observation.
           </p>
         </CardHeader>
       </Card>
@@ -52,7 +61,10 @@ export default function RecordEvidencePage() {
         </TabsList>
 
         <TabsContent value="testimony">
-          <TestimonyForm onSuccess={handleSuccess} />
+          <TestimonyForm
+            onSuccess={handleSuccess}
+            initialCaseId={parsedCaseId}
+          />
         </TabsContent>
 
         <TabsContent value="biological">
