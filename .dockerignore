@@ -1,0 +1,15 @@
+node_modules
+dist
+.git
+.gitignore
+.env
+.env.*
+*.md
+.vscode
+.idea
+.DS_Store
+coverage
+src/__tests__
+jest.config.ts
+jest.transform.cjs
+tsconfig.test.json

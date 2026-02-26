@@ -3,7 +3,7 @@ import type { AxiosInstance, InternalAxiosRequestConfig } from "axios";
 import { toast } from "react-toastify";
 import { useAuthStore } from "../stores/auth.store";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api"; // Replace with your actual API URL
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api"; 
 
 const http: AxiosInstance = axios.create({
   baseURL: API_URL,
