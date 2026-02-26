@@ -1767,28 +1767,12 @@ paths:
       operationId: reward_rewards_claim_create
       tags:
         - reward
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/PaymentCreateRequest"
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: "#/components/schemas/PaymentCreateRequest"
-          multipart/form-data:
-            schema:
-              $ref: "#/components/schemas/PaymentCreateRequest"
-        required: true
       security:
         - jwtAuth: []
         - Bearer: []
       responses:
-        "201":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PaymentCreate"
-          description: ""
+        "200":
+          description: No response body
   /api/suspect/interrogations/:
     get:
       operationId: suspect_interrogations_list
@@ -5302,12 +5286,6 @@ components:
         description:
           type: string
           minLength: 1
-        officer_rejection_reason:
-          type: string
-          nullable: true
-        detective_rejection_reason:
-          type: string
-          nullable: true
         reporter:
           type: integer
         case:
@@ -5490,40 +5468,6 @@ components:
           nullable: true
         created_by:
           type: integer
-    PaymentCreate:
-      type: object
-      properties:
-        unique_code:
-          type: string
-          format: uuid
-        national_id:
-          type: string
-          maxLength: 20
-        full_name:
-          type: string
-          maxLength: 200
-      required:
-        - full_name
-        - national_id
-        - unique_code
-    PaymentCreateRequest:
-      type: object
-      properties:
-        unique_code:
-          type: string
-          format: uuid
-        national_id:
-          type: string
-          minLength: 1
-          maxLength: 20
-        full_name:
-          type: string
-          minLength: 1
-          maxLength: 200
-      required:
-        - full_name
-        - national_id
-        - unique_code
     PaymentError:
       type: object
       properties:
@@ -5853,12 +5797,6 @@ components:
           allOf:
             - $ref: "#/components/schemas/Status77dEnum"
           readOnly: true
-        officer_rejection_reason:
-          type: string
-          nullable: true
-        detective_rejection_reason:
-          type: string
-          nullable: true
         reporter:
           type: integer
         case:
@@ -5946,12 +5884,6 @@ components:
           readOnly: true
         status:
           $ref: "#/components/schemas/Status77dEnum"
-        officer_rejection_reason:
-          type: string
-          nullable: true
-        detective_rejection_reason:
-          type: string
-          nullable: true
         reporter:
           type: integer
         case:
@@ -5986,12 +5918,6 @@ components:
         description:
           type: string
           minLength: 1
-        officer_rejection_reason:
-          type: string
-          nullable: true
-        detective_rejection_reason:
-          type: string
-          nullable: true
         reporter:
           type: integer
         case:
@@ -6040,11 +5966,6 @@ components:
           type: string
           format: uuid
           readOnly: true
-        amount:
-          type: integer
-          maximum: 9223372036854775807
-          minimum: -9223372036854775808
-          format: int64
         is_claimed:
           type: boolean
           readOnly: true
@@ -6056,16 +5977,10 @@ components:
           type: string
           format: date-time
           readOnly: true
-        recipient:
-          type: integer
-        created_by:
-          type: integer
       required:
         - created_at
-        - created_by
         - id
         - is_claimed
-        - recipient
         - unique_code
     RewardDetail:
       type: object
@@ -6085,11 +6000,6 @@ components:
           type: string
           format: uuid
           readOnly: true
-        amount:
-          type: integer
-          maximum: 9223372036854775807
-          minimum: -9223372036854775808
-          format: int64
         is_claimed:
           type: boolean
         claimed_at:
@@ -6100,16 +6010,10 @@ components:
           type: string
           format: date-time
           readOnly: true
-        recipient:
-          type: integer
-        created_by:
-          type: integer
       required:
         - created_at
-        - created_by
         - created_by_details
         - id
-        - recipient
         - recipient_details
         - unique_code
     Role:

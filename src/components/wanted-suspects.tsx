@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+import { format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import { getWantedSuspects } from "@/api/suspect";
 import {
@@ -10,7 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import type { SuspectCrime } from "@/types/suspect.type";
+import type { Suspect } from "@/types/suspect.type";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Alert02Icon } from "@hugeicons/core-free-icons";
 
@@ -20,7 +22,7 @@ export default function WantedSuspects() {
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["suspect-crimes"],
+    queryKey: ["wanted-suspects"],
     queryFn: getWantedSuspects,
   });
 
@@ -96,21 +98,39 @@ export default function WantedSuspects() {
   );
 }
 
-function WantedSuspectItem({ suspect }: { suspect: SuspectCrime }) {
-  const getInitials = (first?: string, last?: string) => {
-    return `${(first || "?").charAt(0)}${(last || "?").charAt(0)}`.toUpperCase();
+function WantedSuspectItem({ suspect }: { suspect: Suspect }) {
+  const getInitials = (name?: string, nickname?: string) => {
+    if (name) {
+      const parts = name.trim().split(/\s+/);
+      return parts.length >= 2
+        ? `${parts[0].charAt(0)}${parts[1].charAt(0)}`.toUpperCase()
+        : `${name.charAt(0)}${(nickname || "?").charAt(0)}`.toUpperCase();
+    }
+    return `${(nickname || "?").charAt(0)}?`.toUpperCase();
   };
+
+  const statusLabel =
+    suspect.status === "most_wanted"
+      ? "MOST WANTED"
+      : suspect.status === "wanted"
+        ? "WANTED"
+        : suspect.status?.toUpperCase() || "N/A";
 
   return (
     <div className="group relative flex flex-col gap-3 p-3 rounded-lg border border-border/40 hover:border-destructive/50 hover:bg-destructive/5 transition-all duration-300">
       <div className="flex items-start gap-4">
         <div className="shrink-0 relative">
-          <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center border-2 border-destructive/20 text-destructive font-mono font-bold text-lg">
-            {getInitials(
-              suspect.suspect_details?.first_name,
-              suspect.suspect_details?.last_name,
-            )}
-          </div>
+          {suspect.picture ? (
+            <img
+              src={suspect.picture}
+              alt={suspect.name}
+              className="w-12 h-12 rounded-full object-cover border-2 border-destructive/20"
+            />
+          ) : (
+            <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center border-2 border-destructive/20 text-destructive font-mono font-bold text-lg">
+              {getInitials(suspect.name, suspect.nickname)}
+            </div>
+          )}
           <div className="absolute -bottom-1 -right-1 bg-background rounded-full p-0.5 border border-border">
             <div className="w-3 h-3 rounded-full bg-destructive animate-pulse" />
           </div>
@@ -118,22 +138,35 @@ function WantedSuspectItem({ suspect }: { suspect: SuspectCrime }) {
         <div className="flex-1 min-w-0 space-y-1">
           <div className="flex items-center justify-between gap-2">
             <h4 className="font-semibold text-sm truncate leading-none">
-              {suspect.suspect_details?.first_name}{" "}
-              {suspect.suspect_details?.last_name}
+              {suspect.name}
             </h4>
             <Badge
               variant="outline"
               className="text-[10px] h-5 px-1.5 border-destructive/30 text-destructive uppercase tracking-wider"
             >
-              {suspect.crime_details?.level || suspect.status}
+              {statusLabel}
             </Badge>
           </div>
-          <p className="text-xs text-muted-foreground truncate font-mono">
-            {suspect.suspect_details?.national_id}
-          </p>
-          <p className="text-xs font-medium text-foreground truncate">
-            {suspect.crime_details?.title || "N/A"}
-          </p>
+          {suspect.nickname && (
+            <p className="text-xs text-muted-foreground truncate font-mono">
+              AKA: {suspect.nickname}
+            </p>
+          )}
+          {suspect.national_id && (
+            <p className="text-xs text-muted-foreground truncate font-mono">
+              ID: {suspect.national_id}
+            </p>
+          )}
+          {suspect.description && (
+            <p className="text-xs font-medium text-foreground truncate line-clamp-2">
+              {suspect.description}
+            </p>
+          )}
+          {(suspect.reward_amount ?? 0) > 0 && (
+            <p className="text-xs font-semibold text-amber-600">
+              Reward: ${suspect.reward_amount?.toLocaleString()}
+            </p>
+          )}
         </div>
       </div>
 
@@ -143,17 +176,28 @@ function WantedSuspectItem({ suspect }: { suspect: SuspectCrime }) {
             Status
           </span>
           <span className="font-mono font-bold text-orange-500">
-            {suspect.status_display || suspect.status}
+            {statusLabel}
           </span>
         </div>
+        {suspect.wanted_since && (
+          <div className="flex flex-col text-right">
+            <span className="text-[10px] text-muted-foreground uppercase tracking-widest">
+              Wanted Since
+            </span>
+            <span className="font-mono text-muted-foreground">
+              {format(new Date(suspect.wanted_since), "MMM d, yyyy")}
+            </span>
+          </div>
+        )}
       </div>
 
       <Button
         size="sm"
         variant="ghost"
         className="w-full text-xs h-7 mt-1 hover:bg-destructive hover:text-destructive-foreground"
+        asChild
       >
-        View Case
+        <Link to="/cases">View Cases</Link>
       </Button>
     </div>
   );

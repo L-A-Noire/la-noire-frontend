@@ -33,7 +33,9 @@ export const deleteSuspectCrime = async (id: number): Promise<void> => {
 };
 
 export const getWantedSuspects = async (): Promise<Suspect[]> => {
-  const response = await http.get<Suspect[]>("/suspect/wanted/");
+  const response = await http.get<Suspect[]>(
+    "/suspect/suspects/?status__in=wanted,most_wanted",
+  );
   return response.data;
 };
 
@@ -89,9 +91,13 @@ export const addSuspectToCase = async (data: {
   return response.data;
 };
 
-// // Mark suspect as wanted (sergeant action)
-export const markAsWanted = async (suspectCrimeId: number): Promise<Suspect> => {
-  const response = await http.post<Suspect>(`/suspect/suspect-crimes/${suspectCrimeId}/mark_as_wanted/`);
+// Mark suspect as wanted (sergeant action)
+// Note: Pass suspect id (from suspect.suspect or suspect.id when using Suspect type)
+export const markAsWanted = async (suspectId: number): Promise<Suspect> => {
+  const response = await http.post<Suspect>(
+    `/suspect/suspects/${suspectId}/mark_as_wanted/`,
+    {},
+  );
   return response.data;
 };
 

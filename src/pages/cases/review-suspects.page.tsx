@@ -182,7 +182,9 @@ export const ReviewSuspectsPage = () => {
                         variant="outline"
                         size="sm"
                         className="text-orange-600 border-orange-200 hover:bg-orange-50"
-                        onClick={() => markAsWantedMutation.mutate(suspect.id)}
+                        onClick={() =>
+                          markAsWantedMutation.mutate(suspect.suspect)
+                        }
                         disabled={markAsWantedMutation.isPending}
                       >
                         <HugeiconsIcon

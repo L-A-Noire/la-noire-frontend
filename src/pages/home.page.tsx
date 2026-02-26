@@ -20,6 +20,7 @@ import {
   TimelineEventIcon,
 } from "@hugeicons/core-free-icons";
 import http from "@/lib/http";
+import WantedSuspects from "@/components/wanted-suspects";
 
 // API function to fetch employee count
 const getEmployeeCount = async () => {
@@ -341,7 +342,7 @@ export default function HomePage() {
           </div>
 
           <div className="lg:col-span-1 min-h-full">
-            {/* <WantedSuspects /> */}
+            <WantedSuspects />
           </div>
         </div>
       ) : (
