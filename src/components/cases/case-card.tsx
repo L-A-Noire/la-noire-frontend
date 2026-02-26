@@ -36,9 +36,8 @@ export const CaseCard = ({ caseItem, onClose, isClosing }: CaseCardProps) => {
 
   return (
     <Card
-      className={`relative overflow-hidden transition-shadow ${
-        isOpen ? "hover:shadow-md" : "opacity-80"
-      }`}
+      className={`relative overflow-hidden transition-shadow ${isOpen ? "hover:shadow-md" : "opacity-80"
+        }`}
     >
       <div className="absolute top-4 right-4">
         <Badge
@@ -109,10 +108,7 @@ export const CaseCard = ({ caseItem, onClose, isClosing }: CaseCardProps) => {
                 {isDetective && (
                   <Button variant="outline" size="sm" asChild>
                     <Link to={`/cases/${caseItem.id}/suspects/manage`}>
-                      <HugeiconsIcon
-                        icon={UserAddIcon}
-                        className="mr-2 h-4 w-4"
-                      />
+                      <HugeiconsIcon icon={UserAddIcon} className="mr-2 h-4 w-4" />
                       Manage Suspects
                     </Link>
                   </Button>
@@ -121,10 +117,7 @@ export const CaseCard = ({ caseItem, onClose, isClosing }: CaseCardProps) => {
                 {isSergeant && (
                   <Button variant="outline" size="sm" asChild>
                     <Link to={`/cases/${caseItem.id}/suspects/review`}>
-                      <HugeiconsIcon
-                        icon={PoliceBadgeIcon}
-                        className="mr-2 h-4 w-4"
-                      />
+                      <HugeiconsIcon icon={PoliceBadgeIcon} className="mr-2 h-4 w-4" />
                       Review Suspects
                     </Link>
                   </Button>
