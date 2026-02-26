@@ -11,6 +11,13 @@ export const getSuspectCrime = async (id: number): Promise<Suspect> => {
   return response.data;
 };
 
+export const getSuspectsByCaseDirect = async (caseId: number): Promise<Suspect[]> => {
+  const response = await http.get<Suspect[]>(
+    `/suspect/suspects/?suspected_crimes__crime__case__id=${caseId}`
+  );
+  return response.data;
+};
+
 export const updateSuspectStatus = async (
   id: number,
   status: string,

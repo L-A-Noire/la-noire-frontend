@@ -39,12 +39,13 @@ import { toast } from "react-toastify";
 import { format } from "date-fns";
 import {
     getAllSuspects,
-    getSuspectsByCase,
+    getSuspectsByCaseDirect, // Use the new function
     addSuspectToCase,
     createSuspect,
     deleteSuspectFromCase,
 } from "@/api/suspect";
 import { getCaseById } from "@/api/cases";
+import type { Suspect } from "@/types/suspect.type";
 
 export const ManageSuspectsPage = () => {
     const { id } = useParams<{ id: string }>();
@@ -86,15 +87,32 @@ export const ManageSuspectsPage = () => {
         enabled: !!caseDetails,
     });
 
+    // Use the new function to get suspects directly linked to this case
     const {
-        data: caseSuspectCrimes = [],
+        data: caseSuspects = [], // This is now an array of Suspect objects, not SuspectCrime
         isLoading: isLoadingCaseSuspects,
         error: caseSuspectsError
     } = useQuery({
+        queryKey: ["suspects", "case", caseId],
+        queryFn: async () => {
+            const data = await getSuspectsByCaseDirect(caseId);
+            console.log("Case suspects (direct):", data);
+            return data;
+        },
+        enabled: !!caseDetails,
+    });
+
+    // We still need suspect-crimes for removal, so let's keep that query too
+    const {
+        data: suspectCrimes = [],
+        isLoading: isLoadingSuspectCrimes,
+    } = useQuery({
         queryKey: ["suspect-crimes", "case", caseId],
         queryFn: async () => {
-            const data = await getSuspectsByCase(caseDetails?.crime);
-            return data;
+            // This endpoint should filter by case, but we'll need to adjust your API
+            // For now, let's get all and filter client-side
+            const response = await http.get(`/suspect/suspect-crimes/`);
+            return response.data.filter((sc: any) => sc.crime === caseDetails?.crime);
         },
         enabled: !!caseDetails,
     });
@@ -104,19 +122,18 @@ export const ManageSuspectsPage = () => {
             console.error("Error fetching suspects:", suspectsError);
         }
         if (caseSuspectsError) {
-            console.error("Error fetching case suspect-crimes:", caseSuspectsError);
+            console.error("Error fetching case suspects:", caseSuspectsError);
         }
         if (caseError) {
             console.error("Error fetching case details:", caseError);
         }
     }, [suspectsError, caseSuspectsError, caseError]);
 
-    const linkedSuspectIds = caseSuspectCrimes.map(sc => {
-        return sc.suspect;
-    });
+    // Get suspect IDs that are already in this case
+    const linkedSuspectIds = caseSuspects.map(suspect => suspect.id);
 
+    // Filter out suspects already in this case and apply search
     const availableSuspects = allSuspects.filter((suspect) => {
-
         if (linkedSuspectIds.includes(suspect.id)) {
             return false;
         }
@@ -127,13 +144,11 @@ export const ManageSuspectsPage = () => {
             const nationalId = suspect.national_id?.toString() || '';
             const term = searchTerm.toLowerCase();
 
-            const matches = name.includes(term) || nickname.includes(term) || nationalId.includes(term);
-            return matches;
+            return name.includes(term) || nickname.includes(term) || nationalId.includes(term);
         }
 
         return true;
     });
-
 
     const addSuspectMutation = useMutation({
         mutationFn: () => {
@@ -144,6 +159,7 @@ export const ManageSuspectsPage = () => {
             return addSuspectToCase(payload);
         },
         onSuccess: (data) => {
+            queryClient.invalidateQueries({ queryKey: ["suspects", "case", caseId] });
             queryClient.invalidateQueries({ queryKey: ["suspect-crimes", "case", caseId] });
             toast.success("Suspect added to case");
             setIsAddDialogOpen(false);
@@ -160,7 +176,6 @@ export const ManageSuspectsPage = () => {
 
     const createSuspectMutation = useMutation({
         mutationFn: async () => {
-
             const formData = new FormData();
             formData.append("name", newSuspectData.name);
             formData.append("description", newSuspectData.description);
@@ -179,6 +194,7 @@ export const ManageSuspectsPage = () => {
         },
         onSuccess: (data) => {
             queryClient.invalidateQueries({ queryKey: ["suspects", "all"] });
+            queryClient.invalidateQueries({ queryKey: ["suspects", "case", caseId] });
             queryClient.invalidateQueries({ queryKey: ["suspect-crimes", "case", caseId] });
             toast.success("New suspect created and added to case");
             setIsNewSuspectDialogOpen(false);
@@ -199,16 +215,22 @@ export const ManageSuspectsPage = () => {
     });
 
     const removeSuspectMutation = useMutation({
-        mutationFn: (suspectCrimeId: number) => {
-            return deleteSuspectFromCase(suspectCrimeId);
+        mutationFn: (suspectId: number) => {
+            // Find the suspect-crime ID for this suspect in this case
+            const suspectCrime = suspectCrimes.find(sc => sc.suspect === suspectId);
+            if (!suspectCrime) {
+                throw new Error("Suspect not linked to this case");
+            }
+            return deleteSuspectFromCase(suspectCrime.id);
         },
         onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["suspects", "case", caseId] });
             queryClient.invalidateQueries({ queryKey: ["suspect-crimes", "case", caseId] });
             toast.success("Suspect removed from case");
         },
         onError: (error: any) => {
             console.error("Error removing suspect:", error);
-            toast.error("Failed to remove suspect");
+            toast.error(error.response?.data?.message || "Failed to remove suspect");
         },
     });
 
@@ -236,7 +258,13 @@ export const ManageSuspectsPage = () => {
         createSuspectMutation.mutate();
     };
 
-    const isLoading = isLoadingCase || isLoadingSuspects || isLoadingCaseSuspects;
+    const handleRemoveSuspect = (suspectId: number) => {
+        if (confirm("Remove this suspect from the case?")) {
+            removeSuspectMutation.mutate(suspectId);
+        }
+    };
+
+    const isLoading = isLoadingCase || isLoadingSuspects || isLoadingCaseSuspects || isLoadingSuspectCrimes;
 
     if (isLoadingCase) {
         return (
@@ -478,74 +506,62 @@ export const ManageSuspectsPage = () => {
                 </DialogContent>
             </Dialog>
 
-            {/* Suspects List - showing SuspectCrimes */}
+            {/* Suspects List - now showing Suspect objects directly */}
             <Card>
                 <CardHeader>
                     <CardTitle>Suspects in this Case</CardTitle>
                     <CardDescription>
-                        {caseSuspectCrimes.length} suspect(s) currently linked to this case
+                        {caseSuspects.length} suspect(s) currently linked to this case
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
                     {isLoading ? (
                         <div className="text-center py-8">Loading suspects...</div>
-                    ) : caseSuspectCrimes.length === 0 ? (
+                    ) : caseSuspects.length === 0 ? (
                         <div className="text-center py-8 text-muted-foreground">
                             No suspects added to this case yet
                         </div>
                     ) : (
                         <div className="space-y-4">
-                            {caseSuspectCrimes.map((suspectCrime) => {
-                                const suspect = suspectCrime.suspect_details;
-                                if (!suspect) return null;
-
-                                return (
-                                    <div
-                                        key={suspectCrime.id}
-                                        className="flex items-center justify-between p-4 border rounded-lg"
-                                    >
-                                        <div className="flex items-start gap-3">
-                                            <HugeiconsIcon icon={UserIcon} className="h-5 w-5 text-muted-foreground mt-1" />
-                                            <div>
-                                                <h3 className="font-semibold">
-                                                    {suspect.name}
-                                                </h3>
-                                                <div className="flex items-center gap-2 mt-1">
-                                                    <Badge variant="outline" className="text-xs">
-                                                        {suspect.status}
-                                                    </Badge>
-                                                    {suspect.nickname && (
-                                                        <span className="text-xs text-muted-foreground">
-                                                            AKA: {suspect.nickname}
-                                                        </span>
-                                                    )}
-                                                </div>
-                                                {suspect.national_id && (
-                                                    <p className="text-xs text-muted-foreground mt-1">
-                                                        ID: {suspect.national_id}
-                                                    </p>
+                            {caseSuspects.map((suspect) => (
+                                <div
+                                    key={suspect.id}
+                                    className="flex items-center justify-between p-4 border rounded-lg"
+                                >
+                                    <div className="flex items-start gap-3">
+                                        <HugeiconsIcon icon={UserIcon} className="h-5 w-5 text-muted-foreground mt-1" />
+                                        <div>
+                                            <h3 className="font-semibold">
+                                                {suspect.name}
+                                            </h3>
+                                            <div className="flex items-center gap-2 mt-1">
+                                                <Badge variant="outline" className="text-xs">
+                                                    {suspect.status}
+                                                </Badge>
+                                                {suspect.nickname && (
+                                                    <span className="text-xs text-muted-foreground">
+                                                        AKA: {suspect.nickname}
+                                                    </span>
                                                 )}
-                                                <p className="text-xs text-muted-foreground mt-2">
-                                                    Added by: {suspectCrime.added_by_details?.username || 'Unknown'} on{" "}
-                                                    {format(new Date(suspectCrime.added_at), "PPP")}
-                                                </p>
                                             </div>
+                                            {suspect.national_id && (
+                                                <p className="text-xs text-muted-foreground mt-1">
+                                                    ID: {suspect.national_id}
+                                                </p>
+                                            )}
                                         </div>
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                                            onClick={() => {
-                                                if (confirm("Remove this suspect from the case?")) {
-                                                    removeSuspectMutation.mutate(suspectCrime.id);
-                                                }
-                                            }}
-                                        >
-                                            <HugeiconsIcon icon={Delete02Icon} className="h-4 w-4" />
-                                        </Button>
                                     </div>
-                                );
-                            })}
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                        onClick={() => handleRemoveSuspect(suspect.id)}
+                                        disabled={removeSuspectMutation.isPending}
+                                    >
+                                        <HugeiconsIcon icon={Delete02Icon} className="h-4 w-4" />
+                                    </Button>
+                                </div>
+                            ))}
                         </div>
                     )}
                 </CardContent>
