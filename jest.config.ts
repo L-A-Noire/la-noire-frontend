@@ -5,9 +5,10 @@ const config: Config = {
   roots: ["<rootDir>/src"],
   transform: {
     "^.+\\.tsx?$": [
-      "ts-jest",
+      "<rootDir>/jest.transform.cjs",
       {
         tsconfig: "tsconfig.test.json",
+        diagnostics: false,
       },
     ],
   },
