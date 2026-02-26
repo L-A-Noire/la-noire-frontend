@@ -19,7 +19,6 @@ import {
   UserGroupIcon,
   TimelineEventIcon,
 } from "@hugeicons/core-free-icons";
-import WantedSuspects from "@/components/wanted-suspects";
 import http from "@/lib/http";
 
 // API function to fetch employee count

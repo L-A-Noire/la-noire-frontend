@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -21,7 +20,6 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import {
     ArrowLeft01Icon,
     CheckmarkCircle01Icon,
-    Delete02Icon,
     UserIcon,
 } from "@hugeicons/core-free-icons";
 import { toast } from "react-toastify";

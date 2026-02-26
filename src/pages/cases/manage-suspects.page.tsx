@@ -44,7 +44,6 @@ import {
     createSuspect,
     deleteSuspectFromCase,
 } from "@/api/suspect";
-import type { Suspect, SuspectCrime } from "@/types/suspect.type";
 
 export const ManageSuspectsPage = () => {
     const { id } = useParams<{ id: string }>();
@@ -156,7 +155,7 @@ export const ManageSuspectsPage = () => {
             setSelectedSuspectId("");
             setSearchTerm("");
         },
-        onError: (error: any) => {
+        onError: (error) => {
             console.error("Error adding suspect:", error);
             console.error("Error response:", error.response?.data);
             toast.error(error.response?.data?.message || "Failed to add suspect");
@@ -200,7 +199,7 @@ export const ManageSuspectsPage = () => {
                 national_id: "",
             });
         },
-        onError: (error: any) => {
+        onError: (error) => {
             console.error("Error creating suspect:", error);
             console.error("Error response:", error.response?.data);
             toast.error(error.response?.data?.message || "Failed to create suspect");
@@ -217,7 +216,7 @@ export const ManageSuspectsPage = () => {
             queryClient.invalidateQueries({ queryKey: ["suspect-crimes", "case", caseId] });
             toast.success("Suspect removed from case");
         },
-        onError: (error: any) => {
+        onError: (error) => {
             console.error("Error removing suspect:", error);
             toast.error("Failed to remove suspect");
         },
