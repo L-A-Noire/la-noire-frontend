@@ -3,6 +3,7 @@ import { getCaseById, assignDetective, closeCase } from "@/api/cases";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { InterrogationList } from "@/components/cases/interrogations/interrogation-list";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -165,10 +166,10 @@ export const CaseDetailPage = () => {
       </Card>
 
       {/* Interrogations Section */}
-      {/* <InterrogationList
+      <InterrogationList
         caseId={caseId}
         caseLevel={caseDetail.crime_details?.level}
-      /> */}
+      />
 
       {/* Detective Assignment */}
       <Card>
