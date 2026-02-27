@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { AxiosError } from "axios";
+import http from "@/lib/http";
 import {
   Card,
   CardContent,
@@ -39,7 +40,7 @@ import {
 import { toast } from "react-toastify";
 import {
   getAllSuspects,
-  getSuspectsByCaseDirect, // Use the new function
+  getSuspectsByCaseDirect,
   addSuspectToCase,
   createSuspect,
   deleteSuspectFromCase,
@@ -91,9 +92,8 @@ export const ManageSuspectsPage = () => {
     enabled: !!caseDetails,
   });
 
-  // Use the new function to get suspects directly linked to this case
   const {
-    data: caseSuspects = [], // This is now an array of Suspect objects, not SuspectCrime
+    data: caseSuspects = [],
     isLoading: isLoadingCaseSuspects,
     error: caseSuspectsError,
   } = useQuery({
@@ -112,6 +112,7 @@ export const ManageSuspectsPage = () => {
       queryFn: async () => {
         const response = await http.get(`/suspect/suspect-crimes/`);
         return response.data.filter(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (sc: any) => sc.crime === caseDetails?.crime,
         );
       },
@@ -157,10 +158,15 @@ export const ManageSuspectsPage = () => {
 
   const addSuspectMutation = useMutation({
     mutationFn: () => {
+      if (!caseDetails) {
+        throw new Error("Case details not loaded");
+      }
+
       const payload = {
-        suspect: parseInt(selectedSuspectId),
-        crime: caseDetails?.crime,
+        suspect: Number(selectedSuspectId),
+        case: caseDetails.id,
       };
+
       return addSuspectToCase(payload);
     },
     onSuccess: () => {
@@ -178,36 +184,44 @@ export const ManageSuspectsPage = () => {
       console.error("Error response:", error.response?.data);
       toast.error(error.response?.data?.message || "Failed to add suspect");
     },
-    enabled: !!caseDetails,
   });
 
   const createSuspectMutation = useMutation({
     mutationFn: async () => {
+      if (!caseDetails) {
+        throw new Error("Case details not loaded");
+      }
+
       const formData = new FormData();
       formData.append("name", newSuspectData.name);
       formData.append("description", newSuspectData.description);
       formData.append("nickname", newSuspectData.nickname);
+
       if (newSuspectData.gender)
         formData.append("gender", newSuspectData.gender);
+
       if (newSuspectData.national_id)
         formData.append("national_id", newSuspectData.national_id);
 
       const newSuspect = await createSuspect(formData);
 
-      const payload = {
+      return addSuspectToCase({
         suspect: newSuspect.id,
-        crime: caseDetails?.crime,
-      };
-
-      return addSuspectToCase(payload);
+        case: caseDetails.id,
+      });
     },
+
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["suspects", "all"] });
-      queryClient.invalidateQueries({ queryKey: ["suspects", "case", caseId] });
+      queryClient.invalidateQueries({
+        queryKey: ["suspects", "case", caseId],
+      });
       queryClient.invalidateQueries({
         queryKey: ["suspect-crimes", "case", caseId],
       });
+
       toast.success("New suspect created and added to case");
+
       setIsNewSuspectDialogOpen(false);
       setNewSuspectData({
         name: "",
@@ -217,17 +231,19 @@ export const ManageSuspectsPage = () => {
         national_id: "",
       });
     },
+
     onError: (error: AxiosError<ErrorResponse>) => {
       console.error("Error creating suspect:", error);
       console.error("Error response:", error.response?.data);
-      toast.error(error.response?.data?.message || "Failed to create suspect");
+
+      toast.error(
+        error.response?.data?.message || "Failed to create suspect"
+      );
     },
-    enabled: !!caseDetails,
   });
 
   const removeSuspectMutation = useMutation({
     mutationFn: (suspectId: number) => {
-      // Find the suspect-crime ID for this suspect in this case
       const suspectCrime = suspectCrimes.find((sc) => sc.suspect === suspectId);
       if (!suspectCrime) {
         throw new Error("Suspect not linked to this case");

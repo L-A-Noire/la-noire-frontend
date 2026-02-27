@@ -8,7 +8,6 @@ import {
   Package01Icon,
 } from "@hugeicons/core-free-icons";
 
-// Define evidence types locally since we removed the global type
 type EvidenceType =
   | "witness_testimony"
   | "forensic"

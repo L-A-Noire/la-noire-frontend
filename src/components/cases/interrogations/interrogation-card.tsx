@@ -60,20 +60,18 @@ export function InterrogationCard({
   const suspect = interrogation.suspect_crime_details?.suspect_details;
   const userRole = session?.user?.role_title;
 
-  // Determine if current user can score
+
   const canScore =
     isDetectiveOrSergeant &&
     ((userRole === "Detective" && interrogation.detective_score === null) ||
       (userRole === "Sergent" && interrogation.sergeant_score === null));
 
-  // Determine if current user can review (captain, and both scores are present)
   const canReview =
     isCaptain &&
     interrogation.detective_score !== null &&
     interrogation.sergeant_score !== null &&
     interrogation.final_score === null;
 
-  // Get status based on scores
   const getStatus = () => {
     if (interrogation.final_score !== null) {
       return interrogation.final_score >= 7 ? "convicted" : "innocent";
@@ -123,7 +121,6 @@ export function InterrogationCard({
       setScore("");
       toast.success("Score submitted successfully");
 
-      // Log the response to see what's coming back
       console.log("Score submission response:", data);
     },
     onError: (error: AxiosError<ErrorResponse>) => {

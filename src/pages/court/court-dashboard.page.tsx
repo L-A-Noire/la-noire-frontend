@@ -1,349 +1,3 @@
-// import { useQuery } from "@tanstack/react-query";
-// import { getSuspectCrimes } from "@/api/suspect";
-// import { Link } from "react-router-dom";
-// import {
-//   Table,
-//   TableBody,
-//   TableCell,
-//   TableHead,
-//   TableHeader,
-//   TableRow,
-// } from "@/components/ui/table";
-// import { Button } from "@/components/ui/button";
-// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-// import { Badge } from "@/components/ui/badge";
-// import { HugeiconsIcon } from "@hugeicons/react";
-// import { Legal01Icon, Loading03Icon } from "@hugeicons/core-free-icons";
-
-// export const CourtDashboardPage = () => {
-//   const { data: suspects, isLoading } = useQuery({
-//     queryKey: ["suspects-trial"],
-//     queryFn: getSuspectCrimes,
-//   });
-
-//   // Filter suspects who are eligible for trial (e.g., arrested)
-//   const eligibleSuspects =
-//     suspects?.filter((s) => s.status === "arrested") || [];
-
-//   if (isLoading) {
-//     return (
-//       <div className="flex h-screen items-center justify-center">
-//         <HugeiconsIcon
-//           icon={Loading03Icon}
-//           className="h-10 w-10 animate-spin text-primary"
-//         />
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="container mx-auto py-8 space-y-6">
-//       <div className="flex justify-between items-center">
-//         <div>
-//           <h1 className="text-3xl font-bold tracking-tight">Court Docket</h1>
-//           <p className="text-muted-foreground mt-1">
-//             Select a case to proceed with the trial.
-//           </p>
-//         </div>
-//       </div>
-
-//       <Card>
-//         <CardHeader>
-//           <CardTitle>Awaiting Trial</CardTitle>
-//         </CardHeader>
-//         <CardContent>
-//           {eligibleSuspects.length === 0 ? (
-//             <div className="text-center py-8 text-muted-foreground">
-//               No suspects awaiting trial.
-//             </div>
-//           ) : (
-//             <Table>
-//               <TableHeader>
-//                 <TableRow>
-//                   <TableHead>Suspect</TableHead>
-//                   <TableHead>Case</TableHead>
-//                   <TableHead>Status</TableHead>
-//                   <TableHead>Actions</TableHead>
-//                 </TableRow>
-//               </TableHeader>
-//               <TableBody>
-//                 {eligibleSuspects.map((sc) => (
-//                   <TableRow key={sc.id}>
-//                     <TableCell className="font-medium">
-//                       {sc.suspect_details?.first_name}{" "}
-//                       {sc.suspect_details?.last_name}
-//                     </TableCell>
-//                     <TableCell>
-//                       {sc.case_details ? (
-//                         <Link
-//                           to={`/cases/${sc.case_details.id}`}
-//                           className="hover:underline text-primary"
-//                         >
-//                           Case #{sc.case_details.id}
-//                         </Link>
-//                       ) : (
-//                         <span className="text-muted-foreground">
-//                           No Case Linked
-//                         </span>
-//                       )}
-//                     </TableCell>
-//                     <TableCell>
-//                       <Badge
-//                         variant="outline"
-//                         className="bg-orange-100 text-orange-800 border-orange-200"
-//                       >
-//                         {sc.status}
-//                       </Badge>
-//                     </TableCell>
-//                     <TableCell>
-//                       <Link to={`/court/trial/${sc.id}`}>
-//                         <Button size="sm" className="gap-2">
-//                           <HugeiconsIcon icon={Legal01Icon} size={16} />
-//                           Start Trial
-//                         </Button>
-//                       </Link>
-//                     </TableCell>
-//                   </TableRow>
-//                 ))}
-//               </TableBody>
-//             </Table>
-//           )}
-//         </CardContent>
-//       </Card>
-//     </div>
-//   );
-// };
-
-// src/pages/court/court-dashboard.page.tsx
-// import { useQuery } from "@tanstack/react-query";
-// import { getSuspectCrimes, getAllSuspects } from "@/api/suspect";
-// import { getCases } from "@/api/cases";
-// import { Link } from "react-router-dom";
-// import {
-//   Table,
-//   TableBody,
-//   TableCell,
-//   TableHead,
-//   TableHeader,
-//   TableRow,
-// } from "@/components/ui/table";
-// import { Button } from "@/components/ui/button";
-// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-// import { Badge } from "@/components/ui/badge";
-// import { HugeiconsIcon } from "@hugeicons/react";
-// import { Legal01Icon, Loading03Icon } from "@hugeicons/core-free-icons";
-// import { useMemo } from "react";
-
-// export const CourtDashboardPage = () => {
-//   // Fetch all suspect-crimes
-//   const {
-//     data: suspectCrimes = [],
-//     isLoading: isLoadingCrimes,
-//     error: crimesError
-//   } = useQuery({
-//     queryKey: ["suspect-crimes"],
-//     queryFn: getSuspectCrimes,
-//   });
-
-//   // Fetch all suspects
-//   const {
-//     data: suspects = [],
-//     isLoading: isLoadingSuspects,
-//     error: suspectsError
-//   } = useQuery({
-//     queryKey: ["suspects"],
-//     queryFn: getAllSuspects,
-//   });
-
-//   // Fetch all cases
-//   const {
-//     data: cases = [],
-//     isLoading: isLoadingCases,
-//     error: casesError
-//   } = useQuery({
-//     queryKey: ["cases"],
-//     queryFn: getCases,
-//   });
-
-//   // Create maps for quick lookup
-//   const suspectMap = useMemo(() => {
-//     const map = new Map<number, Suspect>();
-//     suspects.forEach(suspect => map.set(suspect.id, suspect));
-//     return map;
-//   }, [suspects]);
-
-//   const caseMap = useMemo(() => {
-//     const map = new Map<number, CaseDetail>();
-//     cases.forEach(c => map.set(c.id, c));
-//     return map;
-//   }, [cases]);
-
-//   // Find convicted suspects by checking suspect status
-//   const convictedCases = useMemo(() => {
-//     // First, find all convicted suspects
-//     const convictedSuspectIds = suspects
-//       .filter(suspect => suspect.status === "convicted")
-//       .map(suspect => suspect.id);
-
-//     console.log("Convicted suspect IDs:", convictedSuspectIds);
-
-//     // Then find all suspect-crimes that link these suspects to crimes
-//     const relevantSuspectCrimes = suspectCrimes.filter(sc =>
-//       convictedSuspectIds.includes(sc.suspect)
-//     );
-
-//     console.log("Relevant suspect-crimes:", relevantSuspectCrimes);
-
-//     // Enrich with full data
-//     return relevantSuspectCrimes.map(sc => ({
-//       ...sc,
-//       suspect_details: suspectMap.get(sc.suspect),
-//       crime_details: sc.crime_details || (sc.crime ? { id: sc.crime } : null),
-//       case_details: sc.crime ? caseMap.get(sc.crime) : null,
-//     }));
-//   }, [suspectCrimes, suspects, suspectMap, caseMap]);
-
-//   const isLoading = isLoadingCrimes || isLoadingSuspects || isLoadingCases;
-//   const error = crimesError || suspectsError || casesError;
-
-//   if (isLoading) {
-//     return (
-//       <div className="flex h-screen items-center justify-center">
-//         <HugeiconsIcon
-//           icon={Loading03Icon}
-//           className="h-10 w-10 animate-spin text-primary"
-//         />
-//       </div>
-//     );
-//   }
-
-//   if (error) {
-//     console.error("Error fetching data:", error);
-//     return (
-//       <div className="container mx-auto py-8">
-//         <Card className="border-destructive">
-//           <CardContent className="pt-6 text-center">
-//             <p className="text-destructive">Error loading cases. Please try again.</p>
-//           </CardContent>
-//         </Card>
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="container mx-auto py-8 space-y-6">
-//       <div className="flex justify-between items-center">
-//         <div>
-//           <h1 className="text-3xl font-bold tracking-tight">Court Docket</h1>
-//           <p className="text-muted-foreground mt-1">
-//             Review convicted suspects and issue final judgments.
-//           </p>
-//         </div>
-//       </div>
-
-//       {/* Debug info - remove in production */}
-//       <div className="text-xs text-muted-foreground p-2 bg-muted/30 rounded space-y-1">
-//         <p>Total suspects: {suspects.length}</p>
-//         <p>Convicted suspects: {suspects.filter(s => s.status === "convicted").length}</p>
-//         <p>Total suspect-crimes: {suspectCrimes.length}</p>
-//         <p>Cases for trial: {convictedCases.length}</p>
-//       </div>
-
-//       <Card>
-//         <CardHeader>
-//           <CardTitle>Cases Awaiting Sentencing</CardTitle>
-//         </CardHeader>
-//         <CardContent>
-//           {convictedCases.length === 0 ? (
-//             <div className="text-center py-8 text-muted-foreground">
-//               No convicted suspects awaiting sentencing.
-//             </div>
-//           ) : (
-//             <Table>
-//               <TableHeader>
-//                 <TableRow>
-//                   <TableHead>Suspect</TableHead>
-//                   <TableHead>Case Details</TableHead>
-//                   <TableHead>Crime Level</TableHead>
-//                   <TableHead>Status</TableHead>
-//                   <TableHead>Actions</TableHead>
-//                 </TableRow>
-//               </TableHeader>
-//               <TableBody>
-//                 {convictedCases.map((sc) => (
-//                   <TableRow key={sc.id}>
-//                     <TableCell className="font-medium">
-//                       <div>
-//                         <p className="font-semibold">{sc.suspect_details?.name}</p>
-//                         {sc.suspect_details?.nickname && (
-//                           <p className="text-xs text-muted-foreground">
-//                             AKA: {sc.suspect_details.nickname}
-//                           </p>
-//                         )}
-//                         {sc.suspect_details?.national_id && (
-//                           <p className="text-xs text-muted-foreground">
-//                             ID: {sc.suspect_details.national_id}
-//                           </p>
-//                         )}
-//                       </div>
-//                     </TableCell>
-//                     <TableCell>
-//                       {sc.case_details ? (
-//                         <div>
-//                           <p className="font-medium">{sc.case_details.crime_title}</p>
-//                           <p className="text-xs text-muted-foreground mt-1">
-//                             Case #{sc.case_details.id}
-//                           </p>
-//                         </div>
-//                       ) : (
-//                         <span className="text-muted-foreground">
-//                           Crime ID: {sc.crime}
-//                         </span>
-//                       )}
-//                     </TableCell>
-//                     <TableCell>
-//                       <Badge
-//                         variant={
-//                           sc.case_details?.crime_details?.level === "4"
-//                             ? "destructive"
-//                             : "outline"
-//                         }
-//                         className={
-//                           sc.case_details?.crime_details?.level === "4"
-//                             ? "bg-red-100 text-red-800"
-//                             : ""
-//                         }
-//                       >
-//                         Level {sc.case_details?.crime_details?.level || "N/A"}
-//                       </Badge>
-//                     </TableCell>
-//                     <TableCell>
-//                       <Badge
-//                         variant="outline"
-//                         className="bg-purple-100 text-purple-800 border-purple-200"
-//                       >
-//                         {sc.suspect_details?.status}
-//                       </Badge>
-//                     </TableCell>
-//                     <TableCell>
-//                       <Link to={`/court/trial/${sc.id}`}>
-//                         <Button size="sm" className="gap-2">
-//                           <HugeiconsIcon icon={Legal01Icon} size={16} />
-//                           Review Case
-//                         </Button>
-//                       </Link>
-//                     </TableCell>
-//                   </TableRow>
-//                 ))}
-//               </TableBody>
-//             </Table>
-//           )}
-//         </CardContent>
-//       </Card>
-//     </div>
-//   );
-// };
-
 import { useQuery } from "@tanstack/react-query";
 import { getSuspectCrimes, getAllSuspects } from "@/api/suspect";
 import { getCases } from "@/api/cases";
@@ -366,7 +20,6 @@ import type { Suspect } from "@/types/suspect.type";
 import type { CaseDetail } from "@/types/case.type";
 
 export const CourtDashboardPage = () => {
-  // Fetch all suspect-crimes
   const {
     data: suspectCrimes = [],
     isLoading: isLoadingCrimes,
@@ -376,7 +29,6 @@ export const CourtDashboardPage = () => {
     queryFn: getSuspectCrimes,
   });
 
-  // Fetch all suspects
   const {
     data: suspects = [],
     isLoading: isLoadingSuspects,
@@ -386,7 +38,6 @@ export const CourtDashboardPage = () => {
     queryFn: getAllSuspects,
   });
 
-  // Fetch all cases
   const {
     data: cases = [],
     isLoading: isLoadingCases,
@@ -396,7 +47,6 @@ export const CourtDashboardPage = () => {
     queryFn: getCases,
   });
 
-  // Create maps for quick lookup
   const suspectMap = useMemo(() => {
     const map = new Map<number, Suspect>();
     suspects.forEach((suspect) => map.set(suspect.id, suspect));
@@ -409,18 +59,17 @@ export const CourtDashboardPage = () => {
     return map;
   }, [cases]);
 
-  // Find convicted suspects by checking suspect status
   const convictedCases = useMemo(() => {
-    // First, find all convicted suspects
     const convictedSuspectIds = suspects
       .filter((suspect) => suspect.status === "convicted")
       .map((suspect) => suspect.id);
 
     console.log("Convicted suspect IDs:", convictedSuspectIds);
 
-    // Then find all suspect-crimes that link these suspects to crimes
+
     const relevantSuspectCrimes = suspectCrimes.filter((sc) =>
       convictedSuspectIds.includes(sc.suspect),
+
     );
 
     console.log("Relevant suspect-crimes:", relevantSuspectCrimes);

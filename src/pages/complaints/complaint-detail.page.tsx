@@ -42,7 +42,6 @@ import type { ComplaintReviewRequest } from "@/types/complaint.type";
 import { useState, useEffect } from "react";
 import http from "@/lib/http";
 
-// Crime level options matching backend
 const CRIME_LEVELS = [
   { value: "1", label: "Level 3" },
   { value: "2", label: "Level 2" },
@@ -137,7 +136,6 @@ export const ComplaintDetailPage = () => {
     }
   }, [isConfirmed]);
 
-  // Update complaint mutation
   const updateComplaintMutation = useMutation({
     mutationFn: (data: EditFormData) => updateComplaint(complaintId, data),
     onSuccess: (response) => {
@@ -184,7 +182,6 @@ export const ComplaintDetailPage = () => {
     mutationFn: async (data: CreateCaseFormData) => {
       if (!complaint) throw new Error("Complaint not found");
 
-      // Step 1: Create Crime
       const crimeResponse = await http.post("/crime/crimes/", {
         title: `Case from Complaint #${complaint.id}`,
         description: complaint.description.substring(0, 200),
@@ -193,7 +190,6 @@ export const ComplaintDetailPage = () => {
         committed_at: new Date().toISOString(),
       });
 
-      // Step 2: Create Case linked to Crime
       const caseData = {
         crime: crimeResponse.data.id,
         detective: data.detective_id ? Number(data.detective_id) : 0,
@@ -202,7 +198,6 @@ export const ComplaintDetailPage = () => {
 
       const caseResponse = await createCase(caseData);
 
-      // Step 3: Link Case to Complaint
       await http.patch(`/crime/complaints/${complaintId}/`, {
         case: caseResponse.id,
       });
@@ -221,7 +216,6 @@ export const ComplaintDetailPage = () => {
     },
   });
 
-  // Handle form submission
   const onSubmit = async (data: ReviewFormData) => {
     const reviewData: ComplaintReviewRequest = {
       is_confirmed: data.is_confirmed,
@@ -229,20 +223,16 @@ export const ComplaintDetailPage = () => {
     };
 
     if (isCadet) {
-      // Cadet review - just submit the review
       reviewCadetMutation.mutate(reviewData);
     } else if (isOfficer) {
       if (data.is_confirmed) {
-        // Officer approving - need to create case with crime level
         if (!selectedCrimeLevel) {
           toast.error("Please select a crime level");
           return;
         }
 
-        // First submit the review to approve the complaint
         await reviewOfficerMutation.mutateAsync(reviewData);
 
-        // Then create the case with crime level
         createCrimeAndCaseMutation.mutate({
           crime_level: selectedCrimeLevel,
           crime_location: getCaseValues("crime_location"),
@@ -255,7 +245,6 @@ export const ComplaintDetailPage = () => {
     }
   };
 
-  // Review as Officer (separate mutation for tracking)
   const reviewOfficerMutation = useMutation({
     mutationFn: (data: ComplaintReviewRequest) =>
       reviewComplaintAsOfficer(complaintId, data),
@@ -276,7 +265,6 @@ export const ComplaintDetailPage = () => {
   });
 
   const onEditSubmit = (data: EditFormData) => {
-    // Check if description actually changed
     if (data.description === complaint?.description) {
       toast.info("No changes made to the complaint.");
       setIsEditing(false);
@@ -286,10 +274,8 @@ export const ComplaintDetailPage = () => {
     updateComplaintMutation.mutate(data);
   };
 
-  // Check if the current user is a complainant
   const isComplainant = complaint?.complainants.includes(session?.user.id || 0);
 
-  // Determine if user can review based on role and status
   const canReview = (() => {
     if (!complaint || !session) return false;
 
@@ -306,15 +292,8 @@ export const ComplaintDetailPage = () => {
     return false;
   })();
 
-  // User can edit when complaint is rejected by cadet AND they are the complainant
   const canEdit =
     complaint && complaint.status === "rejected_by_cadet" && isComplainant;
-
-  // Log current state for debugging
-  console.log("Current complaint status:", complaint?.status);
-  console.log("User role:", session?.user.role_title);
-  console.log("Can review:", canReview);
-  console.log("Is confirmed:", isConfirmed);
 
   if (isLoading)
     return (
@@ -494,9 +473,8 @@ export const ComplaintDetailPage = () => {
             <div>
               <p className="text-sm text-muted-foreground">Rejection Count</p>
               <p
-                className={`font-semibold mt-1 ${
-                  complaint.rejection_count >= 3 ? "text-destructive" : ""
-                }`}
+                className={`font-semibold mt-1 ${complaint.rejection_count >= 3 ? "text-destructive" : ""
+                  }`}
               >
                 {complaint.rejection_count}/3
               </p>
@@ -559,11 +537,10 @@ export const ComplaintDetailPage = () => {
                 <div className="flex gap-4">
                   <button
                     type="button"
-                    className={`flex-1 p-4 border-2 rounded-lg transition-all ${
-                      isConfirmed
+                    className={`flex-1 p-4 border-2 rounded-lg transition-all ${isConfirmed
                         ? "border-green-500 bg-green-50 dark:bg-green-950/20"
                         : "border-muted hover:border-green-300"
-                    }`}
+                      }`}
                     onClick={() => setValue("is_confirmed", true)}
                   >
                     <div className="flex items-center justify-center gap-2">
@@ -579,11 +556,10 @@ export const ComplaintDetailPage = () => {
 
                   <button
                     type="button"
-                    className={`flex-1 p-4 border-2 rounded-lg transition-all ${
-                      !isConfirmed
+                    className={`flex-1 p-4 border-2 rounded-lg transition-all ${!isConfirmed
                         ? "border-red-500 bg-red-50 dark:bg-red-950/20"
                         : "border-muted hover:border-red-300"
-                    }`}
+                      }`}
                     onClick={() => setValue("is_confirmed", false)}
                   >
                     <div className="flex items-center justify-center gap-2">
@@ -708,8 +684,8 @@ export const ComplaintDetailPage = () => {
                 }
               >
                 {reviewCadetMutation.isPending ||
-                reviewOfficerMutation.isPending ||
-                createCrimeAndCaseMutation.isPending
+                  reviewOfficerMutation.isPending ||
+                  createCrimeAndCaseMutation.isPending
                   ? "Processing..."
                   : isConfirmed && isOfficer
                     ? "Approve & Create Case"

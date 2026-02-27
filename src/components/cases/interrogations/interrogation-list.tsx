@@ -1,4 +1,3 @@
-// src/components/interrogations/interrogation-list.tsx
 import { useQuery } from "@tanstack/react-query";
 import { getCaseInterrogations } from "@/api/interrogations";
 import { getCaseById } from "@/api/cases";
@@ -15,7 +14,6 @@ export function InterrogationList({ caseId }: InterrogationListProps) {
   const { session } = useAuthStore();
   const userRole = session?.user?.role_title;
 
-  // Get case details to check crime level
   const { data: caseDetails } = useQuery({
     queryKey: ["case", caseId],
     queryFn: () => getCaseById(caseId),
@@ -33,7 +31,6 @@ export function InterrogationList({ caseId }: InterrogationListProps) {
   const isDetectiveOrSergeant =
     userRole === "Detective" || userRole === "Sergent";
 
-  // Check if crime level is critical (level 4)
   const isCriticalCrime = caseDetails?.crime_details?.level === "4";
 
   return (

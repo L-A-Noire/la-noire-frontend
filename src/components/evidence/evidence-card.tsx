@@ -1,8 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-// TODO: This component needs to be rewritten to use the new evidence type structure
-// The old EvidenceDetail type has been removed
-
 interface EvidenceCardProps {
   evidence: unknown;
 }

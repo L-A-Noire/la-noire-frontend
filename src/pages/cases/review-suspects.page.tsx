@@ -36,7 +36,6 @@ export const ReviewSuspectsPage = () => {
   const queryClient = useQueryClient();
   const caseId = parseInt(id!);
 
-  // First, get case details to verify it exists
   const { data: caseDetails, isLoading: isLoadingCase } = useQuery({
     queryKey: ["case", caseId],
     queryFn: () => getCaseById(caseId),
@@ -46,7 +45,6 @@ export const ReviewSuspectsPage = () => {
     message?: string;
   }
 
-  // Get suspects directly linked to this case
   const {
     data: suspects = [],
     isLoading: isLoadingSuspects,
@@ -54,7 +52,7 @@ export const ReviewSuspectsPage = () => {
   } = useQuery({
     queryKey: ["suspects", "case", caseId],
     queryFn: () => getSuspectsByCaseDirect(caseId),
-    enabled: !!caseDetails, // Only run if we have case details
+    enabled: !!caseDetails,
   });
 
   const markAsWantedMutation = useMutation({
