@@ -1,5 +1,5 @@
 import http from "@/lib/http";
-import type { Suspect,SuspectCrime } from "@/types/suspect.type";
+import type { Suspect, SuspectCrime } from "@/types/suspect.type";
 
 export const getSuspectCrimes = async (): Promise<Suspect[]> => {
   const response = await http.get<Suspect[]>("/suspect/suspect-crimes/");
@@ -109,23 +109,24 @@ export const deleteSuspectFromCase = async (
   await http.delete(`/suspect/suspect-crimes/${suspectCrimeId}/`);
 };
 
-
 // Update suspect status (works on SuspectCrime)
 export const updateSuspectCrimeStatus = async (
   suspectCrimeId: number,
-  status: string
+  status: string,
 ): Promise<SuspectCrime> => {
   const response = await http.patch<SuspectCrime>(
     `/suspect/suspect-crimes/${suspectCrimeId}/`,
-    { status }
+    { status },
   );
   return response.data;
 };
 
 // Mark suspect as wanted (works on Suspect)
-export const markSuspectAsWanted = async (suspectId: number): Promise<Suspect> => {
+export const markSuspectAsWanted = async (
+  suspectId: number,
+): Promise<Suspect> => {
   const response = await http.post<Suspect>(
-    `/suspect/suspects/${suspectId}/mark_as_wanted/`
+    `/suspect/suspects/${suspectId}/mark_as_wanted/`,
   );
   return response.data;
 };
