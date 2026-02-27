@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { AxiosError } from "axios";
-import http from "@/lib/http";
 import {
   Card,
   CardContent,
@@ -46,7 +44,6 @@ import {
   deleteSuspectFromCase,
 } from "@/api/suspect";
 import { getCaseById } from "@/api/cases";
-import type { SuspectCrime } from "@/types/suspect.type";
 
 export const ManageSuspectsPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -66,14 +63,10 @@ export const ManageSuspectsPage = () => {
     national_id: "",
   });
 
-  interface ErrorResponse {
-    message?: string;
-  }
-
   const {
     data: caseDetails,
     isLoading: isLoadingCase,
-    error: caseError,
+    error: caseError
   } = useQuery({
     queryKey: ["case", caseId],
     queryFn: () => getCaseById(caseId),
@@ -82,20 +75,19 @@ export const ManageSuspectsPage = () => {
   const {
     data: allSuspects = [],
     isLoading: isLoadingSuspects,
-    error: suspectsError,
+    error: suspectsError
   } = useQuery({
     queryKey: ["suspects", "all"],
     queryFn: async () => {
       const data = await getAllSuspects();
       return data;
     },
-    enabled: !!caseDetails,
   });
 
   const {
     data: caseSuspects = [],
     isLoading: isLoadingCaseSuspects,
-    error: caseSuspectsError,
+    error: caseSuspectsError
   } = useQuery({
     queryKey: ["suspects", "case", caseId],
     queryFn: async () => {
@@ -103,22 +95,18 @@ export const ManageSuspectsPage = () => {
       console.log("Case suspects (direct):", data);
       return data;
     },
-    enabled: !!caseDetails,
   });
 
-  const { data: suspectCrimes = [], isLoading: isLoadingSuspectCrimes } =
-    useQuery<SuspectCrime[]>({
-      queryKey: ["suspect-crimes", "case", caseId],
-      queryFn: async () => {
-        const response = await http.get<SuspectCrime[]>(
-          `/suspect/suspect-crimes/`,
-        );
-        return response.data.filter(
-          (sc: SuspectCrime) => sc.crime === caseDetails?.crime,
-        );
-      },
-      enabled: !!caseDetails,
-    });
+  const {
+    data: suspectCrimes = [],
+    isLoading: isLoadingSuspectCrimes,
+  } = useQuery({
+    queryKey: ["suspect-crimes", "case", caseId],
+    queryFn: async () => {
+      const response = await http.get(`/suspect/suspect-crimes/`);
+      return response.data.filter((sc: any) => sc.crime === caseDetails?.crime);
+    },
+  });
 
   useEffect(() => {
     if (suspectsError) {
@@ -132,26 +120,20 @@ export const ManageSuspectsPage = () => {
     }
   }, [suspectsError, caseSuspectsError, caseError]);
 
-  // Get suspect IDs that are already in this case
-  const linkedSuspectIds = caseSuspects.map((suspect) => suspect.id);
+  const linkedSuspectIds = caseSuspects.map(suspect => suspect.id);
 
-  // Filter out suspects already in this case and apply search
   const availableSuspects = allSuspects.filter((suspect) => {
     if (linkedSuspectIds.includes(suspect.id)) {
       return false;
     }
 
     if (searchTerm) {
-      const name = suspect.name?.toLowerCase() || "";
-      const nickname = suspect.nickname?.toLowerCase() || "";
-      const nationalId = suspect.national_id?.toString() || "";
+      const name = suspect.name?.toLowerCase() || '';
+      const nickname = suspect.nickname?.toLowerCase() || '';
+      const nationalId = suspect.national_id?.toString() || '';
       const term = searchTerm.toLowerCase();
 
-      return (
-        name.includes(term) ||
-        nickname.includes(term) ||
-        nationalId.includes(term)
-      );
+      return name.includes(term) || nickname.includes(term) || nationalId.includes(term);
     }
 
     return true;
@@ -159,28 +141,21 @@ export const ManageSuspectsPage = () => {
 
   const addSuspectMutation = useMutation({
     mutationFn: () => {
-      if (!caseDetails) {
-        throw new Error("Case details not loaded");
-      }
-
       const payload = {
-        suspect: Number(selectedSuspectId),
-        case: caseDetails.id,
+        suspect: parseInt(selectedSuspectId),
+        crime: caseDetails?.crime,
       };
-
       return addSuspectToCase(payload);
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["suspects", "case", caseId] });
-      queryClient.invalidateQueries({
-        queryKey: ["suspect-crimes", "case", caseId],
-      });
+      queryClient.invalidateQueries({ queryKey: ["suspect-crimes", "case", caseId] });
       toast.success("Suspect added to case");
       setIsAddDialogOpen(false);
       setSelectedSuspectId("");
       setSearchTerm("");
     },
-    onError: (error: AxiosError<ErrorResponse>) => {
+    onError: (error: any) => {
       console.error("Error adding suspect:", error);
       console.error("Error response:", error.response?.data);
       toast.error(error.response?.data?.message || "Failed to add suspect");
@@ -189,40 +164,27 @@ export const ManageSuspectsPage = () => {
 
   const createSuspectMutation = useMutation({
     mutationFn: async () => {
-      if (!caseDetails) {
-        throw new Error("Case details not loaded");
-      }
-
       const formData = new FormData();
       formData.append("name", newSuspectData.name);
       formData.append("description", newSuspectData.description);
       formData.append("nickname", newSuspectData.nickname);
-
-      if (newSuspectData.gender)
-        formData.append("gender", newSuspectData.gender);
-
-      if (newSuspectData.national_id)
-        formData.append("national_id", newSuspectData.national_id);
+      if (newSuspectData.gender) formData.append("gender", newSuspectData.gender);
+      if (newSuspectData.national_id) formData.append("national_id", newSuspectData.national_id);
 
       const newSuspect = await createSuspect(formData);
 
-      return addSuspectToCase({
+      const payload = {
         suspect: newSuspect.id,
-        case: caseDetails.id,
-      });
+        crime: caseDetails?.crime,
+      };
+
+      return addSuspectToCase(payload);
     },
-
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["suspects", "all"] });
-      queryClient.invalidateQueries({
-        queryKey: ["suspects", "case", caseId],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["suspect-crimes", "case", caseId],
-      });
-
+      queryClient.invalidateQueries({ queryKey: ["suspects", "case", caseId] });
+      queryClient.invalidateQueries({ queryKey: ["suspect-crimes", "case", caseId] });
       toast.success("New suspect created and added to case");
-
       setIsNewSuspectDialogOpen(false);
       setNewSuspectData({
         name: "",
@@ -232,18 +194,16 @@ export const ManageSuspectsPage = () => {
         national_id: "",
       });
     },
-
-    onError: (error: AxiosError<ErrorResponse>) => {
+    onError: (error: any) => {
       console.error("Error creating suspect:", error);
       console.error("Error response:", error.response?.data);
-
       toast.error(error.response?.data?.message || "Failed to create suspect");
     },
   });
 
   const removeSuspectMutation = useMutation({
     mutationFn: (suspectId: number) => {
-      const suspectCrime = suspectCrimes.find((sc) => sc.suspect === suspectId);
+      const suspectCrime = suspectCrimes.find(sc => sc.suspect === suspectId);
       if (!suspectCrime) {
         throw new Error("Suspect not linked to this case");
       }
@@ -251,12 +211,10 @@ export const ManageSuspectsPage = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["suspects", "case", caseId] });
-      queryClient.invalidateQueries({
-        queryKey: ["suspect-crimes", "case", caseId],
-      });
+      queryClient.invalidateQueries({ queryKey: ["suspect-crimes", "case", caseId] });
       toast.success("Suspect removed from case");
     },
-    onError: (error: AxiosError<ErrorResponse>) => {
+    onError: (error: any) => {
       console.error("Error removing suspect:", error);
       toast.error(error.response?.data?.message || "Failed to remove suspect");
     },
@@ -292,11 +250,7 @@ export const ManageSuspectsPage = () => {
     }
   };
 
-  const isLoading =
-    isLoadingCase ||
-    isLoadingSuspects ||
-    isLoadingCaseSuspects ||
-    isLoadingSuspectCrimes;
+  const isLoading = isLoadingCase || isLoadingSuspects || isLoadingCaseSuspects || isLoadingSuspectCrimes;
 
   if (isLoadingCase) {
     return (
@@ -386,39 +340,27 @@ export const ManageSuspectsPage = () => {
                   </div>
                 ) : availableSuspects.length === 0 ? (
                   <div className="p-4 text-center text-muted-foreground">
-                    {searchTerm
-                      ? "No suspects match your search"
-                      : "No suspects available"}
-                    {allSuspects.length > 0 &&
-                      linkedSuspectIds.length === allSuspects.length && (
-                        <p className="text-xs mt-2">
-                          All suspects are already added to this case
-                        </p>
-                      )}
+                    {searchTerm ? "No suspects match your search" : "No suspects available"}
+                    {allSuspects.length > 0 && linkedSuspectIds.length === allSuspects.length && (
+                      <p className="text-xs mt-2">All suspects are already added to this case</p>
+                    )}
                   </div>
                 ) : (
                   <div className="divide-y">
                     {availableSuspects.map((suspect) => (
                       <div
                         key={suspect.id}
-                        className={`p-3 flex items-center gap-3 cursor-pointer hover:bg-muted/50 transition-colors ${
-                          selectedSuspectId === suspect.id.toString()
-                            ? "bg-muted"
-                            : ""
-                        }`}
-                        onClick={() =>
-                          setSelectedSuspectId(suspect.id.toString())
-                        }
+                        className={`p-3 flex items-center gap-3 cursor-pointer hover:bg-muted/50 transition-colors ${selectedSuspectId === suspect.id.toString() ? "bg-muted" : ""
+                          }`}
+                        onClick={() => setSelectedSuspectId(suspect.id.toString())}
                       >
                         <div className="flex-1">
-                          <div className="font-medium">{suspect.name}</div>
+                          <div className="font-medium">
+                            {suspect.name}
+                          </div>
                           <div className="text-sm text-muted-foreground">
-                            {suspect.nickname && (
-                              <span>AKA: {suspect.nickname} • </span>
-                            )}
-                            {suspect.national_id && (
-                              <span>ID: {suspect.national_id}</span>
-                            )}
+                            {suspect.nickname && <span>AKA: {suspect.nickname} • </span>}
+                            {suspect.national_id && <span>ID: {suspect.national_id}</span>}
                           </div>
                           <div className="text-xs mt-1">
                             <Badge variant="outline" className="text-xs">
@@ -427,9 +369,7 @@ export const ManageSuspectsPage = () => {
                           </div>
                         </div>
                         {selectedSuspectId === suspect.id.toString() && (
-                          <Badge variant="default" className="bg-primary">
-                            Selected
-                          </Badge>
+                          <Badge variant="default" className="bg-primary">Selected</Badge>
                         )}
                       </div>
                     ))}
@@ -462,10 +402,7 @@ export const ManageSuspectsPage = () => {
       </div>
 
       {/* New Suspect Dialog */}
-      <Dialog
-        open={isNewSuspectDialogOpen}
-        onOpenChange={setIsNewSuspectDialogOpen}
-      >
+      <Dialog open={isNewSuspectDialogOpen} onOpenChange={setIsNewSuspectDialogOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>Create New Suspect</DialogTitle>
@@ -478,10 +415,7 @@ export const ManageSuspectsPage = () => {
                   id="name"
                   value={newSuspectData.name}
                   onChange={(e) =>
-                    setNewSuspectData({
-                      ...newSuspectData,
-                      name: e.target.value,
-                    })
+                    setNewSuspectData({ ...newSuspectData, name: e.target.value })
                   }
                   placeholder="John Doe"
                 />
@@ -492,10 +426,7 @@ export const ManageSuspectsPage = () => {
                   id="nickname"
                   value={newSuspectData.nickname}
                   onChange={(e) =>
-                    setNewSuspectData({
-                      ...newSuspectData,
-                      nickname: e.target.value,
-                    })
+                    setNewSuspectData({ ...newSuspectData, nickname: e.target.value })
                   }
                   placeholder="The Shadow"
                 />
@@ -525,10 +456,7 @@ export const ManageSuspectsPage = () => {
                   id="national_id"
                   value={newSuspectData.national_id}
                   onChange={(e) =>
-                    setNewSuspectData({
-                      ...newSuspectData,
-                      national_id: e.target.value,
-                    })
+                    setNewSuspectData({ ...newSuspectData, national_id: e.target.value })
                   }
                   placeholder="ID123456"
                 />
@@ -540,10 +468,7 @@ export const ManageSuspectsPage = () => {
                 id="description"
                 value={newSuspectData.description}
                 onChange={(e) =>
-                  setNewSuspectData({
-                    ...newSuspectData,
-                    description: e.target.value,
-                  })
+                  setNewSuspectData({ ...newSuspectData, description: e.target.value })
                 }
                 placeholder="Physical description, identifying marks, etc."
                 rows={3}
@@ -558,13 +483,9 @@ export const ManageSuspectsPage = () => {
               </Button>
               <Button
                 onClick={handleCreateNewSuspect}
-                disabled={
-                  createSuspectMutation.isPending || !newSuspectData.name
-                }
+                disabled={createSuspectMutation.isPending || !newSuspectData.name}
               >
-                {createSuspectMutation.isPending
-                  ? "Creating..."
-                  : "Create & Add to Case"}
+                {createSuspectMutation.isPending ? "Creating..." : "Create & Add to Case"}
               </Button>
             </div>
           </div>
@@ -594,12 +515,11 @@ export const ManageSuspectsPage = () => {
                   className="flex items-center justify-between p-4 border rounded-lg"
                 >
                   <div className="flex items-start gap-3">
-                    <HugeiconsIcon
-                      icon={UserIcon}
-                      className="h-5 w-5 text-muted-foreground mt-1"
-                    />
+                    <HugeiconsIcon icon={UserIcon} className="h-5 w-5 text-muted-foreground mt-1" />
                     <div>
-                      <h3 className="font-semibold">{suspect.name}</h3>
+                      <h3 className="font-semibold">
+                        {suspect.name}
+                      </h3>
                       <div className="flex items-center gap-2 mt-1">
                         <Badge variant="outline" className="text-xs">
                           {suspect.status}
