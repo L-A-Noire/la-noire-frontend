@@ -134,7 +134,7 @@ export default function AdminSuspectsPage() {
 
   const handleEdit = (item: SuspectCrime) => {
     setEditingSuspect(item);
-    setStatus(item.status);
+    setStatus(item.status ?? "");
     setIsDialogOpen(true);
   };
 
@@ -158,27 +158,23 @@ export default function AdminSuspectsPage() {
         searchFn={(item, search) => {
           const s = search.toLowerCase();
           return (
-            (item.suspect_details?.first_name || "")
-              .toLowerCase()
-              .includes(s) ||
-            (item.suspect_details?.last_name || "").toLowerCase().includes(s) ||
-            (item.suspect_details?.username || "").toLowerCase().includes(s) ||
+            (item.suspect_details?.name || "").toLowerCase().includes(s) ||
+            (item.suspect_details?.nickname || "").toLowerCase().includes(s) ||
             (item.status || "").toLowerCase().includes(s)
           );
         }}
-        searchPlaceholder="Search by name, username, or status..."
+        searchPlaceholder="Search by name, nickname, or status..."
         columns={[
           { header: "ID", accessorKey: "id" },
           {
             header: "Name",
             accessorKey: "suspect",
-            cell: (item) =>
-              `${item.suspect_details?.first_name || ""} ${item.suspect_details?.last_name || ""}`,
+            cell: (item) => item.suspect_details?.name || "N/A",
           },
           {
-            header: "Username",
+            header: "Nickname",
             accessorKey: "added_by",
-            cell: (item) => item.suspect_details?.username || "N/A",
+            cell: (item) => item.suspect_details?.nickname || "N/A",
           },
           { header: "Status", accessorKey: "status" },
           {

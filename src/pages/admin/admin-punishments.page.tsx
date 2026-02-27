@@ -42,7 +42,6 @@ export default function AdminPunishmentsPage() {
     description: "",
     punishment_type: "fine",
     suspect_crime: undefined,
-    case: undefined,
     amount: "",
     duration_months: undefined,
   });
@@ -63,8 +62,8 @@ export default function AdminPunishmentsPage() {
     if (editingPunishment) {
       toast.info("Updating punishments is not supported by the API.");
     } else {
-      if (!formData.suspect_crime || !formData.case) {
-        toast.error("Suspect Crime ID and Case ID are required.");
+      if (!formData.suspect_crime) {
+        toast.error("Suspect Crime ID is required.");
         return;
       }
       createMutation.mutate(formData as CreatePunishmentPayload);
@@ -78,7 +77,6 @@ export default function AdminPunishmentsPage() {
       description: item.description,
       punishment_type: item.punishment_type,
       suspect_crime: item.suspect_crime,
-      case: item.case,
       amount: item.amount,
       duration_months: item.duration_months,
     });
@@ -92,7 +90,6 @@ export default function AdminPunishmentsPage() {
       description: "",
       punishment_type: "fine",
       suspect_crime: undefined,
-      case: undefined,
       amount: "",
       duration_months: undefined,
     });
@@ -184,36 +181,21 @@ export default function AdminPunishmentsPage() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="suspect_crime">Suspect Crime ID</Label>
-                <Input
-                  id="suspect_crime"
-                  type="number"
-                  value={formData.suspect_crime || ""}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      suspect_crime: Number(e.target.value),
-                    })
-                  }
-                  required
-                  disabled={!!editingPunishment}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="case">Case ID</Label>
-                <Input
-                  id="case"
-                  type="number"
-                  value={formData.case || ""}
-                  onChange={(e) =>
-                    setFormData({ ...formData, case: Number(e.target.value) })
-                  }
-                  required
-                  disabled={!!editingPunishment}
-                />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="suspect_crime">Suspect Crime ID</Label>
+              <Input
+                id="suspect_crime"
+                type="number"
+                value={formData.suspect_crime || ""}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    suspect_crime: Number(e.target.value),
+                  })
+                }
+                required
+                disabled={!!editingPunishment}
+              />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">

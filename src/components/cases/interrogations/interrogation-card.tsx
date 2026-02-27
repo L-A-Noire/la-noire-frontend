@@ -60,7 +60,6 @@ export function InterrogationCard({
   const suspect = interrogation.suspect_crime_details?.suspect_details;
   const userRole = session?.user?.role_title;
 
-
   const canScore =
     isDetectiveOrSergeant &&
     ((userRole === "Detective" && interrogation.detective_score === null) ||

@@ -16,8 +16,8 @@ import { Badge } from "@/components/ui/badge";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Legal01Icon, Loading03Icon } from "@hugeicons/core-free-icons";
 import { useMemo } from "react";
-import type { Suspect } from "@/types/suspect.type";
-import type { CaseDetail } from "@/types/case.type";
+import type { Suspect, SuspectCrime } from "@/types/suspect.type";
+import type { CaseList } from "@/types/case.type";
 
 export const CourtDashboardPage = () => {
   const {
@@ -54,7 +54,7 @@ export const CourtDashboardPage = () => {
   }, [suspects]);
 
   const caseMap = useMemo(() => {
-    const map = new Map<number, CaseDetail>();
+    const map = new Map<number, CaseList>();
     cases.forEach((c) => map.set(c.id, c));
     return map;
   }, [cases]);
@@ -64,22 +64,15 @@ export const CourtDashboardPage = () => {
       .filter((suspect) => suspect.status === "convicted")
       .map((suspect) => suspect.id);
 
-    console.log("Convicted suspect IDs:", convictedSuspectIds);
-
-
-    const relevantSuspectCrimes = suspectCrimes.filter((sc) =>
+    const relevantSuspectCrimes = suspectCrimes.filter((sc: SuspectCrime) =>
       convictedSuspectIds.includes(sc.suspect),
-
     );
 
-    console.log("Relevant suspect-crimes:", relevantSuspectCrimes);
-
-    // Enrich with full data
-    return relevantSuspectCrimes.map((sc) => ({
+    return relevantSuspectCrimes.map((sc: SuspectCrime) => ({
       ...sc,
       suspect_details: suspectMap.get(sc.suspect),
-      crime_details: sc.crime_details || (sc.crime ? { id: sc.crime } : null),
-      case_details: sc.crime ? caseMap.get(sc.crime) : null,
+      crime_details: sc.crime_details ?? null,
+      case_details: sc.crime ? (caseMap.get(sc.crime) ?? null) : null,
     }));
   }, [suspectCrimes, suspects, suspectMap, caseMap]);
 
@@ -154,7 +147,10 @@ export const CourtDashboardPage = () => {
         <CardContent>
           {convictedCases.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground border rounded-lg border-dashed">
-              <Legal01Icon className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <HugeiconsIcon
+                icon={Legal01Icon}
+                className="h-12 w-12 mx-auto mb-4 opacity-50"
+              />
               <p className="text-lg font-medium mb-2">
                 No Cases Awaiting Sentencing
               </p>
@@ -205,11 +201,6 @@ export const CourtDashboardPage = () => {
                             <p className="text-xs text-muted-foreground">
                               Case #{sc.case_details.id}
                             </p>
-                            {sc.case_details.crime_details?.description && (
-                              <p className="text-xs text-muted-foreground line-clamp-2">
-                                {sc.case_details.crime_details.description}
-                              </p>
-                            )}
                           </div>
                         ) : (
                           <span className="text-muted-foreground text-sm">
@@ -220,21 +211,21 @@ export const CourtDashboardPage = () => {
                       <TableCell>
                         <Badge
                           variant={
-                            sc.case_details?.crime_details?.level === "4"
+                            sc.crime_details?.level === "4"
                               ? "destructive"
                               : "outline"
                           }
                           className={
-                            sc.case_details?.crime_details?.level === "4"
+                            sc.crime_details?.level === "4"
                               ? "bg-red-100 text-red-800 border-red-200"
-                              : sc.case_details?.crime_details?.level === "3"
+                              : sc.crime_details?.level === "3"
                                 ? "bg-orange-100 text-orange-800 border-orange-200"
-                                : sc.case_details?.crime_details?.level === "2"
+                                : sc.crime_details?.level === "2"
                                   ? "bg-yellow-100 text-yellow-800 border-yellow-200"
                                   : "bg-green-100 text-green-800 border-green-200"
                           }
                         >
-                          Level {sc.case_details?.crime_details?.level || "N/A"}
+                          Level {sc.crime_details?.level || "N/A"}
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -281,9 +272,8 @@ export const CourtDashboardPage = () => {
             <CardContent className="pt-6">
               <div className="text-2xl font-bold">
                 {
-                  convictedCases.filter(
-                    (sc) => sc.case_details?.crime_details?.level === "4",
-                  ).length
+                  convictedCases.filter((sc) => sc.crime_details?.level === "4")
+                    .length
                 }
               </div>
               <p className="text-xs text-muted-foreground">

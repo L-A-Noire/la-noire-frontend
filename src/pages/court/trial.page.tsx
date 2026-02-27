@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getSuspectCrime, updateSuspectCrimeStatus } from "@/api/suspect";
 import { getCaseById, closeCase } from "@/api/cases";
 import { issuePunishment } from "@/api/punishment";
+import type { PunishmentType } from "@/types/punishment.type";
 import { getCaseTimeline } from "@/api/cases";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,7 +26,9 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "react-toastify";
-import { useState, useEffect } from "react";
+import { useState, useCallback } from "react";
+import { AxiosError } from "axios";
+import { extractErrorMessage } from "@/lib/http";
 import { format, parseISO } from "date-fns";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -67,6 +70,20 @@ export const TrialPage = () => {
   const [amount, setAmount] = useState("");
   const [duration, setDuration] = useState("");
 
+  const resetFormAndSetVerdict = useCallback(
+    (newVerdict: "pending" | "guilty" | "innocent") => {
+      setVerdict(newVerdict);
+      if (newVerdict === "pending") {
+        setPunishmentType("");
+        setTitle("");
+        setDescription("");
+        setAmount("");
+        setDuration("");
+      }
+    },
+    [],
+  );
+
   const { data: suspectCrime, isLoading: isLoadingSuspect } = useQuery({
     queryKey: ["suspect-crime", suspectCrimeId],
     queryFn: () => getSuspectCrime(suspectCrimeId),
@@ -75,8 +92,7 @@ export const TrialPage = () => {
 
   const suspect = suspectCrime?.suspect_details;
 
-
-  const caseId = caseIdFromState || suspectCrime?.case || suspectCrime?.case_details?.id;
+  const caseId = caseIdFromState || suspectCrime?.case_details?.id;
 
   const { data: caseDetails, isLoading: isLoadingCase } = useQuery({
     queryKey: ["case", caseId],
@@ -90,16 +106,6 @@ export const TrialPage = () => {
     enabled: !!caseId,
   });
 
-  useEffect(() => {
-    if (verdict === "pending") {
-      setPunishmentType("");
-      setTitle("");
-      setDescription("");
-      setAmount("");
-      setDuration("");
-    }
-  }, [verdict]);
-
   const punishmentMutation = useMutation({
     mutationFn: async () => {
       if (!punishmentType) throw new Error("Select a punishment type");
@@ -109,7 +115,7 @@ export const TrialPage = () => {
 
       const payload = {
         suspect_crime: suspectCrimeId,
-        punishment_type: punishmentType,
+        punishment_type: punishmentType as PunishmentType,
         title,
         description,
         amount: amount || null,
@@ -132,11 +138,9 @@ export const TrialPage = () => {
       toast.success("Punishment issued. Case closed.");
       navigate("/court");
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError) => {
       console.error("Punishment error:", error);
-      toast.error(
-        error.response?.data?.message || "Failed to issue punishment",
-      );
+      toast.error(extractErrorMessage(error));
     },
   });
 
@@ -152,9 +156,9 @@ export const TrialPage = () => {
       toast.success("Suspect declared innocent. Case remains open.");
       navigate("/court");
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError) => {
       console.error("Innocent verdict error:", error);
-      toast.error(error.response?.data?.message || "Failed to update status");
+      toast.error(extractErrorMessage(error));
     },
   });
 
@@ -215,8 +219,8 @@ export const TrialPage = () => {
 
   const suspectName =
     suspect?.name ||
-    (suspect?.first_name && suspect?.last_name
-      ? `${suspect.first_name} ${suspect.last_name}`
+    (suspect?.user_details?.first_name && suspect?.user_details?.last_name
+      ? `${suspect.user_details.first_name} ${suspect.user_details.last_name}`
       : "Unknown Suspect");
 
   return (
@@ -397,7 +401,7 @@ export const TrialPage = () => {
                   <Button
                     variant="outline"
                     className="h-24 flex-col gap-2 hover:bg-green-50 hover:text-green-700 hover:border-green-200"
-                    onClick={() => setVerdict("innocent")}
+                    onClick={() => resetFormAndSetVerdict("innocent")}
                   >
                     <HugeiconsIcon icon={CheckmarkCircle02Icon} size={24} />
                     <span className="font-bold text-lg">Not Guilty</span>
@@ -408,7 +412,7 @@ export const TrialPage = () => {
                   <Button
                     variant="outline"
                     className="h-24 flex-col gap-2 hover:bg-red-50 hover:text-red-700 hover:border-red-200"
-                    onClick={() => setVerdict("guilty")}
+                    onClick={() => resetFormAndSetVerdict("guilty")}
                   >
                     <HugeiconsIcon icon={Cancel01Icon} size={24} />
                     <span className="font-bold text-lg">Guilty</span>
@@ -435,7 +439,7 @@ export const TrialPage = () => {
                   <div className="flex gap-2">
                     <Button
                       variant="ghost"
-                      onClick={() => setVerdict("pending")}
+                      onClick={() => resetFormAndSetVerdict("pending")}
                       className="flex-1"
                     >
                       Back
@@ -535,7 +539,7 @@ export const TrialPage = () => {
                   <div className="flex gap-2 pt-4">
                     <Button
                       variant="ghost"
-                      onClick={() => setVerdict("pending")}
+                      onClick={() => resetFormAndSetVerdict("pending")}
                       className="flex-1"
                       disabled={punishmentMutation.isPending}
                     >

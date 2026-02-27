@@ -56,10 +56,11 @@ export const Header = () => {
               {(isBaseUser || canReviewTestimonies) && (
                 <Link
                   to="/testimonies"
-                  className={`transition-colors font-mono ${isActive("/testimonies")
-                    ? "text-primary font-semibold"
-                    : "text-foreground/60 hover:text-foreground/80"
-                    }`}
+                  className={`transition-colors font-mono ${
+                    isActive("/testimonies")
+                      ? "text-primary font-semibold"
+                      : "text-foreground/60 hover:text-foreground/80"
+                  }`}
                 >
                   Testimonies
                 </Link>
@@ -70,20 +71,22 @@ export const Header = () => {
                 <>
                   <Link
                     to="/cases"
-                    className={`transition-colors font-mono ${isActive("/cases")
-                      ? "text-primary font-semibold"
-                      : "text-foreground/60 hover:text-foreground/80"
-                      }`}
+                    className={`transition-colors font-mono ${
+                      isActive("/cases")
+                        ? "text-primary font-semibold"
+                        : "text-foreground/60 hover:text-foreground/80"
+                    }`}
                   >
                     Cases
                   </Link>
                   {isDetective && (
                     <Link
                       to="/detective-board"
-                      className={`transition-colors font-mono ${isActive("/detective-board")
-                        ? "text-primary font-semibold"
-                        : "text-foreground/60 hover:text-foreground/80"
-                        }`}
+                      className={`transition-colors font-mono ${
+                        isActive("/detective-board")
+                          ? "text-primary font-semibold"
+                          : "text-foreground/60 hover:text-foreground/80"
+                      }`}
                     >
                       Board
                     </Link>
@@ -93,10 +96,11 @@ export const Header = () => {
 
               <Link
                 to="/complaints"
-                className={`transition-colors font-mono ${isActive("/complaints")
-                  ? "text-primary font-semibold"
-                  : "text-foreground/60 hover:text-foreground/80"
-                  }`}
+                className={`transition-colors font-mono ${
+                  isActive("/complaints")
+                    ? "text-primary font-semibold"
+                    : "text-foreground/60 hover:text-foreground/80"
+                }`}
               >
                 Complaints
               </Link>
@@ -104,10 +108,11 @@ export const Header = () => {
               {isBaseUser && (
                 <Link
                   to="/reports"
-                  className={`transition-colors font-mono ${isActive("/reports")
-                    ? "text-primary font-semibold"
-                    : "text-foreground/60 hover:text-foreground/80"
-                    }`}
+                  className={`transition-colors font-mono ${
+                    isActive("/reports")
+                      ? "text-primary font-semibold"
+                      : "text-foreground/60 hover:text-foreground/80"
+                  }`}
                 >
                   My Reports
                 </Link>
@@ -116,10 +121,11 @@ export const Header = () => {
               {canReviewTips && (
                 <Link
                   to="/reward/reports"
-                  className={`transition-colors font-mono ${isActive("/reward/reports")
-                    ? "text-primary font-semibold"
-                    : "text-foreground/60 hover:text-foreground/80"
-                    }`}
+                  className={`transition-colors font-mono ${
+                    isActive("/reward/reports")
+                      ? "text-primary font-semibold"
+                      : "text-foreground/60 hover:text-foreground/80"
+                  }`}
                 >
                   Review Tips
                 </Link>
@@ -129,10 +135,11 @@ export const Header = () => {
               {canReviewTestimonies && (
                 <Link
                   to="/crime-scenes"
-                  className={`transition-colors font-mono ${isActive("/crime-scenes")
-                    ? "text-primary font-semibold"
-                    : "text-foreground/60 hover:text-foreground/80"
-                    }`}
+                  className={`transition-colors font-mono ${
+                    isActive("/crime-scenes")
+                      ? "text-primary font-semibold"
+                      : "text-foreground/60 hover:text-foreground/80"
+                  }`}
                 >
                   Scenes
                 </Link>
@@ -141,10 +148,11 @@ export const Header = () => {
               {isJudge && (
                 <Link
                   to="/court"
-                  className={`transition-colors font-mono ${isActive("/court")
-                    ? "text-primary font-semibold"
-                    : "text-foreground/60 hover:text-foreground/80"
-                    }`}
+                  className={`transition-colors font-mono ${
+                    isActive("/court")
+                      ? "text-primary font-semibold"
+                      : "text-foreground/60 hover:text-foreground/80"
+                  }`}
                 >
                   Court
                 </Link>
@@ -152,10 +160,11 @@ export const Header = () => {
               {isAdmin && (
                 <Link
                   to="/roles"
-                  className={`transition-colors font-mono ${isActive("/roles")
-                    ? "text-primary font-semibold"
-                    : "text-foreground/60 hover:text-foreground/80"
-                    }`}
+                  className={`transition-colors font-mono ${
+                    isActive("/roles")
+                      ? "text-primary font-semibold"
+                      : "text-foreground/60 hover:text-foreground/80"
+                  }`}
                 >
                   Roles
                 </Link>

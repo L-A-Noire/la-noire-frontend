@@ -1,13 +1,15 @@
 import http from "@/lib/http";
 import type { Suspect, SuspectCrime } from "@/types/suspect.type";
 
-export const getSuspectCrimes = async (): Promise<Suspect[]> => {
-  const response = await http.get<Suspect[]>("/suspect/suspect-crimes/");
+export const getSuspectCrimes = async (): Promise<SuspectCrime[]> => {
+  const response = await http.get<SuspectCrime[]>("/suspect/suspect-crimes/");
   return response.data;
 };
 
-export const getSuspectCrime = async (id: number): Promise<Suspect> => {
-  const response = await http.get<Suspect>(`/suspect/suspect-crimes/${id}/`);
+export const getSuspectCrime = async (id: number): Promise<SuspectCrime> => {
+  const response = await http.get<SuspectCrime>(
+    `/suspect/suspect-crimes/${id}/`,
+  );
   return response.data;
 };
 

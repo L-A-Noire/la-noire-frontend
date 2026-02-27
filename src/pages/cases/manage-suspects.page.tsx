@@ -46,7 +46,7 @@ import {
   deleteSuspectFromCase,
 } from "@/api/suspect";
 import { getCaseById } from "@/api/cases";
-import http from "@/lib/http";
+import type { SuspectCrime } from "@/types/suspect.type";
 
 export const ManageSuspectsPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -107,13 +107,14 @@ export const ManageSuspectsPage = () => {
   });
 
   const { data: suspectCrimes = [], isLoading: isLoadingSuspectCrimes } =
-    useQuery({
+    useQuery<SuspectCrime[]>({
       queryKey: ["suspect-crimes", "case", caseId],
       queryFn: async () => {
-        const response = await http.get(`/suspect/suspect-crimes/`);
+        const response = await http.get<SuspectCrime[]>(
+          `/suspect/suspect-crimes/`,
+        );
         return response.data.filter(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (sc: any) => sc.crime === caseDetails?.crime,
+          (sc: SuspectCrime) => sc.crime === caseDetails?.crime,
         );
       },
       enabled: !!caseDetails,
@@ -236,9 +237,7 @@ export const ManageSuspectsPage = () => {
       console.error("Error creating suspect:", error);
       console.error("Error response:", error.response?.data);
 
-      toast.error(
-        error.response?.data?.message || "Failed to create suspect"
-      );
+      toast.error(error.response?.data?.message || "Failed to create suspect");
     },
   });
 

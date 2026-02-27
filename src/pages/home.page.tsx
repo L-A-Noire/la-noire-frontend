@@ -62,16 +62,10 @@ export default function HomePage() {
   });
 
   const handleLogout = () => {
-    const refresh = session?.refresh;
-    if (refresh) {
-      logoutApi(refresh).finally(() => {
-        clearSession();
-        navigate("/login");
-      });
-    } else {
+    logoutApi().finally(() => {
       clearSession();
       navigate("/login");
-    }
+    });
   };
 
   // Calculate solve rate

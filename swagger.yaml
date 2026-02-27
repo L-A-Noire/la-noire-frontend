@@ -1,0 +1,6810 @@
+openapi: 3.0.3
+info:
+  title: Police Management System API
+  version: 1.0.0
+  description: API for managing police cases and investigations
+paths:
+  /api/auth/employees-count/:
+    get:
+      operationId: auth_employees_count_retrieve
+      tags:
+        - auth
+      security:
+        - jwtAuth: []
+        - Bearer: []
+        - {}
+      responses:
+        "200":
+          description: No response body
+  /api/auth/login/:
+    post:
+      operationId: auth_login_create
+      tags:
+        - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+        - {}
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Login"
+          description: ""
+  /api/auth/login/refresh/:
+    post:
+      operationId: auth_login_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+        - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TokenRefreshRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/TokenRefreshRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/TokenRefreshRequest"
+        required: true
+      security:
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenRefresh"
+          description: ""
+  /api/auth/profile/:
+    get:
+      operationId: auth_profile_retrieve
+      tags:
+        - auth
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+          description: ""
+    put:
+      operationId: auth_profile_update
+      tags:
+        - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/UserRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/UserRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+          description: ""
+    patch:
+      operationId: auth_profile_partial_update
+      tags:
+        - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedUserRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedUserRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedUserRequest"
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+          description: ""
+  /api/auth/register/:
+    post:
+      operationId: auth_register_create
+      tags:
+        - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+        - {}
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Register"
+          description: ""
+  /api/auth/roles/:
+    get:
+      operationId: auth_roles_list
+      description:
+        List all roles or create a new role. Only Administrator can create
+        new roles.
+      tags:
+        - auth
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RoleDetail"
+          description: ""
+    post:
+      operationId: auth_roles_create
+      description:
+        List all roles or create a new role. Only Administrator can create
+        new roles.
+      tags:
+        - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoleRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/RoleRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/RoleRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Role"
+          description: ""
+  /api/auth/roles/{id}/:
+    get:
+      operationId: auth_roles_retrieve
+      description:
+        Retrieve, update or delete a role instance. Only Administrator
+        can modify or delete roles.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      tags:
+        - auth
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoleDetail"
+          description: ""
+    put:
+      operationId: auth_roles_update
+      description:
+        Retrieve, update or delete a role instance. Only Administrator
+        can modify or delete roles.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      tags:
+        - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoleRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/RoleRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/RoleRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Role"
+          description: ""
+    patch:
+      operationId: auth_roles_partial_update
+      description:
+        Retrieve, update or delete a role instance. Only Administrator
+        can modify or delete roles.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      tags:
+        - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedRoleRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedRoleRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedRoleRequest"
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Role"
+          description: ""
+    delete:
+      operationId: auth_roles_destroy
+      description:
+        Retrieve, update or delete a role instance. Only Administrator
+        can modify or delete roles.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      tags:
+        - auth
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "204":
+          description: No response body
+  /api/auth/users/:
+    get:
+      operationId: auth_users_list
+      tags:
+        - auth
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserListWithRole"
+          description: ""
+  /api/auth/users/{id}/role/:
+    get:
+      operationId: auth_users_role_retrieve
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      tags:
+        - auth
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserListWithRole"
+          description: ""
+  /api/auth/users/change-role/:
+    post:
+      operationId: auth_users_change_role_create
+      tags:
+        - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangeUserRoleRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/ChangeUserRoleRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ChangeUserRoleRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChangeUserRole"
+          description: ""
+  /api/crime/case-reports/:
+    get:
+      operationId: crime_case_reports_list
+      tags:
+        - crime
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CaseReport"
+          description: ""
+    post:
+      operationId: crime_case_reports_create
+      tags:
+        - crime
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CaseReportCreateRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/CaseReportCreateRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/CaseReportCreateRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CaseReportCreate"
+          description: ""
+  /api/crime/case-reports/{id}/:
+    get:
+      operationId: crime_case_reports_retrieve
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this case report.
+          required: true
+      tags:
+        - crime
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CaseReportDetail"
+          description: ""
+    put:
+      operationId: crime_case_reports_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this case report.
+          required: true
+      tags:
+        - crime
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CaseReportRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/CaseReportRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/CaseReportRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CaseReport"
+          description: ""
+    patch:
+      operationId: crime_case_reports_partial_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this case report.
+          required: true
+      tags:
+        - crime
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedCaseReportRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedCaseReportRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedCaseReportRequest"
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CaseReport"
+          description: ""
+    delete:
+      operationId: crime_case_reports_destroy
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this case report.
+          required: true
+      tags:
+        - crime
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "204":
+          description: No response body
+  /api/crime/case-reports/{id}/review/:
+    put:
+      operationId: crime_case_reports_review_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      tags:
+        - crime
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CaseReportReviewRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/CaseReportReviewRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/CaseReportReviewRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CaseReportReview"
+          description: ""
+    patch:
+      operationId: crime_case_reports_review_partial_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      tags:
+        - crime
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedCaseReportReviewRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedCaseReportReviewRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedCaseReportReviewRequest"
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CaseReportReview"
+          description: ""
+  /api/crime/cases/:
+    get:
+      operationId: crime_cases_list
+      parameters:
+        - in: query
+          name: is_closed
+          schema:
+            type: boolean
+      tags:
+        - crime
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CaseList"
+          description: ""
+    post:
+      operationId: crime_cases_create
+      tags:
+        - crime
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CaseRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/CaseRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/CaseRequest"
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Case"
+          description: ""
+  /api/crime/cases-count/:
+    get:
+      operationId: crime_cases_count_retrieve
+      tags:
+        - crime
+      security:
+        - jwtAuth: []
+        - Bearer: []
+        - {}
+      responses:
+        "200":
+          description: No response body
+  /api/crime/cases/{id}/:
+    get:
+      operationId: crime_cases_retrieve
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this case.
+          required: true
+      tags:
+        - crime
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CaseDetail"
+          description: ""
+    put:
+      operationId: crime_cases_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this case.
+          required: true
+      tags:
+        - crime
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CaseRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/CaseRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/CaseRequest"
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Case"
+          description: ""
+    patch:
+      operationId: crime_cases_partial_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this case.
+          required: true
+      tags:
+        - crime
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedCaseRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedCaseRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedCaseRequest"
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Case"
+          description: ""
+    delete:
+      operationId: crime_cases_destroy
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this case.
+          required: true
+      tags:
+        - crime
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "204":
+          description: No response body
+  /api/crime/cases/{id}/assign_detective/:
+    post:
+      operationId: crime_cases_assign_detective_create
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this case.
+          required: true
+      tags:
+        - crime
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CaseRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/CaseRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/CaseRequest"
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Case"
+          description: ""
+  /api/crime/cases/{id}/close_case/:
+    post:
+      operationId: crime_cases_close_case_create
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this case.
+          required: true
+      tags:
+        - crime
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CaseRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/CaseRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/CaseRequest"
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Case"
+          description: ""
+  /api/crime/cases/{id}/timeline/:
+    get:
+      operationId: crime_cases_timeline_retrieve
+      description: Case timeline (complaints, crime scenes, reports)
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this case.
+          required: true
+      tags:
+        - crime
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Case"
+          description: ""
+  /api/crime/complaints/:
+    get:
+      operationId: crime_complaints_list
+      tags:
+        - crime
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ComplaintDetail"
+          description: ""
+    post:
+      operationId: crime_complaints_create
+      tags:
+        - crime
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ComplaintCreateRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/ComplaintCreateRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ComplaintCreateRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ComplaintCreate"
+          description: ""
+  /api/crime/complaints/{id}/:
+    get:
+      operationId: crime_complaints_retrieve
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this complaint.
+          required: true
+      tags:
+        - crime
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ComplaintDetail"
+          description: ""
+    put:
+      operationId: crime_complaints_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this complaint.
+          required: true
+      tags:
+        - crime
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ComplaintRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/ComplaintRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ComplaintRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Complaint"
+          description: ""
+    patch:
+      operationId: crime_complaints_partial_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this complaint.
+          required: true
+      tags:
+        - crime
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedComplaintRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedComplaintRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedComplaintRequest"
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Complaint"
+          description: ""
+    delete:
+      operationId: crime_complaints_destroy
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this complaint.
+          required: true
+      tags:
+        - crime
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "204":
+          description: No response body
+  /api/crime/complaints/{id}/create-case/:
+    post:
+      operationId: crime_complaints_create_case_create
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      tags:
+        - crime
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "201":
+          description: No response body
+  /api/crime/complaints/{id}/review-cadet/:
+    put:
+      operationId: crime_complaints_review_cadet_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      tags:
+        - crime
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ComplaintReviewRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/ComplaintReviewRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ComplaintReviewRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ComplaintReview"
+          description: ""
+    patch:
+      operationId: crime_complaints_review_cadet_partial_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      tags:
+        - crime
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedComplaintReviewRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedComplaintReviewRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedComplaintReviewRequest"
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ComplaintReview"
+          description: ""
+  /api/crime/complaints/{id}/review-officer/:
+    put:
+      operationId: crime_complaints_review_officer_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      tags:
+        - crime
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ComplaintReviewRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/ComplaintReviewRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ComplaintReviewRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ComplaintReview"
+          description: ""
+    patch:
+      operationId: crime_complaints_review_officer_partial_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      tags:
+        - crime
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedComplaintReviewRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedComplaintReviewRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedComplaintReviewRequest"
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ComplaintReview"
+          description: ""
+  /api/crime/crime-scenes/:
+    get:
+      operationId: crime_crime_scenes_list
+      tags:
+        - crime
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CrimeScene"
+          description: ""
+    post:
+      operationId: crime_crime_scenes_create
+      tags:
+        - crime
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CrimeSceneCreateRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/CrimeSceneCreateRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/CrimeSceneCreateRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CrimeSceneCreate"
+          description: ""
+  /api/crime/crime-scenes/{id}/:
+    get:
+      operationId: crime_crime_scenes_retrieve
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this crime scene.
+          required: true
+      tags:
+        - crime
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CrimeSceneDetail"
+          description: ""
+    put:
+      operationId: crime_crime_scenes_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this crime scene.
+          required: true
+      tags:
+        - crime
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CrimeSceneRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/CrimeSceneRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/CrimeSceneRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CrimeScene"
+          description: ""
+    patch:
+      operationId: crime_crime_scenes_partial_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this crime scene.
+          required: true
+      tags:
+        - crime
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedCrimeSceneRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedCrimeSceneRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedCrimeSceneRequest"
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CrimeScene"
+          description: ""
+    delete:
+      operationId: crime_crime_scenes_destroy
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this crime scene.
+          required: true
+      tags:
+        - crime
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "204":
+          description: No response body
+  /api/crime/crime-scenes/{id}/confirm/:
+    post:
+      operationId: crime_crime_scenes_confirm_create
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this crime scene.
+          required: true
+      tags:
+        - crime
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CrimeLevelRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/CrimeLevelRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/CrimeLevelRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CrimeLevel"
+          description: ""
+  /api/crime/crimes/:
+    get:
+      operationId: crime_crimes_list
+      tags:
+        - crime
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Crime"
+          description: ""
+    post:
+      operationId: crime_crimes_create
+      tags:
+        - crime
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CrimeRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/CrimeRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/CrimeRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Crime"
+          description: ""
+  /api/crime/crimes/{id}/:
+    get:
+      operationId: crime_crimes_retrieve
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this crime.
+          required: true
+      tags:
+        - crime
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CrimeDetail"
+          description: ""
+    put:
+      operationId: crime_crimes_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this crime.
+          required: true
+      tags:
+        - crime
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CrimeRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/CrimeRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/CrimeRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Crime"
+          description: ""
+    patch:
+      operationId: crime_crimes_partial_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this crime.
+          required: true
+      tags:
+        - crime
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedCrimeRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedCrimeRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedCrimeRequest"
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Crime"
+          description: ""
+    delete:
+      operationId: crime_crimes_destroy
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this crime.
+          required: true
+      tags:
+        - crime
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "204":
+          description: No response body
+  /api/payment/initiate/:
+    post:
+      operationId: payment_initiate_create
+      description:
+        Creates a transaction and returns the BitPay gateway URL to redirect
+        the user for payment.
+      summary: Initiate a payment
+      tags:
+        - Payment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransactionCreateRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/TransactionCreateRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/TransactionCreateRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+        - {}
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InitiatePaymentResponse"
+          description: Gateway URL to redirect user to
+        "502":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentError"
+          description: Payment gateway error
+  /api/reward/my-rewards/:
+    get:
+      operationId: reward_my_rewards_retrieve
+      description: List rewards for the current user (e.g. Base User).
+      tags:
+        - reward
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          description: No response body
+  /api/reward/reports/:
+    get:
+      operationId: reward_reports_list
+      tags:
+        - reward
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Report"
+          description: ""
+    post:
+      operationId: reward_reports_create
+      tags:
+        - reward
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReportCreateRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/ReportCreateRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ReportCreateRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReportCreate"
+          description: ""
+  /api/reward/reports/{id}/:
+    get:
+      operationId: reward_reports_retrieve
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this report.
+          required: true
+      tags:
+        - reward
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReportDetail"
+          description: ""
+    put:
+      operationId: reward_reports_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this report.
+          required: true
+      tags:
+        - reward
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReportRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/ReportRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ReportRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Report"
+          description: ""
+    patch:
+      operationId: reward_reports_partial_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this report.
+          required: true
+      tags:
+        - reward
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedReportRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedReportRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedReportRequest"
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Report"
+          description: ""
+    delete:
+      operationId: reward_reports_destroy
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this report.
+          required: true
+      tags:
+        - reward
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "204":
+          description: No response body
+  /api/reward/reports/{id}/review-detective/:
+    put:
+      operationId: reward_reports_review_detective_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      tags:
+        - reward
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReportReviewRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/ReportReviewRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ReportReviewRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReportReview"
+          description: ""
+    patch:
+      operationId: reward_reports_review_detective_partial_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      tags:
+        - reward
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedReportReviewRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedReportReviewRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedReportReviewRequest"
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReportReview"
+          description: ""
+  /api/reward/reports/{id}/review-officer/:
+    put:
+      operationId: reward_reports_review_officer_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      tags:
+        - reward
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReportReviewRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/ReportReviewRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ReportReviewRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReportReview"
+          description: ""
+    patch:
+      operationId: reward_reports_review_officer_partial_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      tags:
+        - reward
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedReportReviewRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedReportReviewRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedReportReviewRequest"
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReportReview"
+          description: ""
+  /api/reward/rewards/:
+    get:
+      operationId: reward_rewards_list
+      tags:
+        - reward
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Reward"
+          description: ""
+  /api/reward/rewards/{id}/:
+    get:
+      operationId: reward_rewards_retrieve
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this reward.
+          required: true
+      tags:
+        - reward
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RewardDetail"
+          description: ""
+  /api/reward/rewards/claim/:
+    post:
+      operationId: reward_rewards_claim_create
+      description:
+        Claim a reward by reward code and recipient national ID. Only police
+        and authorized roles can use this endpoint. National ID must match the reward
+        recipient.
+      summary: Claim a reward
+      tags:
+        - reward
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClaimRewardRequestRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/ClaimRewardRequestRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ClaimRewardRequestRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClaimRewardResponse"
+          description: Reward claimed successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClaimRewardError"
+          description:
+            Invalid code, missing national ID, or national ID does not
+            match recipient
+  /api/suspect/interrogations/:
+    get:
+      operationId: suspect_interrogations_list
+      tags:
+        - suspect
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Interrogation"
+          description: ""
+    post:
+      operationId: suspect_interrogations_create
+      tags:
+        - suspect
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InterrogationCreateRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/InterrogationCreateRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/InterrogationCreateRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InterrogationCreate"
+          description: ""
+  /api/suspect/interrogations/{id}/:
+    get:
+      operationId: suspect_interrogations_retrieve
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this interrogation.
+          required: true
+      tags:
+        - suspect
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InterrogationDetail"
+          description: ""
+    put:
+      operationId: suspect_interrogations_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this interrogation.
+          required: true
+      tags:
+        - suspect
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InterrogationRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/InterrogationRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/InterrogationRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Interrogation"
+          description: ""
+    patch:
+      operationId: suspect_interrogations_partial_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this interrogation.
+          required: true
+      tags:
+        - suspect
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedInterrogationRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedInterrogationRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedInterrogationRequest"
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Interrogation"
+          description: ""
+    delete:
+      operationId: suspect_interrogations_destroy
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this interrogation.
+          required: true
+      tags:
+        - suspect
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "204":
+          description: No response body
+  /api/suspect/interrogations/{id}/review/:
+    put:
+      operationId: suspect_interrogations_review_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      tags:
+        - suspect
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScoreSubmissionRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/ScoreSubmissionRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ScoreSubmissionRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScoreSubmission"
+          description: ""
+    patch:
+      operationId: suspect_interrogations_review_partial_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      tags:
+        - suspect
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedScoreSubmissionRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedScoreSubmissionRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedScoreSubmissionRequest"
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScoreSubmission"
+          description: ""
+  /api/suspect/interrogations/{id}/submit-score/:
+    put:
+      operationId: suspect_interrogations_submit_score_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      tags:
+        - suspect
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScoreSubmissionRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/ScoreSubmissionRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ScoreSubmissionRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScoreSubmission"
+          description: ""
+    patch:
+      operationId: suspect_interrogations_submit_score_partial_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      tags:
+        - suspect
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedScoreSubmissionRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedScoreSubmissionRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedScoreSubmissionRequest"
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScoreSubmission"
+          description: ""
+  /api/suspect/punishments/:
+    get:
+      operationId: suspect_punishments_list
+      tags:
+        - suspect
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Punishment"
+          description: ""
+    post:
+      operationId: suspect_punishments_create
+      tags:
+        - suspect
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PunishmentCreateRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PunishmentCreateRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PunishmentCreateRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PunishmentCreate"
+          description: ""
+  /api/suspect/punishments/{id}/:
+    get:
+      operationId: suspect_punishments_retrieve
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this punishment.
+          required: true
+      tags:
+        - suspect
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PunishmentDetail"
+          description: ""
+    put:
+      operationId: suspect_punishments_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this punishment.
+          required: true
+      tags:
+        - suspect
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PunishmentRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PunishmentRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PunishmentRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Punishment"
+          description: ""
+    patch:
+      operationId: suspect_punishments_partial_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this punishment.
+          required: true
+      tags:
+        - suspect
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedPunishmentRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedPunishmentRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedPunishmentRequest"
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Punishment"
+          description: ""
+    delete:
+      operationId: suspect_punishments_destroy
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this punishment.
+          required: true
+      tags:
+        - suspect
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "204":
+          description: No response body
+  /api/suspect/punishments/{id}/process-payment/:
+    put:
+      operationId: suspect_punishments_process_payment_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      tags:
+        - suspect
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PunishmentRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PunishmentRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PunishmentRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Punishment"
+          description: ""
+    patch:
+      operationId: suspect_punishments_process_payment_partial_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      tags:
+        - suspect
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedPunishmentRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedPunishmentRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedPunishmentRequest"
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Punishment"
+          description: ""
+  /api/suspect/suspect-crimes/:
+    get:
+      operationId: suspect_suspect_crimes_list
+      tags:
+        - suspect
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SuspectCrime"
+          description: ""
+    post:
+      operationId: suspect_suspect_crimes_create
+      tags:
+        - suspect
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SuspectCrimeCreateRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/SuspectCrimeCreateRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/SuspectCrimeCreateRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuspectCrimeCreate"
+          description: ""
+  /api/suspect/suspect-crimes/{id}/:
+    get:
+      operationId: suspect_suspect_crimes_retrieve
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this suspect crime.
+          required: true
+      tags:
+        - suspect
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuspectCrimeDetail"
+          description: ""
+    put:
+      operationId: suspect_suspect_crimes_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this suspect crime.
+          required: true
+      tags:
+        - suspect
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SuspectCrimeRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/SuspectCrimeRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/SuspectCrimeRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuspectCrime"
+          description: ""
+    patch:
+      operationId: suspect_suspect_crimes_partial_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this suspect crime.
+          required: true
+      tags:
+        - suspect
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedSuspectCrimeRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedSuspectCrimeRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedSuspectCrimeRequest"
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuspectCrime"
+          description: ""
+    delete:
+      operationId: suspect_suspect_crimes_destroy
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this suspect crime.
+          required: true
+      tags:
+        - suspect
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "204":
+          description: No response body
+  /api/suspect/suspect-crimes/{id}/arrest/:
+    post:
+      operationId: suspect_suspect_crimes_arrest_create
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this suspect crime.
+          required: true
+      tags:
+        - suspect
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SuspectCrimeRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/SuspectCrimeRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/SuspectCrimeRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuspectCrime"
+          description: ""
+  /api/suspect/suspect-crimes/{suspect_crime_id}/issue-punishment/:
+    post:
+      operationId: suspect_suspect_crimes_issue_punishment_create
+      parameters:
+        - in: path
+          name: suspect_crime_id
+          schema:
+            type: integer
+          required: true
+      tags:
+        - suspect
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PunishmentCreateRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PunishmentCreateRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PunishmentCreateRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PunishmentCreate"
+          description: ""
+  /api/suspect/suspects/:
+    get:
+      operationId: suspect_suspects_list
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum:
+              - arrested
+              - convicted
+              - innocent
+              - most_wanted
+              - suspected
+              - wanted
+          description: |-
+            * `suspected` - Suspected
+            * `wanted` - Wanted
+            * `most_wanted` - Most Wanted
+            * `arrested` - Arrested
+            * `convicted` - Convicted
+            * `innocent` - Innocent
+        - in: query
+          name: status__in
+          schema:
+            type: array
+            items:
+              type: string
+          description: Multiple values may be separated by commas.
+          explode: false
+          style: form
+        - in: query
+          name: suspected_crimes__crime__case__id
+          schema:
+            type: integer
+      tags:
+        - suspect
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Suspect"
+          description: ""
+    post:
+      operationId: suspect_suspects_create
+      tags:
+        - suspect
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SuspectRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/SuspectRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/SuspectRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Suspect"
+          description: ""
+  /api/suspect/suspects/{id}/:
+    get:
+      operationId: suspect_suspects_retrieve
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this suspect.
+          required: true
+      tags:
+        - suspect
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Suspect"
+          description: ""
+    put:
+      operationId: suspect_suspects_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this suspect.
+          required: true
+      tags:
+        - suspect
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SuspectRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/SuspectRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/SuspectRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Suspect"
+          description: ""
+    patch:
+      operationId: suspect_suspects_partial_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this suspect.
+          required: true
+      tags:
+        - suspect
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedSuspectRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedSuspectRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedSuspectRequest"
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Suspect"
+          description: ""
+    delete:
+      operationId: suspect_suspects_destroy
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this suspect.
+          required: true
+      tags:
+        - suspect
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "204":
+          description: No response body
+  /api/suspect/suspects/{id}/mark_as_wanted/:
+    post:
+      operationId: suspect_suspects_mark_as_wanted_create
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this suspect.
+          required: true
+      tags:
+        - suspect
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SuspectRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/SuspectRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/SuspectRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Suspect"
+          description: ""
+  /api/witness/attachments/:
+    get:
+      operationId: witness_attachments_list
+      tags:
+        - witness
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Attachment"
+          description: ""
+    post:
+      operationId: witness_attachments_create
+      tags:
+        - witness
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AttachmentRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/AttachmentRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/AttachmentRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Attachment"
+          description: ""
+  /api/witness/attachments/{id}/:
+    get:
+      operationId: witness_attachments_retrieve
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this attachment.
+          required: true
+      tags:
+        - witness
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Attachment"
+          description: ""
+    put:
+      operationId: witness_attachments_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this attachment.
+          required: true
+      tags:
+        - witness
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AttachmentRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/AttachmentRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/AttachmentRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Attachment"
+          description: ""
+    patch:
+      operationId: witness_attachments_partial_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this attachment.
+          required: true
+      tags:
+        - witness
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedAttachmentRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedAttachmentRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedAttachmentRequest"
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Attachment"
+          description: ""
+    delete:
+      operationId: witness_attachments_destroy
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this attachment.
+          required: true
+      tags:
+        - witness
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "204":
+          description: No response body
+  /api/witness/biological-evidence/:
+    get:
+      operationId: witness_biological_evidence_list
+      tags:
+        - witness
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BiologicalEvidence"
+          description: ""
+    post:
+      operationId: witness_biological_evidence_create
+      tags:
+        - witness
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BiologicalEvidenceRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/BiologicalEvidenceRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/BiologicalEvidenceRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BiologicalEvidence"
+          description: ""
+  /api/witness/biological-evidence/{id}/:
+    get:
+      operationId: witness_biological_evidence_retrieve
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this biological evidence.
+          required: true
+      tags:
+        - witness
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BiologicalEvidence"
+          description: ""
+    put:
+      operationId: witness_biological_evidence_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this biological evidence.
+          required: true
+      tags:
+        - witness
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BiologicalEvidenceRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/BiologicalEvidenceRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/BiologicalEvidenceRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BiologicalEvidence"
+          description: ""
+    patch:
+      operationId: witness_biological_evidence_partial_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this biological evidence.
+          required: true
+      tags:
+        - witness
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedBiologicalEvidenceRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedBiologicalEvidenceRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedBiologicalEvidenceRequest"
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BiologicalEvidence"
+          description: ""
+    delete:
+      operationId: witness_biological_evidence_destroy
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this biological evidence.
+          required: true
+      tags:
+        - witness
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "204":
+          description: No response body
+  /api/witness/evidence/:
+    get:
+      operationId: witness_evidence_list
+      parameters:
+        - in: query
+          name: case
+          schema:
+            type: integer
+      tags:
+        - witness
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Evidence"
+          description: ""
+  /api/witness/identification-evidence/:
+    get:
+      operationId: witness_identification_evidence_list
+      tags:
+        - witness
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/IdentificationEvidence"
+          description: ""
+    post:
+      operationId: witness_identification_evidence_create
+      tags:
+        - witness
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IdentificationEvidenceRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/IdentificationEvidenceRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/IdentificationEvidenceRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IdentificationEvidence"
+          description: ""
+  /api/witness/identification-evidence/{id}/:
+    get:
+      operationId: witness_identification_evidence_retrieve
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this identification evidence.
+          required: true
+      tags:
+        - witness
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IdentificationEvidence"
+          description: ""
+    put:
+      operationId: witness_identification_evidence_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this identification evidence.
+          required: true
+      tags:
+        - witness
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IdentificationEvidenceRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/IdentificationEvidenceRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/IdentificationEvidenceRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IdentificationEvidence"
+          description: ""
+    patch:
+      operationId: witness_identification_evidence_partial_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this identification evidence.
+          required: true
+      tags:
+        - witness
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedIdentificationEvidenceRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedIdentificationEvidenceRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedIdentificationEvidenceRequest"
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IdentificationEvidence"
+          description: ""
+    delete:
+      operationId: witness_identification_evidence_destroy
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this identification evidence.
+          required: true
+      tags:
+        - witness
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "204":
+          description: No response body
+  /api/witness/images/:
+    get:
+      operationId: witness_images_list
+      tags:
+        - witness
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Image"
+          description: ""
+    post:
+      operationId: witness_images_create
+      tags:
+        - witness
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ImageRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/ImageRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ImageRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Image"
+          description: ""
+  /api/witness/images/{id}/:
+    get:
+      operationId: witness_images_retrieve
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this image.
+          required: true
+      tags:
+        - witness
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Image"
+          description: ""
+    put:
+      operationId: witness_images_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this image.
+          required: true
+      tags:
+        - witness
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ImageRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/ImageRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ImageRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Image"
+          description: ""
+    patch:
+      operationId: witness_images_partial_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this image.
+          required: true
+      tags:
+        - witness
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedImageRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedImageRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedImageRequest"
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Image"
+          description: ""
+    delete:
+      operationId: witness_images_destroy
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this image.
+          required: true
+      tags:
+        - witness
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "204":
+          description: No response body
+  /api/witness/other-evidence/:
+    get:
+      operationId: witness_other_evidence_list
+      tags:
+        - witness
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OtherEvidence"
+          description: ""
+    post:
+      operationId: witness_other_evidence_create
+      tags:
+        - witness
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OtherEvidenceRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/OtherEvidenceRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/OtherEvidenceRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OtherEvidence"
+          description: ""
+  /api/witness/other-evidence/{id}/:
+    get:
+      operationId: witness_other_evidence_retrieve
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this other evidence.
+          required: true
+      tags:
+        - witness
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OtherEvidence"
+          description: ""
+    put:
+      operationId: witness_other_evidence_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this other evidence.
+          required: true
+      tags:
+        - witness
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OtherEvidenceRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/OtherEvidenceRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/OtherEvidenceRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OtherEvidence"
+          description: ""
+    patch:
+      operationId: witness_other_evidence_partial_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this other evidence.
+          required: true
+      tags:
+        - witness
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedOtherEvidenceRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedOtherEvidenceRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedOtherEvidenceRequest"
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OtherEvidence"
+          description: ""
+    delete:
+      operationId: witness_other_evidence_destroy
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this other evidence.
+          required: true
+      tags:
+        - witness
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "204":
+          description: No response body
+  /api/witness/testimonies/:
+    get:
+      operationId: witness_testimonies_list
+      tags:
+        - witness
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Testimony"
+          description: ""
+    post:
+      operationId: witness_testimonies_create
+      tags:
+        - witness
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TestimonyRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/TestimonyRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/TestimonyRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Testimony"
+          description: ""
+  /api/witness/testimonies/{id}/:
+    get:
+      operationId: witness_testimonies_retrieve
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this testimony.
+          required: true
+      tags:
+        - witness
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Testimony"
+          description: ""
+    put:
+      operationId: witness_testimonies_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this testimony.
+          required: true
+      tags:
+        - witness
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TestimonyRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/TestimonyRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/TestimonyRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Testimony"
+          description: ""
+    patch:
+      operationId: witness_testimonies_partial_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this testimony.
+          required: true
+      tags:
+        - witness
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedTestimonyRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedTestimonyRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedTestimonyRequest"
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Testimony"
+          description: ""
+    delete:
+      operationId: witness_testimonies_destroy
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this testimony.
+          required: true
+      tags:
+        - witness
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "204":
+          description: No response body
+  /api/witness/testimonies/{id}/confirm/:
+    post:
+      operationId: witness_testimonies_confirm_create
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this testimony.
+          required: true
+      tags:
+        - witness
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CrimeLevelRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/CrimeLevelRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/CrimeLevelRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CrimeLevel"
+          description: ""
+  /api/witness/vehicle-evidence/:
+    get:
+      operationId: witness_vehicle_evidence_list
+      tags:
+        - witness
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VehicleEvidence"
+          description: ""
+    post:
+      operationId: witness_vehicle_evidence_create
+      tags:
+        - witness
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VehicleEvidenceRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/VehicleEvidenceRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/VehicleEvidenceRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VehicleEvidence"
+          description: ""
+  /api/witness/vehicle-evidence/{id}/:
+    get:
+      operationId: witness_vehicle_evidence_retrieve
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this vehicle evidence.
+          required: true
+      tags:
+        - witness
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VehicleEvidence"
+          description: ""
+    put:
+      operationId: witness_vehicle_evidence_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this vehicle evidence.
+          required: true
+      tags:
+        - witness
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VehicleEvidenceRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/VehicleEvidenceRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/VehicleEvidenceRequest"
+        required: true
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VehicleEvidence"
+          description: ""
+    patch:
+      operationId: witness_vehicle_evidence_partial_update
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this vehicle evidence.
+          required: true
+      tags:
+        - witness
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchedVehicleEvidenceRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/PatchedVehicleEvidenceRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PatchedVehicleEvidenceRequest"
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VehicleEvidence"
+          description: ""
+    delete:
+      operationId: witness_vehicle_evidence_destroy
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this vehicle evidence.
+          required: true
+      tags:
+        - witness
+      security:
+        - jwtAuth: []
+        - Bearer: []
+      responses:
+        "204":
+          description: No response body
+components:
+  schemas:
+    Attachment:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        file:
+          type: string
+          format: uri
+        provided_by:
+          type: integer
+      required:
+        - file
+        - id
+        - provided_by
+    AttachmentRequest:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+        provided_by:
+          type: integer
+      required:
+        - file
+        - provided_by
+    BiologicalEvidence:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        images:
+          type: array
+          items:
+            type: integer
+        title:
+          type: string
+          maxLength: 50
+        description:
+          type: string
+        seen_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        location:
+          type: string
+          maxLength: 200
+        result:
+          type: string
+          nullable: true
+        case:
+          type: integer
+          nullable: true
+        created_by:
+          type: integer
+        coronary:
+          type: integer
+          nullable: true
+      required:
+        - created_at
+        - created_by
+        - description
+        - id
+        - images
+        - location
+        - seen_at
+        - title
+    BiologicalEvidenceRequest:
+      type: object
+      properties:
+        images:
+          type: array
+          items:
+            type: integer
+        title:
+          type: string
+          minLength: 1
+          maxLength: 50
+        description:
+          type: string
+          minLength: 1
+        seen_at:
+          type: string
+          format: date-time
+        location:
+          type: string
+          minLength: 1
+          maxLength: 200
+        result:
+          type: string
+          nullable: true
+        case:
+          type: integer
+          nullable: true
+        created_by:
+          type: integer
+        coronary:
+          type: integer
+          nullable: true
+      required:
+        - created_by
+        - description
+        - images
+        - location
+        - seen_at
+        - title
+    BlankEnum:
+      enum:
+        - ""
+    Case:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        is_from_crime_scene:
+          type: boolean
+        is_closed:
+          type: boolean
+        crime:
+          type: integer
+          nullable: true
+        detective:
+          type: integer
+          nullable: true
+      required:
+        - created_at
+        - id
+    CaseDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        detective_details:
+          allOf:
+            - $ref: "#/components/schemas/User"
+          readOnly: true
+        crime_details:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        is_from_crime_scene:
+          type: boolean
+        is_closed:
+          type: boolean
+        crime:
+          type: integer
+          nullable: true
+        detective:
+          type: integer
+          nullable: true
+      required:
+        - created_at
+        - crime_details
+        - detective_details
+        - id
+    CaseList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        is_from_crime_scene:
+          type: boolean
+        is_closed:
+          type: boolean
+        detective_name:
+          type: string
+          readOnly: true
+        crime_title:
+          type: string
+          readOnly: true
+      required:
+        - created_at
+        - crime_title
+        - detective_name
+        - id
+    CaseReport:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        reported_at:
+          type: string
+          format: date-time
+          readOnly: true
+        description:
+          type: string
+          nullable: true
+        status:
+          $ref: "#/components/schemas/StatusC60Enum"
+        rejection_reason:
+          type: string
+          nullable: true
+        reporter:
+          type: integer
+        case:
+          type: integer
+        reviewed_by:
+          type: integer
+          nullable: true
+      required:
+        - case
+        - id
+        - reported_at
+        - reporter
+    CaseReportCreate:
+      type: object
+      properties:
+        reporter:
+          type: integer
+        case:
+          type: integer
+        description:
+          type: string
+          nullable: true
+      required:
+        - case
+        - reporter
+    CaseReportCreateRequest:
+      type: object
+      properties:
+        reporter:
+          type: integer
+        case:
+          type: integer
+        description:
+          type: string
+          nullable: true
+          minLength: 1
+      required:
+        - case
+        - reporter
+    CaseReportDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        reporter_details:
+          allOf:
+            - $ref: "#/components/schemas/User"
+          readOnly: true
+        reviewed_by_details:
+          allOf:
+            - $ref: "#/components/schemas/User"
+          readOnly: true
+        reported_at:
+          type: string
+          format: date-time
+          readOnly: true
+        description:
+          type: string
+          nullable: true
+        status:
+          $ref: "#/components/schemas/StatusC60Enum"
+        rejection_reason:
+          type: string
+          nullable: true
+        reporter:
+          type: integer
+        case:
+          type: integer
+        reviewed_by:
+          type: integer
+          nullable: true
+      required:
+        - case
+        - id
+        - reported_at
+        - reporter
+        - reporter_details
+        - reviewed_by_details
+    CaseReportRequest:
+      type: object
+      properties:
+        description:
+          type: string
+          nullable: true
+          minLength: 1
+        status:
+          $ref: "#/components/schemas/StatusC60Enum"
+        rejection_reason:
+          type: string
+          nullable: true
+        reporter:
+          type: integer
+        case:
+          type: integer
+        reviewed_by:
+          type: integer
+          nullable: true
+      required:
+        - case
+        - reporter
+    CaseReportReview:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/CaseReportReviewStatusEnum"
+        rejection_reason:
+          type: string
+          nullable: true
+      required:
+        - status
+    CaseReportReviewRequest:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/CaseReportReviewStatusEnum"
+        rejection_reason:
+          type: string
+          nullable: true
+      required:
+        - status
+    CaseReportReviewStatusEnum:
+      enum:
+        - approved
+        - rejected
+      type: string
+      description: |-
+        * `approved` - approved
+        * `rejected` - rejected
+    CaseRequest:
+      type: object
+      properties:
+        is_from_crime_scene:
+          type: boolean
+        is_closed:
+          type: boolean
+        crime:
+          type: integer
+          nullable: true
+        detective:
+          type: integer
+          nullable: true
+    ChangeUserRole:
+      type: object
+      properties:
+        user_id:
+          type: integer
+        role_id:
+          type: integer
+      required:
+        - role_id
+        - user_id
+    ChangeUserRoleRequest:
+      type: object
+      properties:
+        user_id:
+          type: integer
+        role_id:
+          type: integer
+      required:
+        - role_id
+        - user_id
+    ClaimRewardError:
+      type: object
+      properties:
+        detail:
+          type: string
+      required:
+        - detail
+    ClaimRewardRequestRequest:
+      type: object
+      properties:
+        reward_code:
+          type: string
+          minLength: 1
+        national_id:
+          type: string
+          minLength: 1
+      required:
+        - national_id
+        - reward_code
+    ClaimRewardResponse:
+      type: object
+      properties:
+        detail:
+          type: string
+        amount:
+          type: integer
+      required:
+        - amount
+        - detail
+    Complaint:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        description:
+          type: string
+        cadet_rejection_reason:
+          type: string
+        rejection_count:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        status:
+          $ref: "#/components/schemas/Status4c3Enum"
+        officer_rejection_reason:
+          type: string
+          nullable: true
+        cadet:
+          type: integer
+        police_officer:
+          type: integer
+        case:
+          type: integer
+          nullable: true
+        complainants:
+          type: array
+          items:
+            type: integer
+      required:
+        - cadet
+        - complainants
+        - created_at
+        - description
+        - id
+        - police_officer
+        - rejection_count
+    ComplaintCreate:
+      type: object
+      properties:
+        description:
+          type: string
+      required:
+        - description
+    ComplaintCreateRequest:
+      type: object
+      properties:
+        description:
+          type: string
+          minLength: 1
+      required:
+        - description
+    ComplaintDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        complainants_details:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+          readOnly: true
+        cadet_details:
+          allOf:
+            - $ref: "#/components/schemas/User"
+          readOnly: true
+        officer_details:
+          allOf:
+            - $ref: "#/components/schemas/User"
+          readOnly: true
+        status_display:
+          type: string
+          readOnly: true
+        description:
+          type: string
+        cadet_rejection_reason:
+          type: string
+        rejection_count:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        status:
+          $ref: "#/components/schemas/Status4c3Enum"
+        officer_rejection_reason:
+          type: string
+          nullable: true
+        cadet:
+          type: integer
+        police_officer:
+          type: integer
+        case:
+          type: integer
+          nullable: true
+        complainants:
+          type: array
+          items:
+            type: integer
+      required:
+        - cadet
+        - cadet_details
+        - complainants
+        - complainants_details
+        - created_at
+        - description
+        - id
+        - officer_details
+        - police_officer
+        - status_display
+    ComplaintRequest:
+      type: object
+      properties:
+        description:
+          type: string
+          minLength: 1
+        cadet_rejection_reason:
+          type: string
+          minLength: 1
+        status:
+          $ref: "#/components/schemas/Status4c3Enum"
+        officer_rejection_reason:
+          type: string
+          nullable: true
+        cadet:
+          type: integer
+        police_officer:
+          type: integer
+        case:
+          type: integer
+          nullable: true
+        complainants:
+          type: array
+          items:
+            type: integer
+      required:
+        - cadet
+        - complainants
+        - description
+        - police_officer
+    ComplaintReview:
+      type: object
+      properties:
+        is_confirmed:
+          type: boolean
+        rejection_reason:
+          type: string
+          nullable: true
+      required:
+        - is_confirmed
+    ComplaintReviewRequest:
+      type: object
+      properties:
+        is_confirmed:
+          type: boolean
+        rejection_reason:
+          type: string
+          nullable: true
+      required:
+        - is_confirmed
+    Crime:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        level_display:
+          type: string
+          readOnly: true
+        level:
+          allOf:
+            - $ref: "#/components/schemas/LevelEnum"
+          minimum: -9223372036854775808
+          maximum: 9223372036854775807
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+        - created_at
+        - id
+        - level
+        - level_display
+    CrimeDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        level_display:
+          type: string
+          readOnly: true
+        level:
+          allOf:
+            - $ref: "#/components/schemas/LevelEnum"
+          minimum: -9223372036854775808
+          maximum: 9223372036854775807
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+        - created_at
+        - id
+        - level
+        - level_display
+    CrimeLevel:
+      type: object
+      properties:
+        crime_level:
+          type: integer
+      required:
+        - crime_level
+    CrimeLevelRequest:
+      type: object
+      properties:
+        crime_level:
+          type: integer
+      required:
+        - crime_level
+    CrimeRequest:
+      type: object
+      properties:
+        level:
+          allOf:
+            - $ref: "#/components/schemas/LevelEnum"
+          minimum: -9223372036854775808
+          maximum: 9223372036854775807
+      required:
+        - level
+    CrimeScene:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        is_confirmed:
+          type: boolean
+        seen_at:
+          type: string
+          format: date-time
+        location:
+          type: string
+          nullable: true
+          maxLength: 500
+        description:
+          type: string
+          nullable: true
+        crime:
+          type: integer
+          nullable: true
+        examiner:
+          type: integer
+          nullable: true
+        testimony:
+          type: integer
+          nullable: true
+        witness:
+          type: integer
+          nullable: true
+      required:
+        - id
+        - seen_at
+    CrimeSceneCreate:
+      type: object
+      properties:
+        location:
+          type: string
+          nullable: true
+          maxLength: 500
+        description:
+          type: string
+          nullable: true
+        seen_at:
+          type: string
+          format: date-time
+      required:
+        - seen_at
+    CrimeSceneCreateRequest:
+      type: object
+      properties:
+        location:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 500
+        description:
+          type: string
+          nullable: true
+          minLength: 1
+        seen_at:
+          type: string
+          format: date-time
+        witness_ids:
+          type: array
+          items:
+            type: integer
+          writeOnly: true
+      required:
+        - seen_at
+    CrimeSceneDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        viewer_details:
+          allOf:
+            - $ref: "#/components/schemas/User"
+          readOnly: true
+        examiner_details:
+          allOf:
+            - $ref: "#/components/schemas/User"
+          readOnly: true
+        witnesses_details:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+          readOnly: true
+        is_confirmed:
+          type: boolean
+        seen_at:
+          type: string
+          format: date-time
+        location:
+          type: string
+          nullable: true
+          maxLength: 500
+        description:
+          type: string
+          nullable: true
+        crime:
+          type: integer
+          nullable: true
+        examiner:
+          type: integer
+          nullable: true
+        testimony:
+          type: integer
+          nullable: true
+        witness:
+          type: integer
+          nullable: true
+      required:
+        - examiner_details
+        - id
+        - seen_at
+        - viewer_details
+        - witnesses_details
+    CrimeSceneRequest:
+      type: object
+      properties:
+        is_confirmed:
+          type: boolean
+        seen_at:
+          type: string
+          format: date-time
+        location:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 500
+        description:
+          type: string
+          nullable: true
+          minLength: 1
+        crime:
+          type: integer
+          nullable: true
+        examiner:
+          type: integer
+          nullable: true
+        testimony:
+          type: integer
+          nullable: true
+        witness:
+          type: integer
+          nullable: true
+      required:
+        - seen_at
+    Evidence:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 50
+        description:
+          type: string
+        seen_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        location:
+          type: string
+          maxLength: 200
+        case:
+          type: integer
+          nullable: true
+        created_by:
+          type: integer
+      required:
+        - created_at
+        - created_by
+        - description
+        - id
+        - location
+        - seen_at
+        - title
+    GenderEnum:
+      enum:
+        - m
+        - f
+      type: string
+      description: |-
+        * `m` - Male
+        * `f` - Female
+    IdentificationEvidence:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 50
+        description:
+          type: string
+        seen_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        location:
+          type: string
+          maxLength: 200
+        owner_first_name:
+          type: string
+          maxLength: 100
+        owner_last_name:
+          type: string
+          maxLength: 100
+        information: {}
+        case:
+          type: integer
+          nullable: true
+        created_by:
+          type: integer
+      required:
+        - created_at
+        - created_by
+        - description
+        - id
+        - location
+        - owner_first_name
+        - owner_last_name
+        - seen_at
+        - title
+    IdentificationEvidenceRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 50
+        description:
+          type: string
+          minLength: 1
+        seen_at:
+          type: string
+          format: date-time
+        location:
+          type: string
+          minLength: 1
+          maxLength: 200
+        owner_first_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        owner_last_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        information: {}
+        case:
+          type: integer
+          nullable: true
+        created_by:
+          type: integer
+      required:
+        - created_by
+        - description
+        - location
+        - owner_first_name
+        - owner_last_name
+        - seen_at
+        - title
+    Image:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        image:
+          type: string
+          format: uri
+        uploaded_by:
+          type: integer
+      required:
+        - id
+        - image
+        - uploaded_by
+    ImageRequest:
+      type: object
+      properties:
+        image:
+          type: string
+          format: binary
+        uploaded_by:
+          type: integer
+      required:
+        - image
+        - uploaded_by
+    InitiatePaymentResponse:
+      type: object
+      properties:
+        gateway_url:
+          type: string
+          format: uri
+      required:
+        - gateway_url
+    Interrogation:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        date:
+          type: string
+          format: date-time
+          readOnly: true
+        location:
+          type: string
+          maxLength: 500
+        notes:
+          type: string
+        detective_score:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+        sergeant_score:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+        final_score:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+        review_notes:
+          type: string
+          nullable: true
+        suspect_crime:
+          type: integer
+        case:
+          type: integer
+        reviewed_by:
+          type: integer
+          nullable: true
+        interrogators:
+          type: array
+          items:
+            type: integer
+          description: Detective and Sergeant conducting the interrogation
+      required:
+        - case
+        - date
+        - id
+        - interrogators
+        - location
+        - notes
+        - suspect_crime
+    InterrogationCreate:
+      type: object
+      properties:
+        suspect_crime:
+          type: integer
+        case:
+          type: integer
+        location:
+          type: string
+          maxLength: 500
+        notes:
+          type: string
+      required:
+        - case
+        - location
+        - notes
+        - suspect_crime
+    InterrogationCreateRequest:
+      type: object
+      properties:
+        suspect_crime:
+          type: integer
+        case:
+          type: integer
+        location:
+          type: string
+          minLength: 1
+          maxLength: 500
+        notes:
+          type: string
+          minLength: 1
+      required:
+        - case
+        - location
+        - notes
+        - suspect_crime
+    InterrogationDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        suspect_crime_details:
+          type: string
+          readOnly: true
+        case_details:
+          allOf:
+            - $ref: "#/components/schemas/Case"
+          readOnly: true
+        interrogators_details:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+          readOnly: true
+        reviewed_by_details:
+          allOf:
+            - $ref: "#/components/schemas/User"
+          readOnly: true
+        status_display:
+          type: string
+          readOnly: true
+        date:
+          type: string
+          format: date-time
+          readOnly: true
+        location:
+          type: string
+          maxLength: 500
+        notes:
+          type: string
+        detective_score:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+        sergeant_score:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+        final_score:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+        review_notes:
+          type: string
+          nullable: true
+        suspect_crime:
+          type: integer
+        case:
+          type: integer
+        reviewed_by:
+          type: integer
+          nullable: true
+        interrogators:
+          type: array
+          items:
+            type: integer
+          description: Detective and Sergeant conducting the interrogation
+      required:
+        - case
+        - case_details
+        - date
+        - id
+        - interrogators
+        - interrogators_details
+        - location
+        - notes
+        - reviewed_by_details
+        - status_display
+        - suspect_crime
+        - suspect_crime_details
+    InterrogationRequest:
+      type: object
+      properties:
+        location:
+          type: string
+          minLength: 1
+          maxLength: 500
+        notes:
+          type: string
+          minLength: 1
+        detective_score:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+        sergeant_score:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+        final_score:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+        review_notes:
+          type: string
+          nullable: true
+        suspect_crime:
+          type: integer
+        case:
+          type: integer
+        reviewed_by:
+          type: integer
+          nullable: true
+        interrogators:
+          type: array
+          items:
+            type: integer
+          description: Detective and Sergeant conducting the interrogation
+      required:
+        - case
+        - interrogators
+        - location
+        - notes
+        - suspect_crime
+    LevelEnum:
+      enum:
+        - 1
+        - 2
+        - 3
+        - 4
+      type: integer
+      description: |-
+        * `1` - level_3
+        * `2` - level_2
+        * `3` - level_1
+        * `4` - critical
+    Login:
+      type: object
+      properties:
+        identifier:
+          type: string
+      required:
+        - identifier
+    LoginRequest:
+      type: object
+      properties:
+        identifier:
+          type: string
+          minLength: 1
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+        - identifier
+        - password
+    NullEnum:
+      enum:
+        - null
+    OtherEvidence:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 50
+        description:
+          type: string
+        seen_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        location:
+          type: string
+          maxLength: 200
+        case:
+          type: integer
+          nullable: true
+        created_by:
+          type: integer
+      required:
+        - created_at
+        - created_by
+        - description
+        - id
+        - location
+        - seen_at
+        - title
+    OtherEvidenceRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 50
+        description:
+          type: string
+          minLength: 1
+        seen_at:
+          type: string
+          format: date-time
+        location:
+          type: string
+          minLength: 1
+          maxLength: 200
+        case:
+          type: integer
+          nullable: true
+        created_by:
+          type: integer
+      required:
+        - created_by
+        - description
+        - location
+        - seen_at
+        - title
+    PatchedAttachmentRequest:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+        provided_by:
+          type: integer
+    PatchedBiologicalEvidenceRequest:
+      type: object
+      properties:
+        images:
+          type: array
+          items:
+            type: integer
+        title:
+          type: string
+          minLength: 1
+          maxLength: 50
+        description:
+          type: string
+          minLength: 1
+        seen_at:
+          type: string
+          format: date-time
+        location:
+          type: string
+          minLength: 1
+          maxLength: 200
+        result:
+          type: string
+          nullable: true
+        case:
+          type: integer
+          nullable: true
+        created_by:
+          type: integer
+        coronary:
+          type: integer
+          nullable: true
+    PatchedCaseReportRequest:
+      type: object
+      properties:
+        description:
+          type: string
+          nullable: true
+          minLength: 1
+        status:
+          $ref: "#/components/schemas/StatusC60Enum"
+        rejection_reason:
+          type: string
+          nullable: true
+        reporter:
+          type: integer
+        case:
+          type: integer
+        reviewed_by:
+          type: integer
+          nullable: true
+    PatchedCaseReportReviewRequest:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/CaseReportReviewStatusEnum"
+        rejection_reason:
+          type: string
+          nullable: true
+    PatchedCaseRequest:
+      type: object
+      properties:
+        is_from_crime_scene:
+          type: boolean
+        is_closed:
+          type: boolean
+        crime:
+          type: integer
+          nullable: true
+        detective:
+          type: integer
+          nullable: true
+    PatchedComplaintRequest:
+      type: object
+      properties:
+        description:
+          type: string
+          minLength: 1
+        cadet_rejection_reason:
+          type: string
+          minLength: 1
+        status:
+          $ref: "#/components/schemas/Status4c3Enum"
+        officer_rejection_reason:
+          type: string
+          nullable: true
+        cadet:
+          type: integer
+        police_officer:
+          type: integer
+        case:
+          type: integer
+          nullable: true
+        complainants:
+          type: array
+          items:
+            type: integer
+    PatchedComplaintReviewRequest:
+      type: object
+      properties:
+        is_confirmed:
+          type: boolean
+        rejection_reason:
+          type: string
+          nullable: true
+    PatchedCrimeRequest:
+      type: object
+      properties:
+        level:
+          allOf:
+            - $ref: "#/components/schemas/LevelEnum"
+          minimum: -9223372036854775808
+          maximum: 9223372036854775807
+    PatchedCrimeSceneRequest:
+      type: object
+      properties:
+        is_confirmed:
+          type: boolean
+        seen_at:
+          type: string
+          format: date-time
+        location:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 500
+        description:
+          type: string
+          nullable: true
+          minLength: 1
+        crime:
+          type: integer
+          nullable: true
+        examiner:
+          type: integer
+          nullable: true
+        testimony:
+          type: integer
+          nullable: true
+        witness:
+          type: integer
+          nullable: true
+    PatchedIdentificationEvidenceRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 50
+        description:
+          type: string
+          minLength: 1
+        seen_at:
+          type: string
+          format: date-time
+        location:
+          type: string
+          minLength: 1
+          maxLength: 200
+        owner_first_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        owner_last_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        information: {}
+        case:
+          type: integer
+          nullable: true
+        created_by:
+          type: integer
+    PatchedImageRequest:
+      type: object
+      properties:
+        image:
+          type: string
+          format: binary
+        uploaded_by:
+          type: integer
+    PatchedInterrogationRequest:
+      type: object
+      properties:
+        location:
+          type: string
+          minLength: 1
+          maxLength: 500
+        notes:
+          type: string
+          minLength: 1
+        detective_score:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+        sergeant_score:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+        final_score:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+        review_notes:
+          type: string
+          nullable: true
+        suspect_crime:
+          type: integer
+        case:
+          type: integer
+        reviewed_by:
+          type: integer
+          nullable: true
+        interrogators:
+          type: array
+          items:
+            type: integer
+          description: Detective and Sergeant conducting the interrogation
+    PatchedOtherEvidenceRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 50
+        description:
+          type: string
+          minLength: 1
+        seen_at:
+          type: string
+          format: date-time
+        location:
+          type: string
+          minLength: 1
+          maxLength: 200
+        case:
+          type: integer
+          nullable: true
+        created_by:
+          type: integer
+    PatchedPunishmentRequest:
+      type: object
+      properties:
+        punishment_type:
+          $ref: "#/components/schemas/PunishmentTypeEnum"
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          minLength: 1
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,0})?$
+          nullable: true
+        duration_months:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+        suspect_crime:
+          type: integer
+        issued_by:
+          type: integer
+          description: Judge who issued the punishment
+    PatchedReportRequest:
+      type: object
+      properties:
+        description:
+          type: string
+          minLength: 1
+        reporter:
+          type: integer
+        case:
+          type: integer
+          nullable: true
+        officer:
+          type: integer
+          nullable: true
+        detective:
+          type: integer
+          nullable: true
+        reward:
+          type: integer
+          nullable: true
+    PatchedReportReviewRequest:
+      type: object
+      properties:
+        is_approved:
+          type: boolean
+        rejection_reason:
+          type: string
+    PatchedRoleRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 100
+    PatchedScoreSubmissionRequest:
+      type: object
+      properties:
+        score:
+          type: integer
+          maximum: 10
+          minimum: 1
+    PatchedSuspectCrimeRequest:
+      type: object
+      properties:
+        suspect:
+          type: integer
+        crime:
+          type: integer
+        added_by:
+          type: integer
+    PatchedSuspectRequest:
+      type: object
+      properties:
+        description:
+          type: string
+          minLength: 1
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        nickname:
+          type: string
+          minLength: 1
+          maxLength: 100
+        gender:
+          nullable: true
+          oneOf:
+            - $ref: "#/components/schemas/GenderEnum"
+            - $ref: "#/components/schemas/BlankEnum"
+            - $ref: "#/components/schemas/NullEnum"
+        picture:
+          type: string
+          format: binary
+          nullable: true
+        national_id:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+        status:
+          $ref: "#/components/schemas/SuspectStatusEnum"
+        user:
+          type: integer
+          nullable: true
+    PatchedTestimonyRequest:
+      type: object
+      properties:
+        attachments:
+          type: array
+          items:
+            type: integer
+        title:
+          type: string
+          minLength: 1
+          maxLength: 50
+        description:
+          type: string
+          minLength: 1
+        seen_at:
+          type: string
+          format: date-time
+        location:
+          type: string
+          minLength: 1
+          maxLength: 200
+        transcription:
+          type: string
+          minLength: 1
+        is_confirmed:
+          type: boolean
+        case:
+          type: integer
+          nullable: true
+        created_by:
+          type: integer
+    PatchedUserRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          nullable: true
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          nullable: true
+          maxLength: 254
+        phone:
+          type: string
+          nullable: true
+          maxLength: 20
+        first_name:
+          type: string
+          nullable: true
+          maxLength: 100
+        last_name:
+          type: string
+          nullable: true
+          maxLength: 100
+        national_id:
+          type: string
+          nullable: true
+          maxLength: 20
+        role:
+          type: integer
+    PatchedVehicleEvidenceRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 50
+        description:
+          type: string
+          minLength: 1
+        seen_at:
+          type: string
+          format: date-time
+        location:
+          type: string
+          minLength: 1
+          maxLength: 200
+        vehicle_model:
+          type: string
+          minLength: 1
+          maxLength: 50
+        registration_plate_number:
+          type: string
+          nullable: true
+          maxLength: 50
+        color:
+          type: string
+          minLength: 1
+          maxLength: 50
+        serial_number:
+          type: string
+          nullable: true
+          maxLength: 50
+        case:
+          type: integer
+          nullable: true
+        created_by:
+          type: integer
+    PaymentError:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+    Punishment:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        punishment_type:
+          $ref: "#/components/schemas/PunishmentTypeEnum"
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,0})?$
+          nullable: true
+        is_paid:
+          type: boolean
+          readOnly: true
+        paid_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        payment_reference:
+          type: string
+          readOnly: true
+          nullable: true
+        duration_months:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+        issued_at:
+          type: string
+          format: date-time
+          readOnly: true
+        suspect_crime:
+          type: integer
+        issued_by:
+          type: integer
+          description: Judge who issued the punishment
+      required:
+        - description
+        - id
+        - is_paid
+        - issued_at
+        - issued_by
+        - paid_at
+        - payment_reference
+        - punishment_type
+        - suspect_crime
+        - title
+    PunishmentCreate:
+      type: object
+      properties:
+        suspect_crime:
+          type: integer
+        punishment_type:
+          $ref: "#/components/schemas/PunishmentTypeEnum"
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,0})?$
+          nullable: true
+        duration_months:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+      required:
+        - description
+        - punishment_type
+        - suspect_crime
+        - title
+    PunishmentCreateRequest:
+      type: object
+      properties:
+        suspect_crime:
+          type: integer
+        punishment_type:
+          $ref: "#/components/schemas/PunishmentTypeEnum"
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          minLength: 1
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,0})?$
+          nullable: true
+        duration_months:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+      required:
+        - description
+        - punishment_type
+        - suspect_crime
+        - title
+    PunishmentDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        suspect_crime_details:
+          type: string
+          readOnly: true
+        case_details:
+          allOf:
+            - $ref: "#/components/schemas/Case"
+          readOnly: true
+        issued_by_details:
+          allOf:
+            - $ref: "#/components/schemas/User"
+          readOnly: true
+        punishment_type_display:
+          type: string
+          readOnly: true
+        punishment_type:
+          $ref: "#/components/schemas/PunishmentTypeEnum"
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,0})?$
+          nullable: true
+        is_paid:
+          type: boolean
+        paid_at:
+          type: string
+          format: date-time
+          nullable: true
+        payment_reference:
+          type: string
+          nullable: true
+          maxLength: 100
+        duration_months:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+        issued_at:
+          type: string
+          format: date-time
+          readOnly: true
+        suspect_crime:
+          type: integer
+        issued_by:
+          type: integer
+          description: Judge who issued the punishment
+      required:
+        - case_details
+        - description
+        - id
+        - issued_at
+        - issued_by
+        - issued_by_details
+        - punishment_type
+        - punishment_type_display
+        - suspect_crime
+        - suspect_crime_details
+        - title
+    PunishmentRequest:
+      type: object
+      properties:
+        punishment_type:
+          $ref: "#/components/schemas/PunishmentTypeEnum"
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          minLength: 1
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,0})?$
+          nullable: true
+        duration_months:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+        suspect_crime:
+          type: integer
+        issued_by:
+          type: integer
+          description: Judge who issued the punishment
+      required:
+        - description
+        - issued_by
+        - punishment_type
+        - suspect_crime
+        - title
+    PunishmentTypeEnum:
+      enum:
+        - fine
+        - bail
+        - imprisonment
+        - death
+      type: string
+      description: |-
+        * `fine` - Fine
+        * `bail` - Bail
+        * `imprisonment` - Imprisonment
+        * `death` - Death
+    Register:
+      type: object
+      properties:
+        username:
+          type: string
+          nullable: true
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          nullable: true
+          maxLength: 254
+        phone:
+          type: string
+          nullable: true
+          maxLength: 20
+        first_name:
+          type: string
+          nullable: true
+          maxLength: 100
+        last_name:
+          type: string
+          nullable: true
+          maxLength: 100
+        national_id:
+          type: string
+          nullable: true
+          maxLength: 20
+    RegisterRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          nullable: true
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          nullable: true
+          maxLength: 254
+        phone:
+          type: string
+          nullable: true
+          maxLength: 20
+        first_name:
+          type: string
+          nullable: true
+          maxLength: 100
+        last_name:
+          type: string
+          nullable: true
+          maxLength: 100
+        national_id:
+          type: string
+          nullable: true
+          maxLength: 20
+        password:
+          type: string
+          writeOnly: true
+          minLength: 8
+      required:
+        - password
+    Report:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        suspect:
+          allOf:
+            - $ref: "#/components/schemas/Suspect"
+          readOnly: true
+        description:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        status:
+          allOf:
+            - $ref: "#/components/schemas/Status77dEnum"
+          readOnly: true
+        reporter:
+          type: integer
+        case:
+          type: integer
+          nullable: true
+        officer:
+          type: integer
+          nullable: true
+        detective:
+          type: integer
+          nullable: true
+        reward:
+          type: integer
+          nullable: true
+      required:
+        - created_at
+        - description
+        - id
+        - reporter
+        - status
+        - suspect
+    ReportCreate:
+      type: object
+      properties:
+        case:
+          type: integer
+          nullable: true
+        suspect:
+          type: integer
+          nullable: true
+        description:
+          type: string
+      required:
+        - description
+    ReportCreateRequest:
+      type: object
+      properties:
+        case:
+          type: integer
+          nullable: true
+        suspect:
+          type: integer
+          nullable: true
+        description:
+          type: string
+          minLength: 1
+      required:
+        - description
+    ReportDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        reporter_details:
+          allOf:
+            - $ref: "#/components/schemas/User"
+          readOnly: true
+        officer_details:
+          allOf:
+            - $ref: "#/components/schemas/User"
+          readOnly: true
+        detective_details:
+          allOf:
+            - $ref: "#/components/schemas/User"
+          readOnly: true
+        case_details:
+          allOf:
+            - $ref: "#/components/schemas/Case"
+          readOnly: true
+        suspect_details:
+          allOf:
+            - $ref: "#/components/schemas/Suspect"
+          readOnly: true
+        status_display:
+          type: string
+          readOnly: true
+        description:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        status:
+          $ref: "#/components/schemas/Status77dEnum"
+        reporter:
+          type: integer
+        case:
+          type: integer
+          nullable: true
+        suspect:
+          type: integer
+          nullable: true
+        officer:
+          type: integer
+          nullable: true
+        detective:
+          type: integer
+          nullable: true
+        reward:
+          type: integer
+          nullable: true
+      required:
+        - case_details
+        - created_at
+        - description
+        - detective_details
+        - id
+        - officer_details
+        - reporter
+        - reporter_details
+        - status_display
+        - suspect_details
+    ReportRequest:
+      type: object
+      properties:
+        description:
+          type: string
+          minLength: 1
+        reporter:
+          type: integer
+        case:
+          type: integer
+          nullable: true
+        officer:
+          type: integer
+          nullable: true
+        detective:
+          type: integer
+          nullable: true
+        reward:
+          type: integer
+          nullable: true
+      required:
+        - description
+        - reporter
+    ReportReview:
+      type: object
+      properties:
+        is_approved:
+          type: boolean
+        rejection_reason:
+          type: string
+      required:
+        - is_approved
+    ReportReviewRequest:
+      type: object
+      properties:
+        is_approved:
+          type: boolean
+        rejection_reason:
+          type: string
+      required:
+        - is_approved
+    Reward:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        unique_code:
+          type: string
+          format: uuid
+          readOnly: true
+        amount:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        is_claimed:
+          type: boolean
+          readOnly: true
+        claimed_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        recipient:
+          type: integer
+          nullable: true
+        created_by:
+          type: integer
+          nullable: true
+      required:
+        - created_at
+        - id
+        - is_claimed
+        - unique_code
+    RewardDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        recipient_details:
+          allOf:
+            - $ref: "#/components/schemas/User"
+          readOnly: true
+        created_by_details:
+          allOf:
+            - $ref: "#/components/schemas/User"
+          readOnly: true
+        unique_code:
+          type: string
+          format: uuid
+          readOnly: true
+        amount:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        is_claimed:
+          type: boolean
+        claimed_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        recipient:
+          type: integer
+          nullable: true
+        created_by:
+          type: integer
+          nullable: true
+      required:
+        - created_at
+        - created_by_details
+        - id
+        - recipient_details
+        - unique_code
+    Role:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 100
+      required:
+        - id
+        - title
+    RoleDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 100
+        user_count:
+          type: integer
+          readOnly: true
+      required:
+        - id
+        - title
+        - user_count
+    RoleRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 100
+      required:
+        - title
+    ScoreSubmission:
+      type: object
+      properties:
+        score:
+          type: integer
+          maximum: 10
+          minimum: 1
+      required:
+        - score
+    ScoreSubmissionRequest:
+      type: object
+      properties:
+        score:
+          type: integer
+          maximum: 10
+          minimum: 1
+      required:
+        - score
+    Status4c3Enum:
+      enum:
+        - pending_cadet
+        - rejected_by_cadet
+        - pending_officer
+        - rejected_by_officer
+        - approved
+        - invalid
+      type: string
+      description: |-
+        * `pending_cadet` - Pending Cadet
+        * `rejected_by_cadet` - Rejected by Cadet
+        * `pending_officer` - Pending Officer
+        * `rejected_by_officer` - Rejected by Officer
+        * `approved` - Approved
+        * `invalid` - Invalid
+    Status77dEnum:
+      enum:
+        - pending_officer
+        - rejected_by_officer
+        - pending_detective
+        - rejected_by_detective
+        - approved
+      type: string
+      description: |-
+        * `pending_officer` - Pending Officer
+        * `rejected_by_officer` - Rejected by Officer
+        * `pending_detective` - Pending Detective
+        * `rejected_by_detective` - Rejected by Detective
+        * `approved` - Approved
+    StatusC60Enum:
+      enum:
+        - pending
+        - approved
+        - rejected
+      type: string
+      description: |-
+        * `pending` - pending state
+        * `approved` - aproved state
+        * `rejected` - rejected state
+    Suspect:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        description:
+          type: string
+        name:
+          type: string
+          maxLength: 100
+        nickname:
+          type: string
+          maxLength: 100
+        gender:
+          nullable: true
+          oneOf:
+            - $ref: "#/components/schemas/GenderEnum"
+            - $ref: "#/components/schemas/BlankEnum"
+            - $ref: "#/components/schemas/NullEnum"
+        picture:
+          type: string
+          format: uri
+          nullable: true
+        national_id:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        status:
+          $ref: "#/components/schemas/SuspectStatusEnum"
+        wanted_since:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        priority_score:
+          type: integer
+          readOnly: true
+        reward_amount:
+          type: integer
+          readOnly: true
+        user:
+          type: integer
+          nullable: true
+      required:
+        - created_at
+        - description
+        - id
+        - name
+        - nickname
+        - priority_score
+        - reward_amount
+        - wanted_since
+    SuspectCrime:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        added_at:
+          type: string
+          format: date-time
+          readOnly: true
+        suspect:
+          type: integer
+        crime:
+          type: integer
+        added_by:
+          type: integer
+      required:
+        - added_at
+        - added_by
+        - crime
+        - id
+        - suspect
+    SuspectCrimeCreate:
+      type: object
+      properties:
+        suspect:
+          type: integer
+        crime:
+          type: integer
+      required:
+        - crime
+        - suspect
+    SuspectCrimeCreateRequest:
+      type: object
+      properties:
+        suspect:
+          type: integer
+        crime:
+          type: integer
+      required:
+        - crime
+        - suspect
+    SuspectCrimeDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        suspect_details:
+          allOf:
+            - $ref: "#/components/schemas/Suspect"
+          readOnly: true
+        case_details:
+          allOf:
+            - $ref: "#/components/schemas/Case"
+          readOnly: true
+        added_by_details:
+          allOf:
+            - $ref: "#/components/schemas/User"
+          readOnly: true
+        status_display:
+          type: string
+          readOnly: true
+        added_at:
+          type: string
+          format: date-time
+          readOnly: true
+        suspect:
+          type: integer
+        crime:
+          type: integer
+        added_by:
+          type: integer
+      required:
+        - added_at
+        - added_by
+        - added_by_details
+        - case_details
+        - crime
+        - id
+        - status_display
+        - suspect
+        - suspect_details
+    SuspectCrimeRequest:
+      type: object
+      properties:
+        suspect:
+          type: integer
+        crime:
+          type: integer
+        added_by:
+          type: integer
+      required:
+        - added_by
+        - crime
+        - suspect
+    SuspectRequest:
+      type: object
+      properties:
+        description:
+          type: string
+          minLength: 1
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        nickname:
+          type: string
+          minLength: 1
+          maxLength: 100
+        gender:
+          nullable: true
+          oneOf:
+            - $ref: "#/components/schemas/GenderEnum"
+            - $ref: "#/components/schemas/BlankEnum"
+            - $ref: "#/components/schemas/NullEnum"
+        picture:
+          type: string
+          format: binary
+          nullable: true
+        national_id:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+        status:
+          $ref: "#/components/schemas/SuspectStatusEnum"
+        user:
+          type: integer
+          nullable: true
+      required:
+        - description
+        - name
+        - nickname
+    SuspectStatusEnum:
+      enum:
+        - suspected
+        - wanted
+        - most_wanted
+        - arrested
+        - convicted
+        - innocent
+      type: string
+      description: |-
+        * `suspected` - Suspected
+        * `wanted` - Wanted
+        * `most_wanted` - Most Wanted
+        * `arrested` - Arrested
+        * `convicted` - Convicted
+        * `innocent` - Innocent
+    Testimony:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        attachments:
+          type: array
+          items:
+            type: integer
+        title:
+          type: string
+          maxLength: 50
+        description:
+          type: string
+        seen_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        location:
+          type: string
+          maxLength: 200
+        transcription:
+          type: string
+        is_confirmed:
+          type: boolean
+        case:
+          type: integer
+          nullable: true
+        created_by:
+          type: integer
+      required:
+        - attachments
+        - created_at
+        - created_by
+        - description
+        - id
+        - location
+        - seen_at
+        - title
+        - transcription
+    TestimonyRequest:
+      type: object
+      properties:
+        attachments:
+          type: array
+          items:
+            type: integer
+        title:
+          type: string
+          minLength: 1
+          maxLength: 50
+        description:
+          type: string
+          minLength: 1
+        seen_at:
+          type: string
+          format: date-time
+        location:
+          type: string
+          minLength: 1
+          maxLength: 200
+        transcription:
+          type: string
+          minLength: 1
+        is_confirmed:
+          type: boolean
+        case:
+          type: integer
+          nullable: true
+        created_by:
+          type: integer
+      required:
+        - attachments
+        - created_by
+        - description
+        - location
+        - seen_at
+        - title
+        - transcription
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+      required:
+        - access
+    TokenRefreshRequest:
+      type: object
+      properties:
+        refresh:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+        - refresh
+    TransactionCreateRequest:
+      type: object
+      properties:
+        amount:
+          type: integer
+          minimum: 1000
+        mobile_num:
+          type: string
+          minLength: 1
+          default: ""
+          maxLength: 15
+      required:
+        - amount
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          nullable: true
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          nullable: true
+          maxLength: 254
+        phone:
+          type: string
+          nullable: true
+          maxLength: 20
+        first_name:
+          type: string
+          nullable: true
+          maxLength: 100
+        last_name:
+          type: string
+          nullable: true
+          maxLength: 100
+        national_id:
+          type: string
+          nullable: true
+          maxLength: 20
+        role:
+          type: integer
+        role_title:
+          type: string
+          readOnly: true
+      required:
+        - id
+        - role
+        - role_title
+    UserListWithRole:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          nullable: true
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          nullable: true
+          maxLength: 254
+        phone:
+          type: string
+          nullable: true
+          maxLength: 20
+        first_name:
+          type: string
+          nullable: true
+          maxLength: 100
+        last_name:
+          type: string
+          nullable: true
+          maxLength: 100
+        national_id:
+          type: string
+          nullable: true
+          maxLength: 20
+        role_id:
+          type: integer
+          readOnly: true
+        role_title:
+          type: string
+          readOnly: true
+        is_active:
+          type: boolean
+          title: Active
+          description:
+            Designates whether this user should be treated as active. Unselect
+            this instead of deleting accounts.
+        date_joined:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+        - date_joined
+        - id
+        - role_id
+        - role_title
+    UserRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          nullable: true
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          nullable: true
+          maxLength: 254
+        phone:
+          type: string
+          nullable: true
+          maxLength: 20
+        first_name:
+          type: string
+          nullable: true
+          maxLength: 100
+        last_name:
+          type: string
+          nullable: true
+          maxLength: 100
+        national_id:
+          type: string
+          nullable: true
+          maxLength: 20
+        role:
+          type: integer
+      required:
+        - role
+    VehicleEvidence:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 50
+        description:
+          type: string
+        seen_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        location:
+          type: string
+          maxLength: 200
+        vehicle_model:
+          type: string
+          maxLength: 50
+        registration_plate_number:
+          type: string
+          nullable: true
+          maxLength: 50
+        color:
+          type: string
+          maxLength: 50
+        serial_number:
+          type: string
+          nullable: true
+          maxLength: 50
+        case:
+          type: integer
+          nullable: true
+        created_by:
+          type: integer
+      required:
+        - color
+        - created_at
+        - created_by
+        - description
+        - id
+        - location
+        - seen_at
+        - title
+        - vehicle_model
+    VehicleEvidenceRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 50
+        description:
+          type: string
+          minLength: 1
+        seen_at:
+          type: string
+          format: date-time
+        location:
+          type: string
+          minLength: 1
+          maxLength: 200
+        vehicle_model:
+          type: string
+          minLength: 1
+          maxLength: 50
+        registration_plate_number:
+          type: string
+          nullable: true
+          maxLength: 50
+        color:
+          type: string
+          minLength: 1
+          maxLength: 50
+        serial_number:
+          type: string
+          nullable: true
+          maxLength: 50
+        case:
+          type: integer
+          nullable: true
+        created_by:
+          type: integer
+      required:
+        - color
+        - created_by
+        - description
+        - location
+        - seen_at
+        - title
+        - vehicle_model
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

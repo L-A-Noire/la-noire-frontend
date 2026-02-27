@@ -43,6 +43,14 @@ export interface SuspectCrime {
     location?: string;
     committed_at?: string;
   };
+  case_details?: {
+    id: number;
+    crime_title?: string;
+    crime_details?: {
+      level: string;
+    };
+  };
+  status_display?: string;
   added_at: string;
   added_by: number;
   added_by_details?: {
@@ -52,6 +60,5 @@ export interface SuspectCrime {
     last_name: string;
     role_title: string;
   };
-
   status?: string;
 }
