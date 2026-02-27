@@ -25,7 +25,9 @@ export const deleteSuspectCrime = async (id: number): Promise<void> => {
 };
 
 export const getWantedSuspects = async (): Promise<Suspect[]> => {
-  const response = await http.get<Suspect[]>("/suspect/wanted/");
+  const response = await http.get<Suspect[]>(
+    "/suspect/suspects/?status__in=wanted,most_wanted",
+  );
   return response.data;
 };
 
