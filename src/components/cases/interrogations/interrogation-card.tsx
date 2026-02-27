@@ -1,6 +1,6 @@
-// src/components/interrogations/interrogation-card.tsx
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import {
   Card,
   CardContent,
@@ -53,6 +53,10 @@ export function InterrogationCard({
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [scoreDialogOpen, setScoreDialogOpen] = useState(false);
 
+  interface ErrorResponse {
+    message?: string;
+  }
+
   const suspect = interrogation.suspect_crime_details?.suspect_details;
   const userRole = session?.user?.role_title;
 
@@ -103,14 +107,20 @@ export function InterrogationCard({
   const submitScoreMutation = useMutation({
     mutationFn: (data: { score: number }) =>
       submitInterrogationScore(interrogation.id, data),
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({
         queryKey: ["interrogations", interrogation.case],
       });
       setScoreDialogOpen(false);
+      setScore("");
       toast.success("Score submitted successfully");
+
+      // Log the response to see what's coming back
+      console.log("Score submission response:", data);
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<ErrorResponse>) => {
+      console.error("Score submission error:", error);
+      console.error("Error response:", error.response?.data);
       toast.error(error.response?.data?.message || "Failed to submit score");
     },
   });
@@ -133,7 +143,7 @@ export function InterrogationCard({
         toast.success("Review submitted successfully");
       }
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<ErrorResponse>) => {
       toast.error(error.response?.data?.message || "Failed to submit review");
     },
   });

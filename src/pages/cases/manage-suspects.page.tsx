@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { AxiosError } from "axios";
 import {
   Card,
   CardContent,
@@ -62,6 +63,10 @@ export const ManageSuspectsPage = () => {
     gender: "",
     national_id: "",
   });
+
+  interface ErrorResponse {
+    message?: string;
+  }
 
   const {
     data: caseDetails,
@@ -170,7 +175,7 @@ export const ManageSuspectsPage = () => {
       setSelectedSuspectId("");
       setSearchTerm("");
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<ErrorResponse>) => {
       console.error("Error adding suspect:", error);
       console.error("Error response:", error.response?.data);
       toast.error(error.response?.data?.message || "Failed to add suspect");
@@ -214,7 +219,7 @@ export const ManageSuspectsPage = () => {
         national_id: "",
       });
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<ErrorResponse>) => {
       console.error("Error creating suspect:", error);
       console.error("Error response:", error.response?.data);
       toast.error(error.response?.data?.message || "Failed to create suspect");
@@ -238,7 +243,7 @@ export const ManageSuspectsPage = () => {
       });
       toast.success("Suspect removed from case");
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<ErrorResponse>) => {
       console.error("Error removing suspect:", error);
       toast.error(error.response?.data?.message || "Failed to remove suspect");
     },
@@ -383,11 +388,10 @@ export const ManageSuspectsPage = () => {
                     {availableSuspects.map((suspect) => (
                       <div
                         key={suspect.id}
-                        className={`p-3 flex items-center gap-3 cursor-pointer hover:bg-muted/50 transition-colors ${
-                          selectedSuspectId === suspect.id.toString()
-                            ? "bg-muted"
-                            : ""
-                        }`}
+                        className={`p-3 flex items-center gap-3 cursor-pointer hover:bg-muted/50 transition-colors ${selectedSuspectId === suspect.id.toString()
+                          ? "bg-muted"
+                          : ""
+                          }`}
                         onClick={() =>
                           setSelectedSuspectId(suspect.id.toString())
                         }

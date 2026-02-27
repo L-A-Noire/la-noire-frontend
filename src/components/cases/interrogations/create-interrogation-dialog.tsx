@@ -206,6 +206,7 @@
 
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import {
   Dialog,
   DialogContent,
@@ -230,13 +231,16 @@ import { Badge } from "@/components/ui/badge";
 import { getSuspectsByCaseDirect, getSuspectCrimeBySuspectAndCase } from "@/api/suspect";
 import { getCaseById } from "@/api/cases";
 import { createInterrogation } from "@/api/interrogations";
-import { useAuthStore } from "@/stores/auth.store";
 import { toast } from "react-toastify";
 import { Add01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
 interface CreateInterrogationDialogProps {
   caseId: number;
+}
+
+interface ErrorResponse {
+  message?: string;
 }
 
 export function CreateInterrogationDialog({
@@ -246,7 +250,6 @@ export function CreateInterrogationDialog({
   const [selectedSuspectId, setSelectedSuspectId] = useState<string>("");
   const [location, setLocation] = useState("");
   const [notes, setNotes] = useState("");
-  const { session } = useAuthStore();
   const queryClient = useQueryClient();
 
   // Get case details to get crime ID
@@ -301,7 +304,7 @@ export function CreateInterrogationDialog({
       resetForm();
       toast.success("Interrogation started successfully");
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<ErrorResponse>) => {
       console.error("Error starting interrogation:", error);
       toast.error(error.response?.data?.message || error.message || "Failed to start interrogation");
     },
