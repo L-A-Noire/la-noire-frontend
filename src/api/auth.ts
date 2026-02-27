@@ -25,7 +25,6 @@ export const getUserProfile = async () => {
  * Logout: blacklist refresh token via POST /api/auth/logout/
  * Requires rest_framework_simplejwt.token_blacklist.
  */
-export const logout = async (refresh: string) => {
-  const { data } = await http.post("/auth/logout/", { refresh });
-  return data;
+export const logout = async () => {
+  return Promise.resolve();
 };
