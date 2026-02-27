@@ -24,6 +24,10 @@ export const Header = () => {
       "Chief",
     ].includes(session.user.role_title);
 
+  const canViewCrimeScenes =
+    session &&
+    ["Administrator", "Chief", "Captain"].includes(session.user.role_title);
+
   const canReviewTips =
     session &&
     [
@@ -132,7 +136,7 @@ export const Header = () => {
               )}
 
               {/* Crime Scenes - for police roles */}
-              {canReviewTestimonies && (
+              {canViewCrimeScenes && (
                 <Link
                   to="/crime-scenes"
                   className={`transition-colors font-mono ${

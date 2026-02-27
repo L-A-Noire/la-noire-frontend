@@ -99,9 +99,15 @@ export function App() {
           <Route path="complaints/new" element={<FileComplaintPage />} />
           <Route path="complaints/:id" element={<ComplaintDetailPage />} />
 
-          <Route path="crime-scenes" element={<CrimeScenesListPage />} />
-          <Route path="crime-scenes/new" element={<ReportCrimeScenePage />} />
-          <Route path="crime-scenes/:id" element={<CrimeSceneDetailPage />} />
+          <Route
+            element={
+              <RoleGuard allowedRoles={["Administrator", "Captain", "Chief"]} />
+            }
+          >
+            <Route path="crime-scenes" element={<CrimeScenesListPage />} />
+            <Route path="crime-scenes/new" element={<ReportCrimeScenePage />} />
+            <Route path="crime-scenes/:id" element={<CrimeSceneDetailPage />} />
+          </Route>
 
           <Route path="reports" element={<MyReportsPage />} />
           <Route path="rewards" element={<MyRewardsPage />} />
