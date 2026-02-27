@@ -41,6 +41,7 @@ import SuccessPaymentPage from "@/pages/success-payment.page";
 import FailedPaymentPage from "@/pages/failed-payment.page";
 import RewardReportsPage from "@/pages/reward/reward-reports.page";
 import MyReportsPage from "@/pages/reward/my-reports.page";
+import MyRewardsPage from "@/pages/reward/my-rewards.page";
 
 export function App() {
   return (
@@ -101,6 +102,7 @@ export function App() {
           <Route path="crime-scenes/:id" element={<CrimeSceneDetailPage />} />
 
           <Route path="reports" element={<MyReportsPage />} />
+          <Route path="rewards" element={<MyRewardsPage />} />
           <Route
             element={
               <RoleGuard

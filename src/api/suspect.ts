@@ -11,9 +11,11 @@ export const getSuspectCrime = async (id: number): Promise<Suspect> => {
   return response.data;
 };
 
-export const getSuspectsByCaseDirect = async (caseId: number): Promise<Suspect[]> => {
+export const getSuspectsByCaseDirect = async (
+  caseId: number,
+): Promise<Suspect[]> => {
   const response = await http.get<Suspect[]>(
-    `/suspect/suspects/?suspected_crimes__crime__case__id=${caseId}`
+    `/suspect/suspects/?suspected_crimes__crime__case__id=${caseId}`,
   );
   return response.data;
 };
@@ -39,9 +41,6 @@ export const getWantedSuspects = async (): Promise<Suspect[]> => {
   return response.data;
 };
 
-
-
-
 // Get all suspects (for detective dropdown)
 export const getAllSuspects = async (): Promise<Suspect[]> => {
   const response = await http.get<Suspect[]>("/suspect/suspects/");
@@ -50,7 +49,9 @@ export const getAllSuspects = async (): Promise<Suspect[]> => {
 
 // Get suspects for a specific case
 export const getSuspectsByCase = async (caseId: number): Promise<Suspect[]> => {
-  const response = await http.get<Suspect[]>(`/suspect/suspect-crimes/?case=${caseId}`);
+  const response = await http.get<Suspect[]>(
+    `/suspect/suspect-crimes/?case=${caseId}`,
+  );
   return response.data;
 };
 
@@ -102,9 +103,12 @@ export const markAsWanted = async (suspectId: number): Promise<Suspect> => {
 };
 
 // Delete suspect from case
-export const deleteSuspectFromCase = async (suspectCrimeId: number): Promise<void> => {
+export const deleteSuspectFromCase = async (
+  suspectCrimeId: number,
+): Promise<void> => {
   await http.delete(`/suspect/suspect-crimes/${suspectCrimeId}/`);
 };
+
 
 // Update suspect status (works on SuspectCrime)
 export const updateSuspectCrimeStatus = async (

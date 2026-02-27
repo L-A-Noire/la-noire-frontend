@@ -226,9 +226,7 @@ export default function RewardReportsPage() {
         <div className="flex flex-wrap gap-3 items-center">
           {myPendingStatus && (
             <Button
-              variant={
-                statusFilter === myPendingStatus ? "default" : "outline"
-              }
+              variant={statusFilter === myPendingStatus ? "default" : "outline"}
               size="sm"
               onClick={() => setStatusFilter(myPendingStatus)}
             >
@@ -236,7 +234,9 @@ export default function RewardReportsPage() {
               {reports.filter((r: Report) => r.status === myPendingStatus)
                 .length > 0 && (
                 <Badge
-                  variant={statusFilter === myPendingStatus ? "secondary" : "default"}
+                  variant={
+                    statusFilter === myPendingStatus ? "secondary" : "default"
+                  }
                   className="ml-2"
                 >
                   {
@@ -251,9 +251,7 @@ export default function RewardReportsPage() {
             <Label className="sr-only">Status</Label>
             <Select
               value={statusFilter}
-              onValueChange={(v) =>
-                setStatusFilter(v as ReportStatus | "all")
-              }
+              onValueChange={(v) => setStatusFilter(v as ReportStatus | "all")}
             >
               <SelectTrigger className="w-[200px]">
                 <SelectValue />

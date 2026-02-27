@@ -2,7 +2,7 @@ import { Navigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useAuthStore } from "@/stores/auth.store";
 import { getReports } from "@/api/reward-reports";
-import { getRewardById } from "@/api/rewards";
+import { getMyRewards } from "@/api/rewards";
 import {
   Card,
   CardContent,
@@ -19,10 +19,11 @@ import {
   CheckmarkCircle01Icon,
   Cancel01Icon,
   GiftIcon,
+  Copy01Icon,
 } from "@hugeicons/core-free-icons";
 import { format } from "date-fns";
 import { useState } from "react";
-import { ClaimRewardDialog } from "@/components/rewards/claim-reward-dialog";
+import { toast } from "react-toastify";
 import type { Report, ReportStatus } from "@/types/reward-report.type";
 
 const STATUS_LABELS: Record<ReportStatus, string> = {
@@ -41,16 +42,26 @@ const STATUS_ICONS: Record<ReportStatus, typeof FileEditIcon> = {
   approved: CheckmarkCircle01Icon,
 };
 
+function formatAmount(amount: number): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 0,
+  }).format(amount);
+}
+
 export default function MyReportsPage() {
   const { session } = useAuthStore();
-  const [claimDialogOpen, setClaimDialogOpen] = useState(false);
-  const [selectedRewardCode, setSelectedRewardCode] = useState<string | null>(
-    null,
-  );
 
   const { data: reports = [], isLoading } = useQuery({
     queryKey: ["reward-reports"],
     queryFn: getReports,
+    enabled: !!session,
+  });
+
+  const { data: myRewards = [] } = useQuery({
+    queryKey: ["my-rewards"],
+    queryFn: getMyRewards,
     enabled: !!session,
   });
 
@@ -69,8 +80,8 @@ export default function MyReportsPage() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">My Tip Reports</h1>
         <p className="text-muted-foreground mt-1">
-          Track the status of your wanted suspect tips. When approved, you will
-          receive a reward coupon to claim.
+          Track the status of your wanted suspect tips. When approved, your
+          reward will appear in My Rewards.
         </p>
       </div>
 
@@ -99,38 +110,26 @@ export default function MyReportsPage() {
             <ReportStatusCard
               key={report.id}
               report={report}
-              onClaimClick={(code) => {
-                setSelectedRewardCode(code);
-                setClaimDialogOpen(true);
-              }}
+              reward={
+                report.reward && report.status === "approved"
+                  ? myRewards.find((r) => r.id === report.reward)
+                  : undefined
+              }
             />
           ))}
         </div>
       )}
-
-      <ClaimRewardDialog
-        open={claimDialogOpen}
-        onOpenChange={setClaimDialogOpen}
-        initialCode={selectedRewardCode}
-        onClose={() => setSelectedRewardCode(null)}
-      />
     </div>
   );
 }
 
 function ReportStatusCard({
   report,
-  onClaimClick,
+  reward,
 }: {
   report: Report;
-  onClaimClick: (code: string) => void;
+  reward?: { unique_code: string; amount: number; is_claimed: boolean };
 }) {
-  const { data: reward, isLoading: isLoadingReward } = useQuery({
-    queryKey: ["reward", report.reward],
-    queryFn: () => getRewardById(report.reward!),
-    enabled: !!report.reward && report.status === "approved",
-  });
-
   const Icon = STATUS_ICONS[report.status];
   const isApproved = report.status === "approved";
 
@@ -166,11 +165,7 @@ function ReportStatusCard({
         </p>
 
         {isApproved && report.reward && (
-          <ApprovedRewardSection
-            reward={reward}
-            isLoading={isLoadingReward}
-            onClaimClick={onClaimClick}
-          />
+          <ApprovedRewardSection reward={reward} />
         )}
       </CardContent>
     </Card>
@@ -179,15 +174,37 @@ function ReportStatusCard({
 
 function ApprovedRewardSection({
   reward,
-  isLoading,
-  onClaimClick,
 }: {
-  reward: { unique_code: string; is_claimed: boolean } | undefined;
-  isLoading: boolean;
-  onClaimClick: (code: string) => void;
+  reward:
+    | { unique_code: string; amount: number; is_claimed: boolean }
+    | undefined;
 }) {
-  if (isLoading || !reward) {
-    return <Skeleton className="h-20 w-full rounded-lg" />;
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    if (!reward) return;
+    try {
+      await navigator.clipboard.writeText(reward.unique_code);
+      setCopied(true);
+      toast.success("Unique code copied to clipboard");
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error("Failed to copy");
+    }
+  };
+
+  if (!reward) {
+    return (
+      <div className="rounded-lg border border-green-500/30 bg-green-500/5 p-4">
+        <div className="flex items-center gap-2 text-green-700 dark:text-green-400">
+          <HugeiconsIcon icon={GiftIcon} className="h-5 w-5" />
+          <span className="font-semibold">Reward Issued</span>
+        </div>
+        <p className="text-sm text-muted-foreground mt-2">
+          View your reward in My Rewards.
+        </p>
+      </div>
+    );
   }
 
   return (
@@ -195,29 +212,38 @@ function ApprovedRewardSection({
       <div className="flex items-center gap-2 text-green-700 dark:text-green-400">
         <HugeiconsIcon icon={GiftIcon} className="h-5 w-5" />
         <span className="font-semibold">Reward Coupon Issued</span>
+        {reward.is_claimed && (
+          <Badge
+            variant="outline"
+            className="text-amber-600 border-amber-600 ml-auto"
+          >
+            Already Claimed
+          </Badge>
+        )}
       </div>
       <div className="space-y-1">
         <p className="text-xs text-muted-foreground">
           Your unique reward code:
         </p>
-        <code className="block font-mono text-sm bg-muted px-3 py-2 rounded break-all">
-          {reward.unique_code}
+        <code className="flex items-center gap-2 font-mono text-sm bg-muted px-3 py-2 rounded break-all">
+          <span className="flex-1 min-w-0">{reward.unique_code}</span>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-7 w-7 shrink-0 p-0 hover:bg-muted-foreground/10"
+            onClick={handleCopy}
+          >
+            <HugeiconsIcon
+              icon={copied ? CheckmarkCircle01Icon : Copy01Icon}
+              className="h-4 w-4"
+            />
+          </Button>
         </code>
       </div>
-      {!reward.is_claimed ? (
-        <Button
-          size="sm"
-          className="bg-amber-600 hover:bg-amber-700"
-          onClick={() => onClaimClick(reward.unique_code)}
-        >
-          <HugeiconsIcon icon={GiftIcon} className="mr-2 h-4 w-4" />
-          Claim Reward
-        </Button>
-      ) : (
-        <Badge variant="outline" className="text-amber-600 border-amber-600">
-          Already Claimed
-        </Badge>
-      )}
+      <p className="text-sm">
+        <span className="text-muted-foreground">Amount: </span>
+        <span className="font-semibold">{formatAmount(reward.amount)}</span>
+      </p>
     </div>
   );
 }

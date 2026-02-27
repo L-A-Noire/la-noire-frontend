@@ -50,3 +50,12 @@ export const getAllRewards = async (): Promise<Reward[]> => {
   const response = await http.get<Reward[]>("/reward/rewards/");
   return response.data;
 };
+
+/**
+ * Get rewards for the current user
+ * GET /api/reward/my-rewards/
+ */
+export const getMyRewards = async (): Promise<Reward[]> => {
+  const response = await http.get<Reward[]>("/reward/my-rewards/");
+  return response.data;
+};

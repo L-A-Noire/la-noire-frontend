@@ -1,18 +1,14 @@
 // src/components/layout/header.tsx (updated)
-import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuthStore } from "@/stores/auth.store";
 import { Button } from "@/components/ui/button";
 import { ALLOWED_CASE_ROLES } from "@/types/role.type";
-import { RewardMenu } from "@/components/rewards/reward-menu";
-import { ClaimRewardDialog } from "@/components/rewards/claim-reward-dialog";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { MoneyReceiveSquareIcon, GiftIcon } from "@hugeicons/core-free-icons";
 
 export const Header = () => {
   const session = useAuthStore((s) => s.session);
   const { pathname } = useLocation();
-  const [claimDialogOpen, setClaimDialogOpen] = useState(false);
   const isAdmin = session?.user.role_title === "Administrator";
   const isDetective = session?.user.role_title === "Detective";
   const isJudge = session?.user.role_title === "Judge";
@@ -29,18 +25,6 @@ export const Header = () => {
       "Sergent",
       "Captain",
       "Chief",
-    ].includes(session.user.role_title);
-
-  // Police roles that can access rewards (verify/claim)
-  const canAccessRewards =
-    session &&
-    [
-      "Police/Patrol Officer",
-      "Detective",
-      "Sergent",
-      "Captain",
-      "Chief",
-      "Administrator",
     ].includes(session.user.role_title);
 
   // Police roles only - can review reward tips (Officer → Detective flow)
@@ -194,7 +178,12 @@ export const Header = () => {
         </div>
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="sm" asChild className="relative gap-2">
-            <Link to="/payment">
+            <Link
+              to="/payment"
+              className={
+                isActive("/payment") ? "text-primary font-semibold" : ""
+              }
+            >
               <HugeiconsIcon
                 icon={MoneyReceiveSquareIcon}
                 className="h-4 w-4"
@@ -202,21 +191,26 @@ export const Header = () => {
               <span className="hidden md:inline">Coupon</span>
             </Link>
           </Button>
-          {session && (
+          {session && isBaseUser && (
             <Button
               variant="ghost"
               size="sm"
+              asChild
               className="relative gap-2"
-              onClick={() => setClaimDialogOpen(true)}
             >
-              <HugeiconsIcon icon={GiftIcon} className="h-4 w-4" />
-              <span className="hidden md:inline">Claim Reward</span>
+              <Link
+                to="/rewards"
+                className={
+                  isActive("/rewards") ? "text-primary font-semibold" : ""
+                }
+              >
+                <HugeiconsIcon icon={GiftIcon} className="h-4 w-4" />
+                <span className="hidden md:inline">My Rewards</span>
+              </Link>
             </Button>
           )}
           {session ? (
             <div className="flex items-center gap-4">
-              {canAccessRewards && <RewardMenu />}
-
               {isAdmin && (
                 <Button
                   variant="outline"
@@ -255,11 +249,6 @@ export const Header = () => {
           )}
         </div>
       </div>
-
-      <ClaimRewardDialog
-        open={claimDialogOpen}
-        onOpenChange={setClaimDialogOpen}
-      />
     </header>
   );
 };
