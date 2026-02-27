@@ -33,23 +33,23 @@ export const getWantedSuspects = async (): Promise<Suspect[]> => {
 
 export const getSuspectCrimeBySuspectAndCase = async (
   suspectId: number,
-  caseId: number
+  caseId: number,
 ): Promise<SuspectCrime | null> => {
   try {
     // First get the case to get the crime ID
     const caseResponse = await http.get(`/crime/cases/${caseId}/`);
     const crimeId = caseResponse.data.crime;
-    
+
     if (!crimeId) {
       console.error("Case has no associated crime");
       return null;
     }
-    
+
     // Then get suspect-crimes filtered by suspect and crime
     const response = await http.get<SuspectCrime[]>(
-      `/suspect/suspect-crimes/?suspect=${suspectId}&crime=${crimeId}`
+      `/suspect/suspect-crimes/?suspect=${suspectId}&crime=${crimeId}`,
     );
-    
+
     return response.data[0] || null;
   } catch (error) {
     console.error("Error fetching suspect-crime:", error);
@@ -98,8 +98,12 @@ export const addSuspectToCase = async (data: {
 };
 
 // // Mark suspect as wanted (sergeant action)
-export const markAsWanted = async (suspectCrimeId: number): Promise<Suspect> => {
-  const response = await http.post<Suspect>(`/suspect/suspect-crimes/${suspectCrimeId}/mark_as_wanted/`);
+export const markAsWanted = async (
+  suspectCrimeId: number,
+): Promise<Suspect> => {
+  const response = await http.post<Suspect>(
+    `/suspect/suspect-crimes/${suspectCrimeId}/mark_as_wanted/`,
+  );
   return response.data;
 };
 
@@ -135,21 +139,24 @@ export const markSuspectAsWanted = async (
 // Update suspect status
 export const updateSuspectStatus = async (
   suspectId: number,
-  status: string
+  status: string,
 ): Promise<Suspect> => {
-  const response = await http.patch<Suspect>(`/suspect/suspects/${suspectId}/`, {
-    status,
-  });
+  const response = await http.patch<Suspect>(
+    `/suspect/suspects/${suspectId}/`,
+    {
+      status,
+    },
+  );
   return response.data;
 };
 
 export const getSuspectCrimeBySuspectAndCrime = async (
   suspectId: number,
-  crimeId: number
+  crimeId: number,
 ): Promise<SuspectCrime | null> => {
   try {
     const response = await http.get<SuspectCrime[]>(
-      `/suspect/suspect-crimes/?suspect=${suspectId}&crime=${crimeId}`
+      `/suspect/suspect-crimes/?suspect=${suspectId}&crime=${crimeId}`,
     );
     return response.data[0] || null;
   } catch (error) {

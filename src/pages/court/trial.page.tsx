@@ -647,7 +647,8 @@ export const TrialPage = () => {
   const suspect = suspectCrime?.suspect_details;
 
   // Use caseId from state first, then try from suspectCrime
-  const caseId = caseIdFromState || suspectCrime?.case || suspectCrime?.case_details?.id;
+  const caseId =
+    caseIdFromState || suspectCrime?.case || suspectCrime?.case_details?.id;
 
   // Fetch Case Details - only if we have a valid caseId
   const { data: caseDetails, isLoading: isLoadingCase } = useQuery({
@@ -699,8 +700,8 @@ export const TrialPage = () => {
     onSuccess: () => {
       // Also close the case
       if (caseId) {
-        closeCase(caseId).catch(err =>
-          console.error("Error closing case:", err)
+        closeCase(caseId).catch((err) =>
+          console.error("Error closing case:", err),
         );
       }
 
@@ -712,7 +713,9 @@ export const TrialPage = () => {
     },
     onError: (error: any) => {
       console.error("Punishment error:", error);
-      toast.error(error.response?.data?.message || "Failed to issue punishment");
+      toast.error(
+        error.response?.data?.message || "Failed to issue punishment",
+      );
     },
   });
 
@@ -737,7 +740,11 @@ export const TrialPage = () => {
     },
   });
 
-  if (isLoadingSuspect || (caseId && isLoadingCase) || (caseId && isLoadingTimeline)) {
+  if (
+    isLoadingSuspect ||
+    (caseId && isLoadingCase) ||
+    (caseId && isLoadingTimeline)
+  ) {
     return (
       <div className="flex h-screen items-center justify-center">
         <HugeiconsIcon
@@ -773,14 +780,13 @@ export const TrialPage = () => {
       <div className="container mx-auto py-8">
         <Card className="border-destructive">
           <CardContent className="pt-6 text-center">
-            <p className="text-destructive mb-2">Error: No case linked to this suspect</p>
+            <p className="text-destructive mb-2">
+              Error: No case linked to this suspect
+            </p>
             <p className="text-sm text-muted-foreground mb-4">
               This suspect crime is not associated with any case.
             </p>
-            <Button
-              variant="outline"
-              onClick={() => navigate("/court")}
-            >
+            <Button variant="outline" onClick={() => navigate("/court")}>
               Back to Docket
             </Button>
           </CardContent>
@@ -789,7 +795,8 @@ export const TrialPage = () => {
     );
   }
 
-  const suspectName = suspect?.name ||
+  const suspectName =
+    suspect?.name ||
     (suspect?.first_name && suspect?.last_name
       ? `${suspect.first_name} ${suspect.last_name}`
       : "Unknown Suspect");
@@ -811,7 +818,8 @@ export const TrialPage = () => {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <HugeiconsIcon icon={File01Icon} /> Case #{caseId}: {caseDetails?.crime_title || "Criminal Case"}
+                <HugeiconsIcon icon={File01Icon} /> Case #{caseId}:{" "}
+                {caseDetails?.crime_title || "Criminal Case"}
               </CardTitle>
               <CardDescription>
                 Review all evidence and context before issuing judgment
@@ -821,7 +829,9 @@ export const TrialPage = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label className="text-muted-foreground">Crime Type</Label>
-                  <p className="font-medium">{caseDetails?.crime_details?.title || "N/A"}</p>
+                  <p className="font-medium">
+                    {caseDetails?.crime_details?.title || "N/A"}
+                  </p>
                 </div>
                 <div>
                   <Label className="text-muted-foreground">Crime Level</Label>
@@ -863,7 +873,9 @@ export const TrialPage = () => {
                       Case Opened
                     </span>
                     <span className="text-xs text-muted-foreground">
-                      {safeFormatDate(timelineData?.created_at || caseDetails?.created_at)}
+                      {safeFormatDate(
+                        timelineData?.created_at || caseDetails?.created_at,
+                      )}
                     </span>
                   </div>
                 </div>
@@ -897,7 +909,8 @@ export const TrialPage = () => {
                         Convicted by Interrogation
                       </span>
                       <p className="text-sm text-muted-foreground pt-1">
-                        The suspect was found guilty during interrogation and now awaits sentencing.
+                        The suspect was found guilty during interrogation and
+                        now awaits sentencing.
                       </p>
                     </div>
                   </div>
@@ -916,9 +929,7 @@ export const TrialPage = () => {
             <CardContent className="grid grid-cols-2 gap-4">
               <div>
                 <Label className="text-muted-foreground">Full Name</Label>
-                <div className="font-medium text-lg">
-                  {suspectName}
-                </div>
+                <div className="font-medium text-lg">{suspectName}</div>
               </div>
               {suspect?.nickname && (
                 <div>
@@ -928,9 +939,7 @@ export const TrialPage = () => {
               )}
               <div>
                 <Label className="text-muted-foreground">National ID</Label>
-                <div className="font-mono">
-                  {suspect?.national_id || "N/A"}
-                </div>
+                <div className="font-mono">{suspect?.national_id || "N/A"}</div>
               </div>
               <div>
                 <Label className="text-muted-foreground">Current Status</Label>
@@ -1000,7 +1009,8 @@ export const TrialPage = () => {
                     <div>
                       <p className="font-semibold">Verdict: Not Guilty</p>
                       <p className="text-sm opacity-90">
-                        {suspectName} will be declared innocent and released. The case will remain open for other suspects.
+                        {suspectName} will be declared innocent and released.
+                        The case will remain open for other suspects.
                       </p>
                     </div>
                   </div>
@@ -1017,7 +1027,9 @@ export const TrialPage = () => {
                       onClick={() => innocentMutation.mutate()}
                       disabled={innocentMutation.isPending}
                     >
-                      {innocentMutation.isPending ? "Processing..." : "Confirm Release"}
+                      {innocentMutation.isPending
+                        ? "Processing..."
+                        : "Confirm Release"}
                     </Button>
                   </div>
                 </div>
@@ -1031,7 +1043,8 @@ export const TrialPage = () => {
                     <div>
                       <p className="font-semibold">Verdict: Guilty</p>
                       <p className="text-sm opacity-90">
-                        Specify the punishment details below. The case will be closed after sentencing.
+                        Specify the punishment details below. The case will be
+                        closed after sentencing.
                       </p>
                     </div>
                   </div>
@@ -1050,7 +1063,9 @@ export const TrialPage = () => {
                       <SelectContent>
                         <SelectItem value="fine">Fine (Monetary)</SelectItem>
                         <SelectItem value="bail">Bail</SelectItem>
-                        <SelectItem value="imprisonment">Imprisonment</SelectItem>
+                        <SelectItem value="imprisonment">
+                          Imprisonment
+                        </SelectItem>
                         <SelectItem value="death">Death Penalty</SelectItem>
                       </SelectContent>
                     </Select>
@@ -1119,7 +1134,9 @@ export const TrialPage = () => {
                       }
                       onClick={() => punishmentMutation.mutate()}
                     >
-                      {punishmentMutation.isPending ? "Processing..." : "Issue Sentence & Close Case"}
+                      {punishmentMutation.isPending
+                        ? "Processing..."
+                        : "Issue Sentence & Close Case"}
                     </Button>
                   </div>
                 </div>

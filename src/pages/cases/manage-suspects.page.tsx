@@ -45,6 +45,7 @@ import {
   deleteSuspectFromCase,
 } from "@/api/suspect";
 import { getCaseById } from "@/api/cases";
+import http from "@/lib/http";
 
 export const ManageSuspectsPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -105,13 +106,10 @@ export const ManageSuspectsPage = () => {
     enabled: !!caseDetails,
   });
 
-  // We still need suspect-crimes for removal, so let's keep that query too
   const { data: suspectCrimes = [], isLoading: isLoadingSuspectCrimes } =
     useQuery({
       queryKey: ["suspect-crimes", "case", caseId],
       queryFn: async () => {
-        // This endpoint should filter by case, but we'll need to adjust your API
-        // For now, let's get all and filter client-side
         const response = await http.get(`/suspect/suspect-crimes/`);
         return response.data.filter(
           (sc: any) => sc.crime === caseDetails?.crime,
@@ -388,10 +386,11 @@ export const ManageSuspectsPage = () => {
                     {availableSuspects.map((suspect) => (
                       <div
                         key={suspect.id}
-                        className={`p-3 flex items-center gap-3 cursor-pointer hover:bg-muted/50 transition-colors ${selectedSuspectId === suspect.id.toString()
-                          ? "bg-muted"
-                          : ""
-                          }`}
+                        className={`p-3 flex items-center gap-3 cursor-pointer hover:bg-muted/50 transition-colors ${
+                          selectedSuspectId === suspect.id.toString()
+                            ? "bg-muted"
+                            : ""
+                        }`}
                         onClick={() =>
                           setSelectedSuspectId(suspect.id.toString())
                         }

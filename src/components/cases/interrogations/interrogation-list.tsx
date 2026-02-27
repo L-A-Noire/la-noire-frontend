@@ -26,8 +26,12 @@ export function InterrogationList({ caseId }: InterrogationListProps) {
     queryFn: () => getCaseInterrogations(caseId),
   });
 
-  const isCaptain = userRole === "Captain" || userRole === "Chief" || userRole === "Administrator";
-  const isDetectiveOrSergeant = userRole === "Detective" || userRole === "Sergent";
+  const isCaptain =
+    userRole === "Captain" ||
+    userRole === "Chief" ||
+    userRole === "Administrator";
+  const isDetectiveOrSergeant =
+    userRole === "Detective" || userRole === "Sergent";
 
   // Check if crime level is critical (level 4)
   const isCriticalCrime = caseDetails?.crime_details?.level === "4";
@@ -41,7 +45,9 @@ export function InterrogationList({ caseId }: InterrogationListProps) {
       <Separator />
 
       {isLoading ? (
-        <div className="text-muted-foreground text-sm">Loading interrogations...</div>
+        <div className="text-muted-foreground text-sm">
+          Loading interrogations...
+        </div>
       ) : interrogations && interrogations.length > 0 ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {interrogations.map((interrogation) => (
@@ -58,9 +64,7 @@ export function InterrogationList({ caseId }: InterrogationListProps) {
         <div className="text-muted-foreground text-sm py-8 text-center border rounded-lg border-dashed">
           No interrogations recorded yet.
           {isDetectiveOrSergeant && (
-            <p className="mt-2">
-              Add wanted suspects to start interrogations.
-            </p>
+            <p className="mt-2">Add wanted suspects to start interrogations.</p>
           )}
         </div>
       )}

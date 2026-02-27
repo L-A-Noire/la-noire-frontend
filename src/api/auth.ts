@@ -28,3 +28,37 @@ export const getUserProfile = async () => {
 export const logout = async () => {
   return Promise.resolve();
 };
+
+export interface AdminUser {
+  id: number;
+  username: string;
+  email: string;
+  phone: string;
+  first_name: string;
+  last_name: string;
+  national_id: string;
+  role_id: number;
+  role_title: string;
+  is_active: boolean;
+  date_joined: string;
+}
+
+export const getUsers = async (): Promise<AdminUser[]> => {
+  const { data } = await http.get<AdminUser[]>("/auth/users/");
+  return data;
+};
+
+export interface ChangeRolePayload {
+  user_id: number;
+  role_id: number;
+}
+
+export const changeUserRole = async (
+  payload: ChangeRolePayload,
+): Promise<ChangeRolePayload> => {
+  const { data } = await http.post<ChangeRolePayload>(
+    "/auth/users/change-role/",
+    payload,
+  );
+  return data;
+};

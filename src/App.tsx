@@ -34,6 +34,7 @@ import AdminComplaintsPage from "@/pages/admin/admin-complaints.page";
 import AdminCrimeScenesPage from "@/pages/admin/admin-crime-scenes.page";
 import AdminSuspectsPage from "@/pages/admin/admin-suspects.page";
 import AdminPunishmentsPage from "@/pages/admin/admin-punishments.page";
+import AdminUsersPage from "@/pages/admin/admin-users.page";
 import { ManageSuspectsPage } from "@/pages/cases/manage-suspects.page";
 import { ReviewSuspectsPage } from "@/pages/cases/review-suspects.page";
 import PaymentPage from "@/pages/payment.page";
@@ -151,6 +152,7 @@ export function App() {
             <Route path="crime-scenes" element={<AdminCrimeScenesPage />} />
             <Route path="suspects" element={<AdminSuspectsPage />} />
             <Route path="punishments" element={<AdminPunishmentsPage />} />
+            <Route path="users" element={<AdminUsersPage />} />
           </Route>
         </Route>
       </Routes>

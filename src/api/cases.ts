@@ -107,7 +107,6 @@ export const closeCase = async (id: number): Promise<CaseDetail> => {
   return response.data;
 };
 
-
 // Add this function to get all cases with full details
 export const getAllCasesWithDetails = async (): Promise<CaseDetail[]> => {
   const response = await http.get<CaseDetail[]>("/crime/cases/");

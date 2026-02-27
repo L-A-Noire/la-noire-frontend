@@ -8,9 +8,15 @@ import {
   MapPinIcon,
   Search01Icon,
   Legal01Icon,
+  User02Icon,
 } from "@hugeicons/core-free-icons";
 
 const adminNavItems = [
+  {
+    title: "Users",
+    href: "/admin/users",
+    icon: User02Icon,
+  },
   {
     title: "Roles",
     href: "/admin/roles",

@@ -48,7 +48,7 @@ export interface Interrogation {
     role_title: string;
   };
   review_notes: string | null;
-  status?: 'pending_scores' | 'pending_review' | 'completed' | 'rejected';
+  status?: "pending_scores" | "pending_review" | "completed" | "rejected";
 }
 
 export interface CreateInterrogationRequest {

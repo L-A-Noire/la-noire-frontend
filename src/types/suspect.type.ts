@@ -52,6 +52,6 @@ export interface SuspectCrime {
     last_name: string;
     role_title: string;
   };
-  
+
   status?: string;
 }

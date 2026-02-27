@@ -61,12 +61,14 @@ export function InterrogationCard({
   const userRole = session?.user?.role_title;
 
   // Determine if current user can score
-  const canScore = isDetectiveOrSergeant &&
+  const canScore =
+    isDetectiveOrSergeant &&
     ((userRole === "Detective" && interrogation.detective_score === null) ||
       (userRole === "Sergent" && interrogation.sergeant_score === null));
 
   // Determine if current user can review (captain, and both scores are present)
-  const canReview = isCaptain &&
+  const canReview =
+    isCaptain &&
     interrogation.detective_score !== null &&
     interrogation.sergeant_score !== null &&
     interrogation.final_score === null;
@@ -76,10 +78,16 @@ export function InterrogationCard({
     if (interrogation.final_score !== null) {
       return interrogation.final_score >= 7 ? "convicted" : "innocent";
     }
-    if (interrogation.detective_score !== null && interrogation.sergeant_score !== null) {
+    if (
+      interrogation.detective_score !== null &&
+      interrogation.sergeant_score !== null
+    ) {
       return "pending_review";
     }
-    if (interrogation.detective_score !== null || interrogation.sergeant_score !== null) {
+    if (
+      interrogation.detective_score !== null ||
+      interrogation.sergeant_score !== null
+    ) {
       return "pending_scores";
     }
     return "pending";
@@ -126,8 +134,11 @@ export function InterrogationCard({
   });
 
   const reviewMutation = useMutation({
-    mutationFn: (data: { score: number; notes: string; is_approved: boolean }) =>
-      reviewInterrogation(interrogation.id, data),
+    mutationFn: (data: {
+      score: number;
+      notes: string;
+      is_approved: boolean;
+    }) => reviewInterrogation(interrogation.id, data),
     onSuccess: (data) => {
       queryClient.invalidateQueries({
         queryKey: ["interrogations", interrogation.case],
@@ -182,7 +193,11 @@ export function InterrogationCard({
             </CardDescription>
             <div className="flex gap-2 mt-1">
               {interrogation.interrogators_details?.map((interrogator) => (
-                <Badge key={interrogator.id} variant="outline" className="text-xs">
+                <Badge
+                  key={interrogator.id}
+                  variant="outline"
+                  className="text-xs"
+                >
                   {interrogator.role_title}: {interrogator.first_name}
                 </Badge>
               ))}
@@ -205,35 +220,45 @@ export function InterrogationCard({
           {interrogation.detective_score !== null && (
             <div className="flex justify-between">
               <span className="text-muted-foreground">Detective Score:</span>
-              <span className="font-semibold">{interrogation.detective_score}/10</span>
+              <span className="font-semibold">
+                {interrogation.detective_score}/10
+              </span>
             </div>
           )}
 
           {interrogation.sergeant_score !== null && (
             <div className="flex justify-between">
               <span className="text-muted-foreground">Sergeant Score:</span>
-              <span className="font-semibold">{interrogation.sergeant_score}/10</span>
+              <span className="font-semibold">
+                {interrogation.sergeant_score}/10
+              </span>
             </div>
           )}
 
           {interrogation.final_score !== null && (
             <div className="flex justify-between">
               <span className="text-muted-foreground">Final Score:</span>
-              <span className="font-semibold text-primary">{interrogation.final_score}/10</span>
+              <span className="font-semibold text-primary">
+                {interrogation.final_score}/10
+              </span>
             </div>
           )}
 
           {interrogation.notes && (
             <div className="mt-2 p-2 bg-muted/30 rounded">
               <p className="text-xs font-semibold mb-1">Notes:</p>
-              <p className="text-xs text-muted-foreground">{interrogation.notes}</p>
+              <p className="text-xs text-muted-foreground">
+                {interrogation.notes}
+              </p>
             </div>
           )}
 
           {interrogation.review_notes && (
             <div className="mt-2 border-l-2 pl-2 border-primary/50">
               <p className="text-xs font-semibold">Captain's Review:</p>
-              <p className="text-xs text-muted-foreground">{interrogation.review_notes}</p>
+              <p className="text-xs text-muted-foreground">
+                {interrogation.review_notes}
+              </p>
             </div>
           )}
         </div>
@@ -296,8 +321,12 @@ export function InterrogationCard({
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
-                  <Label>Detective Score: {interrogation.detective_score}/10</Label>
-                  <Label>Sergeant Score: {interrogation.sergeant_score}/10</Label>
+                  <Label>
+                    Detective Score: {interrogation.detective_score}/10
+                  </Label>
+                  <Label>
+                    Sergeant Score: {interrogation.sergeant_score}/10
+                  </Label>
                 </div>
                 <div className="grid gap-2">
                   <Label>Your Final Score (1-10) *</Label>

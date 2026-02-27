@@ -228,7 +228,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { getSuspectsByCaseDirect, getSuspectCrimeBySuspectAndCase } from "@/api/suspect";
+import {
+  getSuspectsByCaseDirect,
+  getSuspectCrimeBySuspectAndCase,
+} from "@/api/suspect";
 import { getCaseById } from "@/api/cases";
 import { createInterrogation } from "@/api/interrogations";
 import { toast } from "react-toastify";
@@ -270,7 +273,8 @@ export function CreateInterrogationDialog({
 
   // Filter suspects to only show wanted or most_wanted
   const interrogatableSuspects = suspects?.filter(
-    (suspect) => suspect.status === "wanted" || suspect.status === "most_wanted"
+    (suspect) =>
+      suspect.status === "wanted" || suspect.status === "most_wanted",
   );
 
   const createMutation = useMutation({
@@ -282,7 +286,7 @@ export function CreateInterrogationDialog({
       // Get the suspect-crime ID using suspect and crime IDs
       const suspectCrime = await getSuspectCrimeBySuspectAndCase(
         Number(selectedSuspectId),
-        caseId
+        caseId,
       );
 
       if (!suspectCrime) {
@@ -306,7 +310,11 @@ export function CreateInterrogationDialog({
     },
     onError: (error: AxiosError<ErrorResponse>) => {
       console.error("Error starting interrogation:", error);
-      toast.error(error.response?.data?.message || error.message || "Failed to start interrogation");
+      toast.error(
+        error.response?.data?.message ||
+          error.message ||
+          "Failed to start interrogation",
+      );
     },
   });
 
@@ -349,7 +357,8 @@ export function CreateInterrogationDialog({
         <DialogHeader>
           <DialogTitle>Start New Interrogation</DialogTitle>
           <DialogDescription>
-            Select a wanted suspect to interrogate. This will change their status to "arrested".
+            Select a wanted suspect to interrogate. This will change their
+            status to "arrested".
           </DialogDescription>
           {crimeId && (
             <p className="text-xs text-muted-foreground mt-1">
@@ -366,14 +375,17 @@ export function CreateInterrogationDialog({
               disabled={isLoading || !crimeId}
             >
               <SelectTrigger>
-                <SelectValue placeholder={isLoading ? "Loading..." : "Select suspect"} />
+                <SelectValue
+                  placeholder={isLoading ? "Loading..." : "Select suspect"}
+                />
               </SelectTrigger>
               <SelectContent>
                 {isLoading ? (
                   <SelectItem value="loading" disabled>
                     Loading suspects...
                   </SelectItem>
-                ) : !interrogatableSuspects || interrogatableSuspects.length === 0 ? (
+                ) : !interrogatableSuspects ||
+                  interrogatableSuspects.length === 0 ? (
                   <SelectItem value="none" disabled>
                     No wanted suspects available
                   </SelectItem>
@@ -404,7 +416,8 @@ export function CreateInterrogationDialog({
               </SelectContent>
             </Select>
             <p className="text-xs text-muted-foreground">
-              Only suspects with "wanted" or "most_wanted" status can be interrogated
+              Only suspects with "wanted" or "most_wanted" status can be
+              interrogated
             </p>
           </div>
 
@@ -432,12 +445,21 @@ export function CreateInterrogationDialog({
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)} disabled={createMutation.isPending}>
+          <Button
+            variant="outline"
+            onClick={() => setOpen(false)}
+            disabled={createMutation.isPending}
+          >
             Cancel
           </Button>
           <Button
             onClick={handleSubmit}
-            disabled={!selectedSuspectId || !location || createMutation.isPending || !crimeId}
+            disabled={
+              !selectedSuspectId ||
+              !location ||
+              createMutation.isPending ||
+              !crimeId
+            }
           >
             {createMutation.isPending ? "Starting..." : "Start Interrogation"}
           </Button>
