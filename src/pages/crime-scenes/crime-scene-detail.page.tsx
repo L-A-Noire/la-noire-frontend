@@ -321,23 +321,25 @@ export const CrimeSceneDetailPage = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <div className="flex items-start gap-2">
-                <HugeiconsIcon
-                  icon={UserIcon}
-                  className="h-5 w-5 text-muted-foreground mt-0.5"
-                />
-                <div className="flex-1 space-y-1">
-                  <p className="text-sm font-medium">Scene Viewer</p>
-                  <p className="text-sm text-muted-foreground">
-                    {scene.viewer_details?.username || "Unknown"}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {scene.viewer_details?.role_title || "N/A"}
-                  </p>
+            {scene.witness_details && (
+              <div className="space-y-2">
+                <div className="flex items-start gap-2">
+                  <HugeiconsIcon
+                    icon={UserIcon}
+                    className="h-5 w-5 text-muted-foreground mt-0.5"
+                  />
+                  <div className="flex-1 space-y-1">
+                    <p className="text-sm font-medium">Scene Viewer</p>
+                    <p className="text-sm text-muted-foreground">
+                      {scene.witness_details?.username || "Unknown"}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {scene.witness_details?.role_title || "N/A"}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
             {scene.examiner_details && (
               <div className="space-y-2">
