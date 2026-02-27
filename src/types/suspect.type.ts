@@ -52,5 +52,6 @@ export interface SuspectCrime {
     last_name: string;
     role_title: string;
   };
-  status?: string; // This might be inherited from suspect or have its own status
+  
+  status?: string;
 }

@@ -35,10 +35,34 @@ export const deleteSuspectCrime = async (id: number): Promise<void> => {
 };
 
 export const getWantedSuspects = async (): Promise<Suspect[]> => {
-  const response = await http.get<Suspect[]>(
-    "/suspect/suspects/?status__in=wanted,most_wanted",
-  );
+  const response = await http.get<Suspect[]>("/suspect/wanted/");
   return response.data;
+};
+
+export const getSuspectCrimeBySuspectAndCase = async (
+  suspectId: number,
+  caseId: number
+): Promise<SuspectCrime | null> => {
+  try {
+    // First get the case to get the crime ID
+    const caseResponse = await http.get(`/crime/cases/${caseId}/`);
+    const crimeId = caseResponse.data.crime;
+    
+    if (!crimeId) {
+      console.error("Case has no associated crime");
+      return null;
+    }
+    
+    // Then get suspect-crimes filtered by suspect and crime
+    const response = await http.get<SuspectCrime[]>(
+      `/suspect/suspect-crimes/?suspect=${suspectId}&crime=${crimeId}`
+    );
+    
+    return response.data[0] || null;
+  } catch (error) {
+    console.error("Error fetching suspect-crime:", error);
+    return null;
+  }
 };
 
 // Get all suspects (for detective dropdown)
@@ -92,13 +116,9 @@ export const addSuspectToCase = async (data: {
   return response.data;
 };
 
-// Mark suspect as wanted (sergeant action)
-// Note: Pass suspect id (from suspect.suspect or suspect.id when using Suspect type)
-export const markAsWanted = async (suspectId: number): Promise<Suspect> => {
-  const response = await http.post<Suspect>(
-    `/suspect/suspects/${suspectId}/mark_as_wanted/`,
-    {},
-  );
+// // Mark suspect as wanted (sergeant action)
+export const markAsWanted = async (suspectCrimeId: number): Promise<Suspect> => {
+  const response = await http.post<Suspect>(`/suspect/suspect-crimes/${suspectCrimeId}/mark_as_wanted/`);
   return response.data;
 };
 

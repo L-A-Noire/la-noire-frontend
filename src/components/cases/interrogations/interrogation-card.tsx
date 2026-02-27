@@ -1,3 +1,4 @@
+// src/components/interrogations/interrogation-card.tsx
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -35,7 +36,7 @@ interface InterrogationCardProps {
   interrogation: Interrogation;
   isCaptain: boolean;
   isDetectiveOrSergeant: boolean;
-  isCriticalCrime: boolean; // Passed from parent based on Case logic
+  isCriticalCrime: boolean;
 }
 
 export function InterrogationCard({
@@ -47,22 +48,53 @@ export function InterrogationCard({
   const { session } = useAuthStore();
   const queryClient = useQueryClient();
   const [score, setScore] = useState<string>("");
-  const [captainScore, setCaptainScore] = useState<string>("");
+  const [reviewScore, setReviewScore] = useState<string>("");
   const [reviewNotes, setReviewNotes] = useState("");
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [scoreDialogOpen, setScoreDialogOpen] = useState(false);
 
-  // Status Badge Logic
-  const getStatusBadge = (status: Interrogation["status"]) => {
+  const suspect = interrogation.suspect_crime_details?.suspect_details;
+  const userRole = session?.user?.role_title;
+
+  // Determine if current user can score
+  const canScore = isDetectiveOrSergeant &&
+    ((userRole === "Detective" && interrogation.detective_score === null) ||
+      (userRole === "Sergent" && interrogation.sergeant_score === null));
+
+  // Determine if current user can review (captain, and both scores are present)
+  const canReview = isCaptain &&
+    interrogation.detective_score !== null &&
+    interrogation.sergeant_score !== null &&
+    interrogation.final_score === null;
+
+  // Get status based on scores
+  const getStatus = () => {
+    if (interrogation.final_score !== null) {
+      return interrogation.final_score >= 7 ? "convicted" : "innocent";
+    }
+    if (interrogation.detective_score !== null && interrogation.sergeant_score !== null) {
+      return "pending_review";
+    }
+    if (interrogation.detective_score !== null || interrogation.sergeant_score !== null) {
+      return "pending_scores";
+    }
+    return "pending";
+  };
+
+  const status = getStatus();
+
+  const getStatusBadge = () => {
     switch (status) {
-      case "pending_score":
-        return <Badge variant="secondary">Pending Score</Badge>;
+      case "pending":
+        return <Badge variant="secondary">Awaiting Scores</Badge>;
+      case "pending_scores":
+        return <Badge className="bg-orange-500">Partial Scores</Badge>;
       case "pending_review":
-        return <Badge className="bg-orange-500">Pending Review</Badge>;
-      case "completed":
-        return <Badge className="bg-green-600">Completed</Badge>;
-      case "rejected":
-        return <Badge variant="destructive">Rejected</Badge>;
+        return <Badge className="bg-purple-500">Awaiting Captain Review</Badge>;
+      case "convicted":
+        return <Badge className="bg-red-600">Convicted</Badge>;
+      case "innocent":
+        return <Badge className="bg-green-600">Innocent</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -78,48 +110,51 @@ export function InterrogationCard({
       setScoreDialogOpen(false);
       toast.success("Score submitted successfully");
     },
-    onError: () => toast.error("Failed to submit score"),
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Failed to submit score");
+    },
   });
 
   const reviewMutation = useMutation({
-    mutationFn: (data: {
-      captain_score: number;
-      notes: string;
-      is_approved: boolean;
-    }) => reviewInterrogation(interrogation.id, data),
-    onSuccess: () => {
+    mutationFn: (data: { score: number; notes: string; is_approved: boolean }) =>
+      reviewInterrogation(interrogation.id, data),
+    onSuccess: (data) => {
       queryClient.invalidateQueries({
         queryKey: ["interrogations", interrogation.case],
       });
       setReviewDialogOpen(false);
-      toast.success("Review submitted successfully");
-    },
-    onError: () => toast.error("Failed to submit review"),
-  });
 
-  const canScore =
-    isDetectiveOrSergeant &&
-    interrogation.status === "pending_score" &&
-    interrogation.interrogator === session?.user?.id;
-  const canReview = isCaptain && interrogation.status === "pending_review";
+      const finalScore = data.final_score;
+      if (finalScore && finalScore >= 7) {
+        toast.success("Suspect convicted. Case will proceed to trial.");
+      } else if (finalScore && finalScore <= 3) {
+        toast.success("Suspect found innocent. Status updated.");
+      } else {
+        toast.success("Review submitted successfully");
+      }
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Failed to submit review");
+    },
+  });
 
   const handleScoreSubmit = () => {
     const numScore = Number(score);
-    if (isNaN(numScore) || numScore < 0 || numScore > 100) {
-      toast.error("Please enter a valid score (0-100)");
+    if (isNaN(numScore) || numScore < 1 || numScore > 10) {
+      toast.error("Please enter a valid score (1-10)");
       return;
     }
     submitScoreMutation.mutate({ score: numScore });
   };
 
   const handleReviewSubmit = (approved: boolean) => {
-    const numScore = Number(captainScore);
-    if (isNaN(numScore) || numScore < 0 || numScore > 100) {
-      toast.error("Please enter a valid score (0-100)");
+    const numScore = Number(reviewScore);
+    if (isNaN(numScore) || numScore < 1 || numScore > 10) {
+      toast.error("Please enter a valid score (1-10)");
       return;
     }
     reviewMutation.mutate({
-      captain_score: numScore,
+      score: numScore,
       notes: reviewNotes,
       is_approved: approved,
     });
@@ -130,47 +165,70 @@ export function InterrogationCard({
       <CardHeader className="pb-3">
         <div className="flex justify-between items-start">
           <div>
-            <CardTitle>{interrogation.suspect_name}</CardTitle>
+            <CardTitle>{suspect?.name || "Unknown Suspect"}</CardTitle>
             <CardDescription>
-              Interrogated match by {interrogation.interrogator_name} (
-              {interrogation.interrogator_role})
+              {suspect?.nickname && <span>AKA: {suspect.nickname} • </span>}
+              ID: {suspect?.national_id || "N/A"}
             </CardDescription>
+            <div className="flex gap-2 mt-1">
+              {interrogation.interrogators_details?.map((interrogator) => (
+                <Badge key={interrogator.id} variant="outline" className="text-xs">
+                  {interrogator.role_title}: {interrogator.first_name}
+                </Badge>
+              ))}
+            </div>
           </div>
-          {getStatusBadge(interrogation.status)}
+          {getStatusBadge()}
         </div>
       </CardHeader>
       <CardContent>
-        <div className="grid gap-2 text-sm">
+        <div className="grid gap-3 text-sm">
           <div className="flex justify-between">
             <span className="text-muted-foreground">Date:</span>
-            <span>{format(new Date(interrogation.created_at), "PPP")}</span>
+            <span>{format(new Date(interrogation.date), "PPP")}</span>
           </div>
-          {interrogation.score !== null && (
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Location:</span>
+            <span>{interrogation.location}</span>
+          </div>
+
+          {interrogation.detective_score !== null && (
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Interrogator Score:</span>
-              <span className="font-semibold">{interrogation.score}/100</span>
+              <span className="text-muted-foreground">Detective Score:</span>
+              <span className="font-semibold">{interrogation.detective_score}/10</span>
             </div>
           )}
-          {interrogation.captain_score !== null && (
+
+          {interrogation.sergeant_score !== null && (
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Captain Score:</span>
-              <span className="font-semibold text-primary">
-                {interrogation.captain_score}/100
-              </span>
+              <span className="text-muted-foreground">Sergeant Score:</span>
+              <span className="font-semibold">{interrogation.sergeant_score}/10</span>
             </div>
           )}
+
+          {interrogation.final_score !== null && (
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Final Score:</span>
+              <span className="font-semibold text-primary">{interrogation.final_score}/10</span>
+            </div>
+          )}
+
           {interrogation.notes && (
-            <div className="mt-2 text-muted-foreground italic">
-              "{interrogation.notes}"
+            <div className="mt-2 p-2 bg-muted/30 rounded">
+              <p className="text-xs font-semibold mb-1">Notes:</p>
+              <p className="text-xs text-muted-foreground">{interrogation.notes}</p>
             </div>
           )}
-          {interrogation.captain_notes && (
-            <div className="mt-2 border-l-2 pl-2 border-primary/50 text-xs">
-              <strong>Captain's Review:</strong> {interrogation.captain_notes}
+
+          {interrogation.review_notes && (
+            <div className="mt-2 border-l-2 pl-2 border-primary/50">
+              <p className="text-xs font-semibold">Captain's Review:</p>
+              <p className="text-xs text-muted-foreground">{interrogation.review_notes}</p>
             </div>
           )}
         </div>
       </CardContent>
+
       <CardFooter className="flex justify-end gap-2 pt-0">
         {canScore && (
           <Dialog open={scoreDialogOpen} onOpenChange={setScoreDialogOpen}>
@@ -181,19 +239,22 @@ export function InterrogationCard({
               <DialogHeader>
                 <DialogTitle>Submit Interrogation Score</DialogTitle>
                 <DialogDescription>
-                  Rate the suspect's cooperation and likelihood of guilt based
-                  on your interrogation.
+                  Rate the suspect's guilt on a scale of 1-10.
+                  {userRole === "Detective"
+                    ? " Your score will be combined with the Sergeant's."
+                    : " Your score will be combined with the Detective's."}
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
-                  <Label>Score (0-100)</Label>
+                  <Label>Score (1-10)</Label>
                   <Input
                     type="number"
-                    min="0"
-                    max="100"
+                    min="1"
+                    max="10"
                     value={score}
                     onChange={(e) => setScore(e.target.value)}
+                    placeholder="Enter score"
                   />
                 </div>
               </div>
@@ -215,20 +276,28 @@ export function InterrogationCard({
               <DialogHeader>
                 <DialogTitle>Captain's Review</DialogTitle>
                 <DialogDescription>
-                  Review the interrogation results and provide a final score.
-                  {isCriticalCrime &&
-                    " This is a CRITICAL crime. Your decision will be final approval."}
+                  Review the interrogation results and provide a final verdict.
+                  {isCriticalCrime && (
+                    <span className="block mt-1 text-orange-500">
+                      This is a CRITICAL crime. Your decision will be final.
+                    </span>
+                  )}
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
-                  <Label>Final Score (0-100)</Label>
+                  <Label>Detective Score: {interrogation.detective_score}/10</Label>
+                  <Label>Sergeant Score: {interrogation.sergeant_score}/10</Label>
+                </div>
+                <div className="grid gap-2">
+                  <Label>Your Final Score (1-10) *</Label>
                   <Input
                     type="number"
-                    min="0"
-                    max="100"
-                    value={captainScore}
-                    onChange={(e) => setCaptainScore(e.target.value)}
+                    min="1"
+                    max="10"
+                    value={reviewScore}
+                    onChange={(e) => setReviewScore(e.target.value)}
+                    placeholder="Enter final score"
                   />
                 </div>
                 <div className="grid gap-2">
@@ -236,25 +305,33 @@ export function InterrogationCard({
                   <Textarea
                     value={reviewNotes}
                     onChange={(e) => setReviewNotes(e.target.value)}
-                    placeholder="Add your comments..."
+                    placeholder="Add your comments and reasoning..."
+                    rows={4}
                   />
                 </div>
               </div>
-              <DialogFooter>
+              <DialogFooter className="gap-2">
                 {isCriticalCrime ? (
                   <>
                     <Button
                       variant="destructive"
                       onClick={() => handleReviewSubmit(false)}
+                      disabled={!reviewScore}
                     >
-                      Reject
+                      Reject & Mark Innocent
                     </Button>
-                    <Button onClick={() => handleReviewSubmit(true)}>
-                      Approve & Finalize
+                    <Button
+                      onClick={() => handleReviewSubmit(true)}
+                      disabled={!reviewScore}
+                    >
+                      Approve & Convict
                     </Button>
                   </>
                 ) : (
-                  <Button onClick={() => handleReviewSubmit(true)}>
+                  <Button
+                    onClick={() => handleReviewSubmit(true)}
+                    disabled={!reviewScore}
+                  >
                     Submit Review
                   </Button>
                 )}
