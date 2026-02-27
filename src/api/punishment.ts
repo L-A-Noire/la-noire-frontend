@@ -1,4 +1,3 @@
-// src/api/punishment.ts
 import http from "@/lib/http";
 import type {
   Punishment,
@@ -28,4 +27,13 @@ export const getPunishment = async (id: number): Promise<Punishment> => {
 
 export const deletePunishment = async (id: number): Promise<void> => {
   await http.delete(`/suspect/punishments/${id}/`);
+};
+
+export const getPunishmentBySuspectCrime = async (suspectCrimeId: number): Promise<Punishment | null> => {
+  try {
+    const response = await http.get<Punishment[]>(`/suspect/punishments/?suspect_crime=${suspectCrimeId}`);
+    return response.data[0] || null;
+  } catch {
+    return null;
+  }
 };

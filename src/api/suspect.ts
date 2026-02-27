@@ -20,16 +20,6 @@ export const getSuspectsByCaseDirect = async (
   return response.data;
 };
 
-export const updateSuspectStatus = async (
-  id: number,
-  status: string,
-): Promise<Suspect> => {
-  const response = await http.patch<Suspect>(`/suspect/suspect-crimes/${id}/`, {
-    status,
-  });
-  return response.data;
-};
-
 export const deleteSuspectCrime = async (id: number): Promise<void> => {
   await http.delete(`/suspect/suspect-crimes/${id}/`);
 };
@@ -95,17 +85,6 @@ export const createSuspect = async (data: FormData): Promise<Suspect> => {
   return response.data;
 };
 
-// // Update suspect status (for sergeant)
-// export const updateSuspectStatus = async (
-//   suspectCrimeId: number,
-//   status: string,
-// ): Promise<Suspect> => {
-//   const response = await http.patch<Suspect>(`/suspect/suspect-crimes/${suspectCrimeId}/`, {
-//     status,
-//   });
-//   return response.data;
-// };
-
 // // Add existing suspect to case (creates SuspectCrime)
 export const addSuspectToCase = async (data: {
   suspect: number;
@@ -149,4 +128,30 @@ export const markSuspectAsWanted = async (
     `/suspect/suspects/${suspectId}/mark_as_wanted/`,
   );
   return response.data;
+};
+
+// Update suspect status
+export const updateSuspectStatus = async (
+  suspectId: number,
+  status: string
+): Promise<Suspect> => {
+  const response = await http.patch<Suspect>(`/suspect/suspects/${suspectId}/`, {
+    status,
+  });
+  return response.data;
+};
+
+export const getSuspectCrimeBySuspectAndCrime = async (
+  suspectId: number,
+  crimeId: number
+): Promise<SuspectCrime | null> => {
+  try {
+    const response = await http.get<SuspectCrime[]>(
+      `/suspect/suspect-crimes/?suspect=${suspectId}&crime=${crimeId}`
+    );
+    return response.data[0] || null;
+  } catch (error) {
+    console.error("Error fetching suspect-crime:", error);
+    return null;
+  }
 };
