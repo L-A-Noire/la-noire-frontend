@@ -20,6 +20,7 @@ import {
   TimelineEventIcon,
 } from "@hugeicons/core-free-icons";
 import http from "@/lib/http";
+import { logout as logoutApi } from "@/api/auth";
 import WantedSuspects from "@/components/wanted-suspects";
 
 // API function to fetch employee count
@@ -61,8 +62,16 @@ export default function HomePage() {
   });
 
   const handleLogout = () => {
-    clearSession();
-    navigate("/login");
+    const refresh = session?.refresh;
+    if (refresh) {
+      logoutApi(refresh).finally(() => {
+        clearSession();
+        navigate("/login");
+      });
+    } else {
+      clearSession();
+      navigate("/login");
+    }
   };
 
   // Calculate solve rate

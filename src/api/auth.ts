@@ -21,9 +21,11 @@ export const getUserProfile = async () => {
   return data;
 };
 
-export const logout = async () => {
-  // If your backend handles logout, call it here.
-  // Otherwise, just clear the store (which is usually done in the component).
-  const { data } = await http.post("/auth/logout");
+/**
+ * Logout: blacklist refresh token via POST /api/auth/logout/
+ * Requires rest_framework_simplejwt.token_blacklist.
+ */
+export const logout = async (refresh: string) => {
+  const { data } = await http.post("/auth/logout/", { refresh });
   return data;
 };
