@@ -5,6 +5,8 @@ import type {
   PaymentRequest,
   PaymentResponse,
   RewardVerificationResponse,
+  ClaimRewardRequest,
+  ClaimRewardResponse,
 } from "@/types/reward.type";
 
 /**
@@ -57,5 +59,20 @@ export const getAllRewards = async (): Promise<Reward[]> => {
  */
 export const getMyRewards = async (): Promise<Reward[]> => {
   const response = await http.get<Reward[]>("/reward/my-rewards/");
+  return response.data;
+};
+
+/**
+ * Claim a reward (police/authorized roles only)
+ * POST /api/reward/rewards/claim/
+ * National ID must match the reward recipient.
+ */
+export const claimRewardByCode = async (
+  data: ClaimRewardRequest,
+): Promise<ClaimRewardResponse> => {
+  const response = await http.post<ClaimRewardResponse>(
+    "/reward/rewards/claim/",
+    data,
+  );
   return response.data;
 };

@@ -42,6 +42,7 @@ import FailedPaymentPage from "@/pages/failed-payment.page";
 import RewardReportsPage from "@/pages/reward/reward-reports.page";
 import MyReportsPage from "@/pages/reward/my-reports.page";
 import MyRewardsPage from "@/pages/reward/my-rewards.page";
+import ClaimRewardPage from "@/pages/reward/claim-reward.page";
 
 export function App() {
   return (
@@ -117,6 +118,7 @@ export function App() {
             }
           >
             <Route path="reward/reports" element={<RewardReportsPage />} />
+            <Route path="reward/claim" element={<ClaimRewardPage />} />
           </Route>
           <Route path="testimonies" element={<TestimoniesListPage />} />
           <Route

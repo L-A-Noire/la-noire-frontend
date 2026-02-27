@@ -46,7 +46,7 @@ export default function PaymentPage() {
   };
 
   return (
-    <div className="container mx-auto flex min-h-[calc(100vh-3.5rem)] items-center justify-center px-4 py-12">
+    <div className="container mx-auto flex min-h-full items-center justify-center px-4 py-12">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-extrabold tracking-tight text-primary font-mono">
@@ -70,7 +70,7 @@ export default function PaymentPage() {
           <Separator className="bg-primary/20" />
 
           <form onSubmit={handleSubmit(onSubmit)}>
-            <CardContent className="pt-6 space-y-5">
+            <CardContent className="mb-6 space-y-5">
               <div className="space-y-2">
                 <Label
                   htmlFor="amount"

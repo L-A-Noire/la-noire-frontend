@@ -209,6 +209,24 @@ export const Header = () => {
               </Link>
             </Button>
           )}
+          {session && canReviewTips && (
+            <Button
+              variant="ghost"
+              size="sm"
+              asChild
+              className="relative gap-2"
+            >
+              <Link
+                to="/reward/claim"
+                className={
+                  isActive("/reward/claim") ? "text-primary font-semibold" : ""
+                }
+              >
+                <HugeiconsIcon icon={GiftIcon} className="h-4 w-4" />
+                <span className="hidden md:inline">Claim Reward</span>
+              </Link>
+            </Button>
+          )}
           {session ? (
             <div className="flex items-center gap-4">
               {isAdmin && (

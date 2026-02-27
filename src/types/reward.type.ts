@@ -71,3 +71,15 @@ export interface VerificationResult {
   reward?: RewardDetail;
   error?: string;
 }
+
+/** Request for police claim endpoint: POST /api/reward/rewards/claim/ */
+export interface ClaimRewardRequest {
+  reward_code: string;
+  national_id: string;
+}
+
+/** Response from claim endpoint */
+export interface ClaimRewardResponse {
+  detail: string;
+  amount: number;
+}
