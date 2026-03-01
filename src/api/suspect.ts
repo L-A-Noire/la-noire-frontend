@@ -89,13 +89,14 @@ export const createSuspect = async (data: FormData): Promise<Suspect> => {
   return response.data;
 };
 
-// // Add existing suspect to case (creates SuspectCrime)
 export const addSuspectToCase = async (data: {
   suspect: number;
-  case: number;
-  status?: string;
-}): Promise<Suspect> => {
-  const response = await http.post<Suspect>("/suspect/suspect-crimes/", data);
+  crime: number;
+}): Promise<SuspectCrime> => {
+  const response = await http.post<SuspectCrime>(
+    "/suspect/suspect-crimes/",
+    data,
+  );
   return response.data;
 };
 

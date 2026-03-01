@@ -296,7 +296,8 @@ export const TrialPage = () => {
                     </span>
                     <span className="text-xs text-muted-foreground">
                       {safeFormatDate(
-                        timelineData?.created_at || caseDetails?.created_at,
+                        timelineData?.case?.opened_date ||
+                          caseDetails?.created_at,
                       )}
                     </span>
                   </div>

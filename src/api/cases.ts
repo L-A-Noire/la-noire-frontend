@@ -7,7 +7,7 @@ import type {
   PatchCaseRequest,
   AssignDetectiveRequest,
   CloseCaseRequest,
-  CaseTimeline,
+  CaseTimelineResponse,
 } from "@/types/case.type";
 
 /**
@@ -75,8 +75,12 @@ export const deleteCase = async (id: number): Promise<void> => {
  * Get case timeline (complaints, crime scenes, reports)
  * GET /api/crime/cases/{id}/timeline/
  */
-export const getCaseTimeline = async (id: number): Promise<CaseTimeline> => {
-  const response = await http.get<CaseTimeline>(`/crime/cases/${id}/timeline/`);
+export const getCaseTimeline = async (
+  id: number,
+): Promise<CaseTimelineResponse> => {
+  const response = await http.get<CaseTimelineResponse>(
+    `/crime/cases/${id}/timeline/`,
+  );
   return response.data;
 };
 

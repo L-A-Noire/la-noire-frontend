@@ -79,16 +79,46 @@ export interface CloseCaseRequest {
   is_closed: true;
 }
 
-/**
- * CaseTimeline - Timeline events for a case
- * Contains investigation events, complaints, crime scenes, reports
- * Extends CaseDetail to include denormalized fields
- */
-export interface CaseTimeline extends CaseDetail {
-  timeline_events?: Array<{
+export interface TimelineCaseInfo {
+  opened_date: string;
+  assigned_detective?: {
     id: number;
-    timestamp: string;
-    event_type: "complaint" | "crime_scene" | "report" | "update";
-    description: string;
-  }>;
+    name: string;
+  };
+}
+
+export type TimelineEvent =
+  | {
+      type: "crime_scene";
+      date: string;
+      id: number;
+      location?: string;
+      is_confirmed: boolean;
+    }
+  | {
+      type: "case_opened";
+      date: string;
+      assigned_detective?: {
+        id: number;
+        name: string;
+      };
+    }
+  | {
+      type: "complaint";
+      date: string;
+      id: number;
+      description: string;
+      status: string;
+    }
+  | {
+      type: "report";
+      date: string;
+      id: number;
+      description: string;
+      status: string;
+    };
+
+export interface CaseTimelineResponse {
+  case: TimelineCaseInfo;
+  timeline: TimelineEvent[];
 }
